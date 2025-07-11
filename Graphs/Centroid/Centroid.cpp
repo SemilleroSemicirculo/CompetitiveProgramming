@@ -1,9 +1,24 @@
 #include <bits/stdc++.h>
+
 using namespace std;
+typedef long long ll;
+typedef long double ld;
+const ll INF = numeric_limits<ll>::max();
+
+#define all(x) x.begin(), x.end()
+#define rall(x) x.rbegin(), x.rend()
+#define MOD 998244353
+// #define MOD pow(10, 9)+7;
+// #define MOD 3245284303;
+#define pi acos(-1)
+#define gcd __gcd
+#define lcm(a, b) ((a) * (b) / gcd(a, b))
+#define precision(n) cout << fixed << setprecision(n)
+#define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
+#define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+    fastio;
 
     int n;
     cin >> n;
@@ -15,11 +30,9 @@ int main() {
         adj[b].push_back(a);
     }
 
-    // 1) DFS iterativo para obtener parent[] y order[]
-    vector<int> parent(n+1, 0);
-    vector<int> order;
+    vector<int> parent(n+1, 0), order;
     order.reserve(n);
-    stack<pair<int,int>> st;
+    stack<pair<int, int>> st;
     st.emplace(1, 0);
 
     while (!st.empty()) {
@@ -32,7 +45,6 @@ int main() {
         }
     }
 
-    // 2) Calcular tamaños de subárbol dp[u]
     vector<int> dp(n+1, 1);
     for (int i = n-1; i >= 0; --i) {
         int u = order[i];
@@ -42,15 +54,13 @@ int main() {
         }
     }
 
-    // 3) Encontrar centroide
     int limit = n / 2;
     int u = 1;
     while (true) {
         bool moved = false;
-        // Intentar bajar por hijo con subárbol > limit
         for (int v : adj[u]) {
             if (v != parent[u] && dp[v] > limit) {
-                parent[u] = u; // opcional, marca para posible subida
+                parent[u] = u;
                 u = v;
                 moved = true;
                 break;
@@ -58,12 +68,11 @@ int main() {
         }
         if (moved) continue;
 
-        // Si no se mueve hacia abajo, comprobar la parte "arriba"
         if (n - dp[u] <= limit) {
-            cout << u << "\n";
+            cout << u << '\n';
             break;
         }
-        // Si la parte de arriba es demasiado grande, subir
+
         u = parent[u];
     }
 
