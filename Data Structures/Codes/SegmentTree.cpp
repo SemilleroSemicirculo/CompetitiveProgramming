@@ -1,39 +1,30 @@
 #include <bits/stdc++.h>
-#include <iomanip>
 
 using namespace std;
-
-typedef long long int ll;
-typedef pair<ll, ll> pll;
-typedef tuple<ll, ll, ll> triple;
+typedef long long ll;
+typedef long double ld;
 const ll INF = numeric_limits<ll>::max();
 
-template <typename ele_type>
-ostream& operator<<(ostream& os, const vector<ele_type>& vect_name){
-  for(auto itr: vect_name){
-    os << itr << " ";
-  }
-  return os;
-}
-
-ll MOD = pow(10, 9)+9;
-ll Max_n = pow(10, 6);
-ll mod(ll x, ll n){
-    if(x >= 0) return x % n;
-    else return n - (-x % n);
-}
-
-vector<ll> Fib(Max_n, 0);
-vector<ll> Fib_suma(Max_n, 0);
+#define all(x) x.begin(), x.end()
+#define rall(x) x.rbegin(), x.rend()
+#define MOD 998244353
+// #define MOD pow(10, 9)+7;
+// #define MOD 3245284303;
+#define pi acos(-1)
+#define gcd __gcd
+#define lcm(a, b) ((a) * (b) / gcd(a, b))
+#define precision(n) cout << fixed << setprecision(n)
+#define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
+#define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);#include <bits/stdc++.h>
 
 
 struct Data{
-    ll suma, size = 0;
-    Data(){suma = 0;}
-    Data(ll s){suma = s; size = 1;}
+    ll suma, size;
+    Data(): suma(0), size(0) {}
+    Data(ll s): suma(s), size(1) {}
 
     Data(const Data &left, const Data &right){
-        suma = mod(left.suma + right.suma, MOD);
+        suma = (left.suma + right.suma) % MOD;
         size = left.size + right.size;
     }
 
@@ -44,27 +35,20 @@ struct Data{
 
 
 struct Lazy{
-    ll suma, lower;
-    Lazy(){suma = 0, lower = 1;}
-    Lazy(ll s, ll lw){suma = s; lower = lw;}
+    ll suma;
+    Lazy(): suma(0) {}
+    Lazy(ll s): suma(s) {}
 
     void updateData(Data &data){
-        data.suma = mod(data.suma + suma, MOD);
+        data.suma = (data.suma + (suma*data.size)) % MOD;
     }
 
     pair<Lazy, Lazy> split(ll left, ll right) const {
-        ll mid = (left + right)/2;
-        ll suma1 = mod(Fib_suma[max(mid-lower+1, 0ll)] - Fib_suma[max(left-lower, 0ll)], MOD);
-        ll suma2 = mod(Fib_suma[max(right-lower+1, 0ll)] - Fib_suma[max(mid - lower+1, 0ll)], MOD);
-        return {
-            Lazy(suma1, lower), 
-            Lazy(suma2, lower)
-        };
+        return {*this, *this};
     }
 
     void updateLazy(const Lazy &newLazy){
-        suma = mod(suma + newLazy.suma, MOD);
-        // lower = newLazy.lower;
+        suma += newLazy.suma;
     }
 };
 
@@ -74,14 +58,14 @@ struct SegmentTree{
         Data data;
         Lazy lazy;
         bool has_lazy = false;
-
+ 
         Node(){data=Data(); lazy=Lazy(); has_lazy = false;}
         Node(ll s){data = Data(s); lazy=Lazy(); has_lazy = false;}
     };
     
     vector<Node> st;
     ll n;
-
+ 
     void build(vector<ll> &A, ll index, ll left, ll right){
         if(index == 1) {
             n = A.size();
@@ -95,50 +79,41 @@ struct SegmentTree{
             st[index].data.merge(st[2*index].data, st[2*index+1].data);
         }
     }
-
-    // Propagate lazy value to children and update current node's data
-    void propagate(ll index, ll left, ll right, ll lower) {
+ 
+    void propagate(ll index, ll left, ll right) {
         if (!st[index].has_lazy) return;
-
-        st[index].lazy.updateData(st[index].data);
         
+        st[index].lazy.updateData(st[index].data);
         if (left != right) {
-            ll mid = (left + right) / 2;
             auto [lazyL, lazyR] = st[index].lazy.split(left, right);
-
             st[2*index].lazy.updateLazy(lazyL); st[2*index].has_lazy = true;
             st[2*index+1].lazy.updateLazy(lazyR); st[2*index+1].has_lazy = true;
         }
+        
         st[index].lazy = Lazy();
         st[index].has_lazy = false;
     }
-
-    // Update range [lower, upper] with 'lazy'
-    void update(ll index, ll left, ll right, ll lower, ll upper, const Lazy &lazy){
-        vector<ll> test = {index, left, right, lower, upper, lazy.lower};
-
-        propagate(index, left, right, lower);
+ 
+    void update(ll index, ll left, ll right, ll lower, ll upper, ll value){
+        propagate(index, left, right);
         if(left > right || left > upper || right < lower) return;
         
-        st[index].lazy.lower = lazy.lower;
         if(lower <= left && right <= upper){
-            st[index].lazy.updateLazy(lazy);
-            st[index].has_lazy = true;
-            propagate(index, left, right, lower);
+            Lazy lazy = Lazy(value);
+            st[index].lazy.updateLazy(lazy); st[index].has_lazy = true;
+            propagate(index, left, right);
             return;
         }
         
-        ll mid = (left + right)/2;
-        auto [lazyL, lazyR] = st[index].lazy.split(left, right);
-        update(2*index, left, mid, lower, upper, lazyL);
-        update(2*index+1, mid+1, right, lower, upper, lazyR);
+        ll mid = left + (right - left)/2;
+        update(2*index, left, mid, lower, upper, value);
+        update(2*index+1, mid+1, right, lower, upper, value);
+        
         st[index].data.merge(st[2*index].data, st[2*index+1].data);
-
     }
-
-    // Query range [lower, upper]
+ 
     Data query(ll index, ll left, ll right, ll lower, ll upper){
-        propagate(index, left, right, lower);
+        propagate(index, left, right);
         if(left > right || left > upper || right < lower) return Data();
         if(lower <= left && right <= upper){
             return st[index].data;
@@ -161,19 +136,14 @@ int main() {
     SegmentTree Tree;
     Tree.build(a, 1, 1, n);
 
-    Fib[1] = 1;
-    Fib[2] = 1;
-    for(int i = 3; i< Fib.size(); i++) Fib[i] = mod(Fib[i-1] + Fib[i-2], MOD);
-    for(int i = 1; i< Fib_suma.size(); i++) Fib_suma[i] = mod(Fib_suma[i-1] + Fib[i], MOD);
-
     for(int i = 0; i < q; i++){
         ll type; cin >> type;
         ll l, r; cin >> l >> r;
-
-        ll F = Fib_suma[r-l+1];
         
-        
-        if(type == 1) Tree.update(1, 1, n, l, r, Lazy(F, l));
-        else cout << Tree.query(1, 1, n, l, r).suma << endl;
+        if(type == 1) cout << Tree.query(1, 1, n, l, r).suma << endl;
+        else{
+            ll value; cin >> value;
+            Tree.update(1, 1, n, l, r, value);
+        } 
     }
 }
