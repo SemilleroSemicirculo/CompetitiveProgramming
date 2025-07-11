@@ -8,3 +8,6 @@ print("Pila inicial:", stack)
 top = stack.pop()
 print("Elemento removido:", top)
 print("Pila tras pop:", stack)
+
+
+# Hola mundo(Prueba :D)
