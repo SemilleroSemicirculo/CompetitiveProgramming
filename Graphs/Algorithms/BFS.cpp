@@ -1,48 +1,51 @@
 #include <bits/stdc++.h>
-#include <iomanip>
 
 using namespace std;
-
-typedef long long int ll;
-typedef pair<ll, ll> pll;
-typedef tuple<ll, ll, ll> triple;
+typedef long long ll;
+typedef long double ld;
 const ll INF = numeric_limits<ll>::max();
 
-template <typename ele_type>
-ostream& operator<<(ostream& os, const vector<ele_type>& vect_name){
-  for(auto itr: vect_name){
-    os << itr << " ";
-  }
-  return os;
-}
+#define all(x) x.begin(), x.end()
+#define rall(x) x.rbegin(), x.rend()
+#define MOD 998244353
+// #define MOD pow(10, 9)+7;
+// #define MOD 3245284303;
+#define pi acos(-1)
+#define gcd __gcd
+#define lcm(a, b) ((a) * (b) / gcd(a, b))
+#define precision(n) cout << fixed << setprecision(n)
+#define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
+#define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
 int main(){
-    ll n, m; cin >> n >> m;
-    vector<vector<ll>> G(n, vector<ll>());
-    
-    for(int i = 0; i < m; i++){
-        ll u, v; cin >> u >> v;
-        u--; v--;
+    fastio;
+
+    ll n, m;
+    cin >> n >> m;
+
+    vector<vector<ll>> G(n);
+    for (ll i = 0; i < m; ++i) {
+        ll u, v;
+        cin >> u >> v;
+        u--, v--;
         G[u].push_back(v);
         G[v].push_back(u);
     }
 
-    ll root = 0;
+    vector<ll> dist(n, INF);
+    queue<ll> q;
+    dist[0] = 0;
+    q.push(0);
 
-    queue<ll> qq;
-    vector<ll> distance(n, INF);
-
-    qq.push(root);
-    distance[root] = 0;
-    while (!qq.empty())
-    {
-        ll v = qq.front(); qq.pop();
-        
-        for(auto u: G[v]){
-            if(distance[u] == INF){
-                distance[u] = distance[v] + 1;
-                qq.push(u);
+    while (!q.empty()) {
+        ll v = q.front(); q.pop();
+        for (ll u : G[v]) {
+            if (dist[u] == INF) {
+                dist[u] = dist[v] + 1;
+                q.push(u);
             }
         }
     }
+
+    return 0;
 }
