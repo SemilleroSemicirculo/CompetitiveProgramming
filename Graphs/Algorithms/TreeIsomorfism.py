@@ -58,10 +58,8 @@ def solve_case():
                 return
     print("NO")
 
-def main():
-    T = int(input())
-    for _ in range(T):
-        solve_case()
+T = int(input())
+for _ in range(T):
+    solve_case()
 
-if __name__ == "__main__":
-    main()
+
