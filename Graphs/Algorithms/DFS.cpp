@@ -31,7 +31,7 @@ int main(){
         G[u].push_back(v);
         G[v].push_back(u);
     }
-
+    
     vector<bool> vis(n, false);
     stack<ll> st;
     st.push(0);
