@@ -3,7 +3,7 @@ stack.append("a")
 stack.append("b")
 stack.append("c")
 print("Pila inicial:", stack)
-
+#Solo Millos Loks
 # Remover el elemento superior (LIFO)
 top = stack.pop()
 print("Elemento removido:", top)
