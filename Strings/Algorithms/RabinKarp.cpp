@@ -19,7 +19,7 @@ const ll INF = numeric_limits<ll>::max();
 
 
 ll P1 = pow(10, 9)+7;
-ll P2 = 3245284303;
+ll P2 = 998244353;
 ll base = 60;
 
 vector<ll> Pot1(pow(10, 5)+3, 1);

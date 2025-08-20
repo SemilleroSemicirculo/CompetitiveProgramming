@@ -1,7 +1,7 @@
 max_size=100003
 
 P1 = 10**9 + 7
-P2 = 3245284303
+P2 = 998244353
 
 base = 60
 pot1 = [1] * max_size
@@ -30,13 +30,13 @@ class Hash:
     def __add__(self, other):
         """Concatenate two hashes"""
         new_h1 = (self.hash_1 * pot1[other.size] + other.hash_1) % P1
-        new_h2 = (self.hash_2 * pot1[other.size] + other.hash_2) % P2
+        new_h2 = (self.hash_2 * pot2[other.size] + other.hash_2) % P2
         return Hash(new_h1, new_h2, self.size + other.size)
     
     def __sub__(self, other):
         """Remove prefix hash from current hash"""
         new_h1 = (self.hash_1 - other.hash_1 * pot1[self.size - other.size]) % P1
-        new_h2 = (self.hash_2 - other.hash_2 * pot1[self.size - other.size]) % P2
+        new_h2 = (self.hash_2 - other.hash_2 * pot2[self.size - other.size]) % P2
         return Hash(new_h1, new_h2, self.size - other.size)
     
     def __eq__(self, other):
