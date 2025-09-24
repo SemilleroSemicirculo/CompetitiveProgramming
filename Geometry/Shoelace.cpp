@@ -18,19 +18,18 @@ ll mod(ll x, ll n){
 }
 
 int main(){
-    fastio;
+	fastio;
+	ll n = 4;
+	vector<pair<ll, ll>> points = {	{0,0},
+					{0,1},
+					{1,1},
+					{1,0}};
 
-    ll n; cin >> n;
-    vector<pair<ll, ll>> points(n);
-    for(int i = 0; i < n; i++){
-        cin >> points[i].first >> points[i].second;
-    }
+	ll res = 0;
+	for(int i = 0; i < n; i++){
+		res += points[i].first * (points[mod(i + 1, n)].second - points[mod(i - 1, n)].second);
+	}
 
-    ll res = 0;
-    for(int i = 0; i < n; i++){
-        res += points[i].first * (points[mod(i + 1, n)].second - points[mod(i - 1, n)].second);
-    }
-
-    res = abs(res);
-    cout << res << endl;
+	res = abs(res); //Esto me da 2 veces el area!!
+	cout << res << endl;
 }
