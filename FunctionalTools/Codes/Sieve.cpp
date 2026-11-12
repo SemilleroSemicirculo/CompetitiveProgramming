@@ -38,9 +38,8 @@ vector<ll> segmented_sieve(ll L, ll R) {
 
     ll sz = R - L + 1;
     vector<bool> is_prime(sz, true);
-    if (L == 0) {
-        if (sz > 0) is_prime[0] = false;
-        if (sz > 1) is_prime[1] = false;
+    if (L <= 1) {
+        for (ll x = L; x <= min(R, 1LL); ++x) is_prime[x - L] = false;
     }
     for (ll p : primes) {
         ll start = max(p*p, ((L + p - 1)/p)*p);

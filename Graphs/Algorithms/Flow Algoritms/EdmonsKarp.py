@@ -43,7 +43,7 @@ edges = []  # list of (u, v, cap) for original directed edges
 def add_edge(u, v, cap):
     ady[u].append(v)
     ady[v].append(u)  # reverse edge for residual graph
-    capacity[u][v] = cap
+    capacity[u][v] += cap
     edges.append((u, v, cap))
 
 add_edge(0, 1, 3)

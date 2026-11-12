@@ -21,9 +21,9 @@ def segmented_sieve(L, R):
     primes = [i for i, ok in enumerate(base) if ok]
     sz = R - L + 1
     is_prime = [True] * sz
-    if L == 0:
-        if sz > 0: is_prime[0] = False
-        if sz > 1: is_prime[1] = False
+    if L <= 1:
+        for x in range(L, min(R, 1) + 1):
+            is_prime[x - L] = False
     for p in primes:
         start = max(p*p, ((L + p - 1)//p)*p)
         for x in range(start, R+1, p):
