@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Semicírculo en CSES</title>
+<style>
+/* Idea de diseño: informe técnico sobrio, resumen arriba y tablas de detalle debajo */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --text: #1b2430; --muted: #5b6676; --line: #dde2e9; --accent: #1f5fbf;
+  --ok-bg: #dff3e4; --ok-fg: #14602b; --warn-bg: #fdecc8; --warn-fg: #7a4b00; --bad-bg: #fbdada; --bad-fg: #8a1c1c;
+  --code-bg: #eef1f5;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141b; --surface: #171e28; --text: #e6eaf0; --muted: #9aa5b4; --line: #2a3442; --accent: #7fb0ff;
+    --ok-bg: #16361f; --ok-fg: #7fd69a; --warn-bg: #3d2e0d; --warn-fg: #f1c56a; --bad-bg: #44191b; --bad-fg: #ff9a9a;
+    --code-bg: #212a37; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141b; --surface: #171e28; --text: #e6eaf0; --muted: #9aa5b4; --line: #2a3442; --accent: #7fb0ff;
+  --ok-bg: #16361f; --ok-fg: #7fd69a; --warn-bg: #3d2e0d; --warn-fg: #f1c56a; --bad-bg: #44191b; --bad-fg: #ff9a9a;
+  --code-bg: #212a37; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.55; }
+main { max-width: 980px; margin: 0 auto; padding: 32px 16px 64px; display: flex; flex-direction: column; gap: 36px; }
+h1 { font-size: 2rem; margin: 0 0 6px; text-wrap: balance; }
+h2 { font-size: 1.25rem; margin: 0 0 12px; text-wrap: balance; }
+p { margin: 0; max-width: 68ch; }
+.muted { color: var(--muted); }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code { font-family: var(--mono); font-size: .88em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+.tile b { display: block; font-size: 1.9rem; font-variant-numeric: tabular-nums; }
+.tile span { color: var(--muted); font-size: .9rem; }
+.tile.ok b { color: var(--ok-fg); }
+.tile.warn b { color: var(--warn-fg); }
+.tile.bad b { color: var(--bad-fg); }
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: .94rem; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+.pill { display: inline-block; font-weight: 600; font-size: .8rem; padding: 2px 10px; border-radius: 999px; font-variant-numeric: tabular-nums; }
+.pill.ac { background: var(--ok-bg); color: var(--ok-fg); }
+.pill.tle { background: var(--warn-bg); color: var(--warn-fg); }
+.pill.wa { background: var(--bad-bg); color: var(--bad-fg); }
+ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; max-width: 72ch; }
+footer { color: var(--muted); font-size: .88rem; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Semicírculo en CSES</h1>
+  <p class="muted">Resultado de enviar a CSES las soluciones del <a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming">repositorio de Programación Competitiva</a>, con los bugs que salieron y los algoritmos agregados después de la revisión.</p>
+</header>
+
+<section aria-label="Resumen">
+  <div class="tiles">
+    <div class="tile"><b>15</b><span>archivos enviados</span></div>
+    <div class="tile ok"><b>13</b><span>aceptados (AC)</span></div>
+    <div class="tile warn"><b>1</b><span>tiempo excedido (TLE)</span></div>
+    <div class="tile bad"><b>1</b><span>respuesta incorrecta (WA)</span></div>
+    <div class="tile"><b>5</b><span>algoritmos nuevos</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Resultados en CSES</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Problema</th><th>Archivo</th><th>Resultado</th><th>Nota</th></tr></thead>
+    <tbody>
+<tr><td>Minimizing Coins</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/DP/Algorithms/CoinChange.cpp"><code>CoinChange.cpp</code></a></td><td><span class="pill ac">AC</span></td><td></td></tr>
+<tr><td>Maximum Subarray Sum</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/DP/Algorithms/Kadane1D.cpp"><code>Kadane1D.cpp</code></a></td><td><span class="pill ac">AC</span></td><td></td></tr>
+<tr><td>Increasing Subsequence</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/DP/Algorithms/LIS-II.cpp"><code>LIS-II.cpp</code></a></td><td><span class="pill ac">AC</span></td><td>Versión O(n log n)</td></tr>
+<tr><td>Increasing Subsequence</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/DP/Algorithms/LIS-I.cpp"><code>LIS-I.cpp</code></a></td><td><span class="pill tle">TLE</span></td><td>Versión O(n²), sirve para estudiar y no para n = 2·10⁵</td></tr>
+<tr><td>Gray Code</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/FunctionalTools/Codes/GrayCode.cpp"><code>GrayCode.cpp</code></a></td><td><span class="pill ac">AC</span></td><td></td></tr>
+<tr><td>Mail Delivery</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Graphs/Algorithms/Graph%20Traversal/EulerianCycle.cpp"><code>EulerianCycle.cpp</code></a></td><td><span class="pill ac">AC</span></td><td></td></tr>
+<tr><td>Flight Routes Check</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Graphs/Algorithms/Graph%20Traversal/Tarjan.cpp"><code>Tarjan.cpp</code></a></td><td><span class="pill ac">AC</span></td><td>Pasa después de corregir el <code>+1</code> al imprimir</td></tr>
+<tr><td>Giant Pizza</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Graphs/Algorithms/Miscellaneous/2-SAT.cpp"><code>2-SAT.cpp</code></a></td><td><span class="pill ac">AC</span></td><td></td></tr>
+<tr><td>Round Trip</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Graphs/Algorithms/Miscellaneous/CycleFindingUndirected.cpp"><code>CycleFindingUndirected.cpp</code></a></td><td><span class="pill ac">AC</span></td><td></td></tr>
+<tr><td>Round Trip II</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Graphs/Algorithms/Miscellaneous/CycleFindingDirected.cpp"><code>CycleFindingDirected.cpp</code></a></td><td><span class="pill ac">AC</span></td><td></td></tr>
+<tr><td>Finding a Centroid</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Graphs/Algorithms/Trees/Centroid.cpp"><code>Centroid.cpp</code></a></td><td><span class="pill ac">AC</span></td><td></td></tr>
+<tr><td>Company Queries II</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Graphs/Algorithms/Trees/LCA.cpp"><code>LCA.cpp</code></a></td><td><span class="pill ac">AC</span></td><td></td></tr>
+<tr><td>Tree Diameter</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Graphs/Algorithms/Graph%20Traversal/Diameter.cpp"><code>Diameter.cpp</code></a></td><td><span class="pill ac">AC</span></td><td>Recursión profunda sin problemas de pila</td></tr>
+<tr><td>Tree Isomorphism II</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Graphs/Algorithms/Trees/TreeIsomorfism.cpp"><code>TreeIsomorfism.cpp</code></a></td><td><span class="pill ac">AC</span></td><td>Resuelve la versión sin raíz</td></tr>
+<tr><td>Book Shop</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/DP/Algorithms/Knapsack.cpp"><code>Knapsack.cpp</code></a></td><td><span class="pill wa">WA</span></td><td>Lee pares peso-valor y CSES entrega una línea de precios y otra de páginas</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Bugs corregidos</h2>
+  <p class="muted" style="margin-bottom:12px">Todos se reprodujeron con pruebas contra fuerza bruta y sanitizers antes de tocar el código, y se volvieron a probar después.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Archivo</th><th>Problema</th><th>Corrección</th></tr></thead>
+    <tbody>
+<tr><td><code>Tarjan.cpp</code></td><td>Faltaba el <code>+1</code> al imprimir un nodo cuando no hay aristas entre componentes</td><td>Se imprime el nodo en base 1</td></tr>
+<tr><td><code>Tarjan.py</code></td><td><code>UnboundLocalError</code>, entrada sin restar 1 y varias respuestas</td><td><code>global tempo</code>, entrada en base 0 y una sola respuesta</td></tr>
+<tr><td><code>CycleFindingDirected.py</code></td><td>Entrada sin restar 1</td><td>Se resta 1 a cada nodo</td></tr>
+<tr><td><code>LIS-II.py</code></td><td>Imprimía la lista y la longitud</td><td>Imprime solo la longitud, igual que el C++</td></tr>
+<tr><td><code>EdmonsKarp</code></td><td>Una arista paralela pisaba a la anterior; comentario con flujo 4</td><td>Se acumula con <code>+=</code>; el flujo esperado es 5</td></tr>
+<tr><td><code>ConvexHull</code></td><td>Lectura fuera de rango con <code>include_collinear=false</code>; comentarios de orientación invertidos</td><td><code>while</code> con <code>st.size() &gt; 1</code> y comentarios corregidos</td></tr>
+<tr><td><code>Point</code></td><td><code>proj</code> dividía por |b| y <code>==</code> ignoraba <code>z</code></td><td>Divide por <code>norm(b)</code> y compara <code>z</code></td></tr>
+<tr><td><code>Sieve</code></td><td>La criba segmentada devolvía el 1 como primo con L = 1</td><td>Condición <code>L &lt;= 1</code></td></tr>
+<tr><td><code>FloydWarshall</code></td><td>Desbordamiento con INF en la matriz</td><td>Guarda contra INF antes de sumar</td></tr>
+<tr><td><code>Kruskal / Prim</code></td><td>Peso total en <code>int</code>; <code>G</code> vacío en Prim; print de debug</td><td><code>ll</code>, <code>G(n)</code> y sin print</td></tr>
+<tr><td><code>Dinic</code></td><td><code>it[v]</code> nunca avanzaba</td><td>Se usa la referencia <code>it[v]</code> (current-arc)</td></tr>
+<tr><td><code>K-Smallest Sums</code></td><td>Índices fuera de rango</td><td>Se comprueban los límites</td></tr>
+<tr><td><code>RabinKarp</code></td><td><code>mod</code> devolvía <code>n</code> en lugar de 0</td><td>Siempre en <code>[0, n)</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Algoritmos nuevos</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Algoritmo</th><th>Archivos</th><th>Problema CSES</th></tr></thead>
+    <tbody>
+<tr><td>Fenwick Tree</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Data%20Structures/Algorithms/FenwickTree.cpp"><code>FenwickTree.cpp</code></a> · <a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Data%20Structures/Algorithms/FenwickTree.py"><code>FenwickTree.py</code></a></td><td>Dynamic Range Sum Queries</td></tr>
+<tr><td>Sparse Table</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Data%20Structures/Algorithms/SparseTable.cpp"><code>SparseTable.cpp</code></a> · <a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Data%20Structures/Algorithms/SparseTable.py"><code>SparseTable.py</code></a></td><td>Static Range Minimum Queries</td></tr>
+<tr><td>Aritmética modular</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/FunctionalTools/Codes/ModArithmetic.cpp"><code>ModArithmetic.cpp</code></a> · <a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/FunctionalTools/Codes/ModArithmetic.py"><code>ModArithmetic.py</code></a></td><td>Binomial Coefficients</td></tr>
+<tr><td>Orden topológico</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Graphs/Algorithms/Graph%20Traversal/TopologicalSort.cpp"><code>TopologicalSort.cpp</code></a> · <a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Graphs/Algorithms/Graph%20Traversal/TopologicalSort.py"><code>TopologicalSort.py</code></a></td><td>Course Schedule</td></tr>
+<tr><td>Z-function</td><td><a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Strings/Algorithms/ZFunction.cpp"><code>ZFunction.cpp</code></a> · <a href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/Strings/Algorithms/ZFunction.py"><code>ZFunction.py</code></a></td><td>String Matching</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Pendiente</h2>
+  <ul>
+    <li><strong>Book Shop:</strong> falta una versión de <code>Knapsack</code> con el formato de CSES.</li>
+    <li><strong>Tree Isomorphism I</strong> (árboles con raíz) no está en el repositorio.</li>
+    <li><code>Djikstra</code>, <code>BellmanFord</code>, <code>FloydWarshall</code> y <code>SegmentTree</code> usan formatos o módulos distintos de CSES.</li>
+    <li>Los nombres con errores de escritura (<code>Djikstra</code>, <code>EdmonsKarp</code>, <code>Flow Algoritms</code>) siguen igual para no romper enlaces.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Formato de commits</h2>
+  <p>Desde esta revisión los commits siguen el formato <code>tipo(carpeta): descripción</code>, por ejemplo <code>fix(DP): corrige LIS-II.py</code> o <code>feat(Strings): agrega ZFunction</code>. El historial anterior se conserva sin cambios.</p>
+</section>
+
+<footer>Los resultados de CSES corresponden a envíos en C++17 hechos en noviembre de 2026.</footer>
+</main>
+</body>
+</html>
