@@ -27,8 +27,8 @@ struct pt {
 
 int orientation(pt a, pt b, pt c) {
     double v = a.x*(b.y-c.y)+b.x*(c.y-a.y)+c.x*(a.y-b.y); //Producto cruz
-    if (v < 0) return -1; // a-b-c Antiohorario
-    if (v > 0) return +1; // a-b-c Horario
+    if (v < 0) return -1; // a-b-c Horario
+    if (v > 0) return +1; // a-b-c Antihorario
     return 0;
 }
 
@@ -59,11 +59,9 @@ void convex_hull(vector<pt>& a, bool include_collinear = false) {
 
     vector<pt> st;
     for (int i = 0; i < (int)a.size(); i++) {
-	if (st.size() > 1){
-        while (!cw(st[st.size()-2], st.back(), a[i], include_collinear)){
-		//Verifica si los dos anteriores con el actual van en sentido antihorario
+        while (st.size() > 1 && !cw(st[st.size()-2], st.back(), a[i], include_collinear)){
+		//Verifica si los dos anteriores con el actual van en sentido horario
 		st.pop_back();
-	}
 	}
         st.push_back(a[i]);
     }

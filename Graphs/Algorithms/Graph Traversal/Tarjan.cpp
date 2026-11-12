@@ -105,7 +105,7 @@ int main(){
  
         for(int i = 0; i < n; i++){
             if(tarjan.SCC_index[i] != 0){
-                cout << i+1 << " " << tarjan.SCC.front().front() << endl;
+                cout << i+1 << " " << tarjan.SCC.front().front()+1 << endl;
                 return 0; 
             }
         }

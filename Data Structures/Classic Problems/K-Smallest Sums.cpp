@@ -35,12 +35,12 @@ vector<ll> merge(vector<ll> &a, vector<ll> &b, int k){
 		auto [suma, ii, j] = heap.top(); heap.pop();
 		res[i] = suma;
 		
-		if(vis.find({ii+1, j}) == vis.end()){
+		if(ii+1 < k && vis.find({ii+1, j}) == vis.end()){
 			tuple<ll, ll, ll> first = {a[ii+1] + b[j], ii+1, j};
 			heap.push(first);
 			vis.insert({ii+1, j});
 		}
-		if(vis.find({ii, j+1}) == vis.end()){
+		if(j+1 < k && vis.find({ii, j+1}) == vis.end()){
 			tuple<ll, ll, ll> second = {a[ii] + b[j+1], ii, j+1};
 			heap.push(second);
 			vis.insert({ii, j+1});

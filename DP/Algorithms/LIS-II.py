@@ -17,4 +17,4 @@ for i in range(n):
         R[ind] = a[i]
         M[ind] = i
 
-print(R, len(R))
+print(len(R))

@@ -72,14 +72,14 @@ struct Point3d {
 		return sqrt(norm(a));
 	}
 	static Point3d proj(Point3d a, Point3d b) {// proyeccion de a en b
-		return b*(dot(a, b) / abs(b));
+		return b*(dot(a, b) / norm(b));
 	}
 	static ld angle(Point3d a, Point3d b) {
 		return acos(dot(a, b) / abs(a) / abs(b));
 	}
 	bool operator==(const Point3d &other) const {
     		const double EPS = 1e-6;
-		return fabs(x - other.x) < EPS && fabs(y - other.y) < EPS;
+		return fabs(x - other.x) < EPS && fabs(y - other.y) < EPS && fabs(z - other.z) < EPS;
 	}
 };
 Point3d operator*(ld a, Point3d b) {

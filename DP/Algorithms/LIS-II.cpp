@@ -7,7 +7,7 @@ const ll INF = numeric_limits<ll>::max();
 
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
-#define MOD 998244353;
+#define MOD 998244353
 // #define MOD pow(10, 9)+7;
 // #define MOD 3245284303;
 #define pi acos(-1)

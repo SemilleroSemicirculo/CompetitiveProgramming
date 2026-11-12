@@ -55,7 +55,7 @@ class Point3d:
 
     @staticmethod
     def proj(a, b):
-        return b * (Point3d.dot(a, b) / Point3d.abs(b))
+        return b * (Point3d.dot(a, b) / Point3d.norm(b))
 
     @staticmethod
     def angle(a, b):
