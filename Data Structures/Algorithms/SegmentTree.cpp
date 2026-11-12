@@ -17,7 +17,7 @@ const ll INF = numeric_limits<ll>::max();
 
 /*
  * Algoritmo : Segment Tree con propagación perezosa (suma de rango, asignación y suma de rango)
- * Problema  : CSES 1735 - Range Update and Sum Queries (https://cses.fi/problemset/task/1735)
+ * Problema  : CSES 1735 - Range Updates and Sums (https://cses.fi/problemset/task/1735)
  * Entrada   : n q, n enteros, luego q consultas: "1 a b x" (suma x), "2 a b x" (asigna x) o "3 a b" (consulta suma)
  * Salida    : la suma de cada consulta de tipo 3
  * Complejidad: tiempo O((n + q) log n), memoria O(n)
