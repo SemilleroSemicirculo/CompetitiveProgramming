@@ -15,64 +15,51 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
-struct Edge { int u, v; ll w; };
-
-// Ejecuta Bellman–Ford desde la fuente 0, escribe distancias y retorna si hay ciclo negativo
-bool bellman_ford(const vector<Edge>& edges, int V, vector<ll>& dist) {
-    dist.assign(V, INF);
-    dist[0] = 0;
-    if (V == 1) return false;
-
-    // V-1 relajaciones
-    for (int i = 0; i < V - 1; i++) {
-        bool changed = false;
-        for (auto &e : edges) {
-            if (dist[e.u] != INF && dist[e.u] + e.w < dist[e.v]) {
-                dist[e.v] = dist[e.u] + e.w;
-                changed = true;
-            }
-        }
-        if (!changed) break;
-    }
-
-    // pasada extra para detectar ciclo negativo
-    for (auto &e : edges) {
-        if (dist[e.u] != INF && dist[e.u] + e.w < dist[e.v]) {
-            return true;
-        }
-    }
-    return false;
-}
+/*
+ * Algoritmo : Bellman-Ford (detección de ciclo negativo)
+ * Problema  : CSES 1197 - Cycle Finding (https://cses.fi/problemset/task/1197)
+ * Entrada   : n m, luego m aristas dirigidas "a b c" (peso c)
+ * Salida    : NO, o YES y un ciclo de peso negativo
+ * Complejidad: tiempo O(n·m), memoria O(n + m)
+ */
 
 int main() {
     fastio;
-    int C; 
-    cin >> C;
-    while (C--) {
-        int n, m;
-        cin >> n >> m;
-        vector<Edge> edges;
-        edges.reserve(m);
-        for (int i = 0; i < m; i++) {
-            int x, y; ll t;
-            cin >> x >> y >> t;
-            edges.push_back({x, y, t});
+    int n, m;
+    cin >> n >> m;
+    vector<array<ll, 3>> edges(m);
+    for (auto &e : edges) cin >> e[0] >> e[1] >> e[2];
+
+    // dist = 0 para todos: equivale a un nodo fuente virtual conectado a todos
+    vector<ll> dist(n + 1, 0);
+    vector<int> parent(n + 1, 0);
+    int last = -1;
+    for (int i = 0; i < n; i++) {
+        last = -1;
+        for (auto &[a, b, c] : edges) {
+            if (dist[a] + c < dist[b]) {
+                dist[b] = dist[a] + c;
+                parent[b] = a;
+                last = b;
+            }
         }
-
-        vector<ll> dist;
-        bool hasNeg = bellman_ford(edges, n, dist);
-
-        // Imprimir distancias
-        for (int i = 0; i < n; i++) {
-            if (dist[i] == INF) 
-                cout << "INF";
-            else 
-                cout << dist[i];
-            cout << (i+1<n ? ' ' : '\n');
-        }
-
-        // Indicar si hay ciclo negativo
-        cout << (hasNeg ? "possible\n" : "not possible\n");
+        if (last == -1) break;
     }
+
+    if (last == -1) {
+        cout << "NO\n";
+        return 0;
+    }
+    // retroceder n veces para asegurar estar dentro del ciclo
+    for (int i = 0; i < n; i++) last = parent[last];
+    vector<int> cycle;
+    for (int v = last;; v = parent[v]) {
+        cycle.push_back(v);
+        if (v == last && cycle.size() > 1) break;
+    }
+    reverse(all(cycle));
+    cout << "YES\n";
+    for (int v : cycle) cout << v << ' ';
+    cout << "\n";
     return 0;
 }

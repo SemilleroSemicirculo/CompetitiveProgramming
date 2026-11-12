@@ -1,22 +1,28 @@
 #include <bits/stdc++.h>
- 
+
 using namespace std;
 typedef long long ll;
 typedef long double ld;
 const ll INF = numeric_limits<ll>::max();
- 
+
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
-// #define MOD 3245284303;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
 #define precision(n) cout << fixed << setprecision(n)
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
- 
+
+/*
+ * Algoritmo : Componentes fuertemente conexas (Tarjan)
+ * Problema  : CSES 1682 - Flight Routes Check (https://cses.fi/problemset/task/1682)
+ * Entrada   : n m, luego m aristas dirigidas "a b"
+ * Salida    : YES si todo nodo llega a todo nodo; si no, NO y un par "a b" sin camino de a hacia b
+ * Complejidad: tiempo O(n + m), memoria O(n + m)
+ */
+
 struct Tarjan{
     ll tempo = 0;
     vector<vector<ll>> ady;
@@ -90,14 +96,14 @@ int main(){
     }
  
     if(tarjan.SCC.size() == 1){
-        cout << "YES" << endl;
+        cout << "YES" << "\n";
     }
     else{
-        cout << "NO" << endl;
+        cout << "NO" << "\n";
         for(int i = 0; i < n; i++){
             for(auto j: tarjan.ady[i]){
                 if(tarjan.SCC_index[i] != tarjan.SCC_index[j]){
-                    cout << j+1 << " " << i+1 << endl;
+                    cout << j+1 << " " << i+1 << "\n";
                     return 0;
                 }
             }
@@ -105,7 +111,7 @@ int main(){
  
         for(int i = 0; i < n; i++){
             if(tarjan.SCC_index[i] != 0){
-                cout << i+1 << " " << tarjan.SCC.front().front()+1 << endl;
+                cout << i+1 << " " << tarjan.SCC.front().front()+1 << "\n";
                 return 0; 
             }
         }

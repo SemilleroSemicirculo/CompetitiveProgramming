@@ -15,6 +15,14 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Diámetro de un árbol (dos DFS)
+ * Problema  : CSES 1131 - Tree Diameter (https://cses.fi/problemset/task/1131)
+ * Entrada   : n, luego n-1 aristas "a b"
+ * Salida    : longitud del diámetro (en aristas)
+ * Complejidad: tiempo O(n), memoria O(n)
+ */
+
 vector<vector<int>> g;
 vector<int> dist_dfs;
 

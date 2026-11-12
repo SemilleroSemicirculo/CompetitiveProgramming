@@ -8,8 +8,6 @@ const ll INF = numeric_limits<ll>::max();
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
-// #define MOD 3245284303;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
@@ -17,8 +15,16 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
- 
+/*
+ * Algoritmo : Cola de equipos (cola de colas)
+ * Problema  : UVa 540 - Team Queue
+ * Entrada   : varios casos: n equipos con sus miembros y órdenes ENQUEUE x / DEQUEUE / STOP, terminando con n = 0
+ * Salida    : cada elemento desencolado, bajo "Scenario #t"
+ * Complejidad: tiempo O(1) por operación, memoria O(n)
+ */
+
 int main(){
+	fastio;
 	int tt = 1;
 	while(true){
 		ll n; cin >> n;
@@ -36,7 +42,7 @@ int main(){
 			}
 		}
 
-		cout << "Scenario #" << tt << endl;
+		cout << "Scenario #" << tt << "\n";
 		while (true)
 		{
 			string s; cin >> s;
@@ -50,12 +56,12 @@ int main(){
 			}
 			else{
 				ll x = Queue.front()->front();
-				cout << x << endl;
+				cout << x << "\n";
 				Queue.front()->pop();
 
 				if(Queue.front()->size() == 0) Queue.pop();
 			}
 		}
-		tt++; cout << endl;
+		tt++; cout << "\n";
 	}
 }

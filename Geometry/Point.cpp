@@ -8,14 +8,20 @@ const ll INF = numeric_limits<ll>::max();
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
-// #define MOD 3245284303;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
 #define precision(n) cout << fixed << setprecision(n)
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+
+/*
+ * Algoritmo : Vectores 3D (suma, producto punto y cruz, norma, proyección, ángulo)
+ * Problema  : Sin problema equivalente en CSES; formato propio
+ * Entrada   : seis reales: ax ay az bx by bz (para vectores en el plano, z = 0)
+ * Salida    : a+b, a-b, a×b, a·b, |b| y la proyección de a sobre b (10 decimales)
+ * Complejidad: tiempo O(1) por operación, memoria O(1)
+ */
 
 struct Point3d {
 	ld x, y, z; //Son vectores y si lo necesita en el plano, pues fije z=0
@@ -86,19 +92,19 @@ Point3d operator*(ld a, Point3d b) {
 	return b * a;
 }
 
+int main() {
+    fastio;
+    precision(10);
+    ld ax, ay, az, bx, by, bz;
+    cin >> ax >> ay >> az >> bx >> by >> bz;
+    Point3d A(ax, ay, az), B(bx, by, bz);
 
-
-
-int main(){
-	precision(10);
-	ld t = 0.5;
-	Point3d OA(3,1,4.5), OB(3,4,0);
-	cout << "OA+OB = " << (OA+OB).x << " " <<(OA+OB).y << (OA+OB).z<< endl;
-	cout << "OA-OB = " << (OA-OB).x << " " <<(OA-OB).y << (OA-OB).z<<endl;
-	cout << "tOB = " << (OB*t).x << " " << (OB*t).y << (OB*t).z << endl;
-	cout << "(1/t)OB = " << (OB/t).x << " " << (OB/t).y << (OB/t).z << endl;
-	cout << "OAxOB = " << Point3d::cross(OA,OB).x << " " << Point3d::cross(OA,OB).y << " " << Point3d::cross(OA,OB).z << endl;
-	cout << "OA*OB = " << Point3d::dot(OA,OB) << endl;
-	cout << "||OB|| = " << Point3d::abs(OB) << endl;
-	cout << "Proyeccion de OA sobre OB " << Point3d::proj(OA,OB).x << " " << Point3d::proj(OA,OB).y << " " << Point3d::proj(OA,OB).z << endl;
+    Point3d sum = A + B, diff = A - B, cr = Point3d::cross(A, B), pr = Point3d::proj(A, B);
+    cout << "A+B = " << sum.x << ' ' << sum.y << ' ' << sum.z << "\n";
+    cout << "A-B = " << diff.x << ' ' << diff.y << ' ' << diff.z << "\n";
+    cout << "AxB = " << cr.x << ' ' << cr.y << ' ' << cr.z << "\n";
+    cout << "A.B = " << Point3d::dot(A, B) << "\n";
+    cout << "|B| = " << Point3d::abs(B) << "\n";
+    cout << "proj_B(A) = " << pr.x << ' ' << pr.y << ' ' << pr.z << "\n";
+    return 0;
 }

@@ -15,6 +15,14 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Exponenciación binaria, inverso modular y nCr
+ * Problema  : CSES 1079 - Binomial Coefficients (https://cses.fi/problemset/task/1079)
+ * Entrada   : t, luego t pares "a b"
+ * Salida    : C(a, b) módulo 10^9 + 7
+ * Complejidad: tiempo O(10^6 + t), memoria O(10^6)
+ */
+
 const int MAXN = 1000001;
 vector<ll> fact(MAXN), inv_fact(MAXN);
 

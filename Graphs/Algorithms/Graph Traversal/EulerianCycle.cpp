@@ -8,14 +8,20 @@ const ll INF = numeric_limits<ll>::max();
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
-// #define MOD 3245284303;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
 #define precision(n) cout << fixed << setprecision(n)
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+
+/*
+ * Algoritmo : Ciclo euleriano (Hierholzer, grafo no dirigido)
+ * Problema  : CSES 1691 - Mail Delivery (https://cses.fi/problemset/task/1691)
+ * Entrada   : n m, luego m aristas "a b"
+ * Salida    : un ciclo euleriano desde el nodo 1, o IMPOSSIBLE
+ * Complejidad: tiempo O(n + m), memoria O(n + m)
+ */
 
 struct Edge{
     ll to, id;
@@ -57,7 +63,7 @@ int main(){
     }
     
     if(!agg){
-        cout << "IMPOSSIBLE" << endl;
+        cout << "IMPOSSIBLE" << "\n";
         return 0;
     }
 
@@ -78,6 +84,5 @@ int main(){
     }
     
     for(auto &x: cycle) cout << x+1 << " ";
-    cout << endl;
+    cout << "\n";
 }
-

@@ -8,7 +8,6 @@ const ll INF = numeric_limits<ll>::max();
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
@@ -16,95 +15,71 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
-ll BFS(ll s, ll t, vector<ll> &parent, vector<vector<ll>> &ady, vector<vector<ll>> &capacity){
+/*
+ * Algoritmo : Edmonds-Karp (flujo máximo con BFS)
+ * Problema  : CSES 1694 - Download Speed (https://cses.fi/problemset/task/1694)
+ * Entrada   : n m, luego m aristas dirigidas "a b c" (capacidad c)
+ * Salida    : el flujo máximo de 1 a n
+ * Complejidad: tiempo O(V · E^2), memoria O(V^2)
+ */
+
+int n;
+vector<vector<ll>> capacity;
+vector<vector<int>> adj;
+
+// BFS que busca un camino aumentante; devuelve el cuello de botella
+ll bfs(int s, int t, vector<int> &parent) {
     fill(all(parent), -1);
     parent[s] = -2;
-    queue<pair<ll, ll>> qq; qq.push({s, INF});
-
-    while (!qq.empty()){
-        auto [v, flow] = qq.front(); qq.pop();
-
-        for(auto u: ady[v]){
-            if(parent[u] == -1 && capacity[v][u]){
-                parent[u] = v;
-                ll new_flow = min(flow, capacity[v][u]);
-                if(u == t) return new_flow;
-
-                qq.push({u, new_flow});
+    queue<pair<int, ll>> q;
+    q.push({s, INF});
+    while (!q.empty()) {
+        auto [u, flow] = q.front();
+        q.pop();
+        for (int v : adj[u]) {
+            if (parent[v] == -1 && capacity[u][v] > 0) {
+                parent[v] = u;
+                ll new_flow = min(flow, capacity[u][v]);
+                if (v == t) return new_flow;
+                q.push({v, new_flow});
             }
         }
     }
     return 0;
 }
 
-ll max_flow(ll s, ll t, vector<vector<ll>> &ady, vector<vector<ll>> &capacity){
-    ll flow = 0, new_flow = 0;
-    vector<ll> parent(ady.size());
-
-    while (new_flow = BFS(s, t, parent, ady, capacity)){
+ll maxflow(int s, int t) {
+    ll flow = 0;
+    vector<int> parent(n + 1);
+    while (ll new_flow = bfs(s, t, parent)) {
         flow += new_flow;
-        ll cur = t;
-        while (cur != s){
-            ll prev = parent[cur];
+        int cur = t;
+        while (cur != s) {
+            int prev = parent[cur];
             capacity[prev][cur] -= new_flow;
             capacity[cur][prev] += new_flow;
             cur = prev;
-        }   
+        }
     }
-    
     return flow;
 }
 
-int main(){
+int main() {
     fastio;
-    // Example graph:
-    // 0 -> 1 (cap 3)
-    // 0 -> 2 (cap 2)
-    // 1 -> 2 (cap 1)
-    // 1 -> 3 (cap 2)
-    // 2 -> 3 (cap 4)
-    //
-    // Expected max flow from 0 to 3 = 5
-
-    int n = 4;
-    vector<vector<ll>> ady(n);
-    vector<vector<ll>> capacity(n, vector<ll>(n, 0));
-    vector<tuple<int,int,ll>> edges; // store original directed edges
-
-    auto add_edge = [&](int u, int v, ll cap){
-        ady[u].push_back(v);
-        ady[v].push_back(u); // add reverse edge for residual graph
-        capacity[u][v] += cap;
-        edges.emplace_back(u, v, cap);
-    };
-
-    add_edge(0, 1, 3);
-    add_edge(0, 2, 2);
-    add_edge(1, 2, 1);
-    add_edge(1, 3, 2);
-    add_edge(2, 3, 4);
-
-    // keep a copy of original capacities to compute flow on each edge later
-    vector<vector<ll>> capacity_init = capacity;
-
-    ll s = 0, t = 3;
-    ll flow = max_flow(s, t, ady, capacity);
-    cout << "Max flow from " << s << " to " << t << " = " << flow << '\n';
-
-    // Print flow sent on each original edge and residual capacity
-    cout << "Edge flows (u -> v):\n";
-    for (auto &e : edges){
-        int u, v; ll cap;
-        tie(u, v, cap) = e;
-        ll sent = capacity_init[u][v] - capacity[u][v]; // original - remaining
-        cout << u << " -> " << v << " : sent = " << sent 
-             << " (residual cap = " << capacity[u][v] << ")\n";
-    }
-
-    cout << "Residual capacity matrix:\n";
-    for(int i = 0; i < n; ++i){
-        for(int j = 0; j < n; ++j){
-            cout << capacity[i][j] << (j+1==n?'\n':' ');
+    int m;
+    cin >> n >> m;
+    capacity.assign(n + 1, vector<ll>(n + 1, 0));
+    adj.assign(n + 1, {});
+    for (int i = 0; i < m; i++) {
+        int a, b;
+        ll c;
+        cin >> a >> b >> c;
+        if (capacity[a][b] == 0 && capacity[b][a] == 0) {
+            adj[a].push_back(b);
+            adj[b].push_back(a);
         }
+        capacity[a][b] += c;
     }
+    cout << maxflow(1, n) << "\n";
+    return 0;
 }

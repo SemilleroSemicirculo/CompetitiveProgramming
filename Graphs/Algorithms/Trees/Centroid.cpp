@@ -8,14 +8,20 @@ const ll INF = numeric_limits<ll>::max();
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
-// #define MOD 3245284303;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
 #define precision(n) cout << fixed << setprecision(n)
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+
+/*
+ * Algoritmo : Centroide de un árbol (tamaños de subárbol)
+ * Problema  : CSES 2079 - Finding a Centroid (https://cses.fi/problemset/task/2079)
+ * Entrada   : n, luego n-1 aristas "a b"
+ * Salida    : un centroide
+ * Complejidad: tiempo O(n), memoria O(n)
+ */
 
 int main() {
     fastio;

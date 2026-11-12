@@ -15,6 +15,14 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Fenwick Tree (BIT)
+ * Problema  : CSES 1648 - Dynamic Range Sum Queries (https://cses.fi/problemset/task/1648)
+ * Entrada   : n q, n enteros, luego q consultas: "1 k u" (a[k] = u) o "2 a b" (suma)
+ * Salida    : la suma de cada consulta de tipo 2
+ * Complejidad: tiempo O((n + q) log n), memoria O(n)
+ */
+
 struct Fenwick {
     int n;
     vector<ll> bit;

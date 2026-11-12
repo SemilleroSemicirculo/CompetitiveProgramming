@@ -15,6 +15,14 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Z-function
+ * Problema  : CSES 1753 - String Matching (https://cses.fi/problemset/task/1753)
+ * Entrada   : dos líneas: el texto s y el patrón t
+ * Salida    : número de apariciones de t en s
+ * Complejidad: tiempo O(|s| + |t|), memoria O(|s| + |t|)
+ */
+
 // z[i] = longitud del prefijo comun mas largo entre s y s[i..]
 vector<int> z_function(const string &s) {
     int n = s.size();

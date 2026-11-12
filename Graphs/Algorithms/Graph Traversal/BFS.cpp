@@ -8,8 +8,6 @@ const ll INF = numeric_limits<ll>::max();
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
-// #define MOD 3245284303;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
@@ -17,35 +15,50 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
-int main(){
+/*
+ * Algoritmo : BFS (camino más corto en grafo no ponderado)
+ * Problema  : CSES 1667 - Message Route (https://cses.fi/problemset/task/1667)
+ * Entrada   : n m, luego m aristas "a b"
+ * Salida    : IMPOSSIBLE, o la cantidad de nodos y un camino mínimo de 1 a n
+ * Complejidad: tiempo O(n + m), memoria O(n + m)
+ */
+
+int main() {
     fastio;
-
-    ll n, m;
+    int n, m;
     cin >> n >> m;
-
-    vector<vector<ll>> G(n);
-    for (ll i = 0; i < m; ++i) {
-        ll u, v;
-        cin >> u >> v;
-        u--, v--;
-        G[u].push_back(v);
-        G[v].push_back(u);
+    vector<vector<int>> G(n + 1);
+    for (int i = 0; i < m; i++) {
+        int a, b;
+        cin >> a >> b;
+        G[a].push_back(b);
+        G[b].push_back(a);
     }
 
-    vector<ll> dist(n, INF);
-    queue<ll> q;
-    dist[0] = 0;
-    q.push(0);
-
+    vector<int> dist(n + 1, -1), parent(n + 1, 0);
+    queue<int> q;
+    dist[1] = 0;
+    q.push(1);
     while (!q.empty()) {
-        ll v = q.front(); q.pop();
-        for (ll u : G[v]) {
-            if (dist[u] == INF) {
-                dist[u] = dist[v] + 1;
-                q.push(u);
-            }
+        int u = q.front();
+        q.pop();
+        for (int v : G[u]) {
+            if (dist[v] != -1) continue;
+            dist[v] = dist[u] + 1;
+            parent[v] = u;
+            q.push(v);
         }
     }
 
+    if (dist[n] == -1) {
+        cout << "IMPOSSIBLE\n";
+        return 0;
+    }
+    vector<int> path;
+    for (int v = n; v != 0; v = parent[v]) path.push_back(v);
+    reverse(all(path));
+    cout << path.size() << "\n";
+    for (int v : path) cout << v << ' ';
+    cout << "\n";
     return 0;
 }

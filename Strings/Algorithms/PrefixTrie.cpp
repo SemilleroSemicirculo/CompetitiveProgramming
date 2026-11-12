@@ -15,11 +15,21 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
-struct Node{
-    int children[26];
-    bool flag = false; 
+/*
+ * Algoritmo : Trie (prefix tree) + DP de conteo de formas
+ * Problema  : CSES 1731 - Word Combinations (https://cses.fi/problemset/task/1731)
+ * Entrada   : cadena s, k, luego k palabras
+ * Salida    : cantidad de formas de construir s con las palabras, módulo 10^9+7
+ * Complejidad: tiempo O(|s|^2 + suma de longitudes), memoria O(suma de longitudes)
+ */
 
-    Node(){
+const int MODW = 1000000007;  // este problema pide módulo 10^9+7
+
+struct Node {
+    int children[26];
+    bool flag = false;
+
+    Node() {
         fill(begin(children), end(children), -1);
     }
 };
@@ -29,49 +39,66 @@ struct Trie {
     Trie() {
         Tree.emplace_back();
     }
-    
-    void insert(string word) {
+
+    void insert(const string &word) {
         int v = 0;
-        for(int i = 0; i < word.size(); i++){
-            int code = word[i] - 'a';
-            if(Tree[v].children[code] == -1){
+        for (char ch : word) {
+            int code = ch - 'a';
+            if (Tree[v].children[code] == -1) {
                 Tree[v].children[code] = Tree.size();
                 Tree.emplace_back();
             }
-            v = Tree[v].children[code];   
+            v = Tree[v].children[code];
         }
         Tree[v].flag = true;
     }
-    
-    bool search(string word) {
-      int v = 0;
-      for(int i = 0; i < word.size(); i++){
-        int code = word[i] - 'a';
-        if(Tree[v].children[code] == -1) return false;
-        v = Tree[v].children[code];
-      }
-      return Tree[v].flag;
+
+    bool search(const string &word) {
+        int v = 0;
+        for (char ch : word) {
+            int code = ch - 'a';
+            if (Tree[v].children[code] == -1) return false;
+            v = Tree[v].children[code];
+        }
+        return Tree[v].flag;
     }
-    
-    bool startsWith(string prefix) {
-      int v = 0;
-      for(int i = 0; i < prefix.size(); i++){
-        int code = prefix[i] - 'a';
-        if(Tree[v].children[code] == -1) return false;
-        v = Tree[v].children[code];
-      }
-      return true;
+
+    bool startsWith(const string &prefix) {
+        int v = 0;
+        for (char ch : prefix) {
+            int code = ch - 'a';
+            if (Tree[v].children[code] == -1) return false;
+            v = Tree[v].children[code];
+        }
+        return true;
     }
 };
 
-int main(){
+int main() {
     fastio;
-    
+    string s;
+    int k;
+    cin >> s >> k;
     Trie PrefixTrie;
-    PrefixTrie.insert("apple");
-    cout << PrefixTrie.search("apple") << endl;
-    cout << PrefixTrie.search("app") << endl;
-    cout << PrefixTrie.startsWith("app") << endl;
-    PrefixTrie.insert("app");
-    cout << PrefixTrie.search("app") << endl;
+    for (int i = 0; i < k; i++) {
+        string w;
+        cin >> w;
+        PrefixTrie.insert(w);
+    }
+
+    // dp[i] = formas de construir el sufijo s[i..]
+    int n = s.size();
+    vector<ll> dp(n + 1, 0);
+    dp[n] = 1;
+    for (int i = n - 1; i >= 0; i--) {
+        int v = 0;
+        for (int j = i; j < n; j++) {
+            int code = s[j] - 'a';
+            if (PrefixTrie.Tree[v].children[code] == -1) break;
+            v = PrefixTrie.Tree[v].children[code];
+            if (PrefixTrie.Tree[v].flag) dp[i] = (dp[i] + dp[j + 1]) % MODW;
+        }
+    }
+    cout << dp[0] << "\n";
+    return 0;
 }

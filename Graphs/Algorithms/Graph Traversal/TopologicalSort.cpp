@@ -15,6 +15,14 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Orden topológico (Kahn)
+ * Problema  : CSES 1679 - Course Schedule (https://cses.fi/problemset/task/1679)
+ * Entrada   : n m, luego m aristas dirigidas "a b"
+ * Salida    : un orden topológico, o IMPOSSIBLE
+ * Complejidad: tiempo O(n + m), memoria O(n + m)
+ */
+
 int main() {
     fastio;
     ll n, m;

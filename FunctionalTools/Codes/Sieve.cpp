@@ -15,6 +15,14 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Criba de Eratóstenes y criba segmentada
+ * Problema  : Sin problema equivalente en CSES; formato propio
+ * Entrada   : N, luego L R
+ * Salida    : primos ≤ N y luego los primos en [L, R]
+ * Complejidad: tiempo O(N log log N) y O((R-L) log log R), memoria O(N + R - L)
+ */
+
 // Criba de Eratóstenes: marca en `is_prime` los primos ≤ N.
 vector<bool> sieve(int N) {
     vector<bool> is_prime(N+1, true);

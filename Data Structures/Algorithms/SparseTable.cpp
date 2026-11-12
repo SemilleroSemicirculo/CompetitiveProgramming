@@ -15,6 +15,14 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Sparse Table (mínimo de rango en O(1))
+ * Problema  : CSES 1647 - Static Range Minimum Queries (https://cses.fi/problemset/task/1647)
+ * Entrada   : n q, n enteros, luego q consultas "a b"
+ * Salida    : el mínimo de cada rango
+ * Complejidad: tiempo O(n log n + q), memoria O(n log n)
+ */
+
 struct SparseTable {
     int n, LOG;
     vector<vector<ll>> st;
