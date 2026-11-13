@@ -15,6 +15,14 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Kadane 2D (submatriz de suma máxima)
+ * Problema  : Clásico, sin problema equivalente en CSES
+ * Entrada   : R C, luego la matriz de R filas y C columnas
+ * Salida    : máxima suma de una submatriz no vacía
+ * Complejidad: tiempo O(R^2 · C), memoria O(R · C)
+ */
+
 int main() {
     fastio;
     int R, C;
@@ -24,12 +32,15 @@ int main() {
         for (int j = 0; j < C; j++)
             cin >> mat[i][j];
 
+    // se parte de -INF porque todos los valores pueden ser negativos
     ll best = -INF;
     // fijar fila superior y fila inferior
     for (int top = 0; top < R; top++) {
+        // colSum[j] = suma de la columna j entre las filas top y bot
         vector<ll> colSum(C, 0);
         for (int bot = top; bot < R; bot++) {
             for (int j = 0; j < C; j++)
+                // al bajar bot se suma una fila más a cada columna
                 colSum[j] += mat[bot][j];
             // aplicar Kadane 1D sobre colSum
             ll curr = colSum[0];

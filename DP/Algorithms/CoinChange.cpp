@@ -15,6 +15,14 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : DP de monedas (mínimo número de monedas)
+ * Problema  : CSES 1634 - Minimizing Coins (https://cses.fi/problemset/task/1634)
+ * Entrada   : n x, luego n monedas
+ * Salida    : mínimo de monedas para sumar x, o -1
+ * Complejidad: tiempo O(n·x), memoria O(x)
+ */
+
 int main() {
     fastio;
     int n, target;
@@ -25,13 +33,16 @@ int main() {
     // dp[x] = mínimo número de monedas para sumar x
     vector<int> dp(target+1, INT_MAX);
     dp[0] = 0;
+    // cada moneda se puede usar muchas veces (mochila no acotada)
     for (int c : coins) {
         for (int x = c; x <= target; x++) {
+            // solo se usa dp[x-c] si ya era alcanzable
             if (dp[x-c] != INT_MAX)
                 dp[x] = min(dp[x], dp[x-c] + 1);
         }
     }
 
+    // si dp[target] sigue en INT_MAX no hay forma de formarlo
     int ans = dp[target];
     cout << (ans == INT_MAX ? -1 : ans) << "\n";
     return 0;
