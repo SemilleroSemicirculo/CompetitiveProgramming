@@ -15,21 +15,32 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Mochila 0/1 (DP unidimensional)
+ * Problema  : CSES 1158 - Book Shop (https://cses.fi/problemset/task/1158)
+ * Entrada   : n x, luego n precios y luego n cantidades de páginas
+ * Salida    : máximo de páginas que se pueden comprar con presupuesto x
+ * Complejidad: tiempo O(n·x), memoria O(x)
+ */
+
 int main() {
     fastio;
-    int n, W;
-    cin >> n >> W;
-    vector<int> wt(n), val(n);
+    int n, x;
+    cin >> n >> x;
+    vector<int> price(n), pages(n);
+    for (auto &p : price) cin >> p;
+    for (auto &p : pages) cin >> p;
+
+    // dp[w] = máximo de páginas con presupuesto w
+    vector<ll> dp(x + 1, 0);
+    // cada libro se usa una sola vez (mochila 0/1)
     for (int i = 0; i < n; i++) {
-        cin >> wt[i] >> val[i];
-    }
-    // dp[w] = máximo valor con capacidad w
-    vector<ll> dp(W+1, 0);
-    for (int i = 0; i < n; i++) {
-        for (int w = W; w >= wt[i]; w--) {
-            dp[w] = max(dp[w], dp[w - wt[i]] + val[i]);
+        // el presupuesto se recorre de mayor a menor para no reusar el mismo libro
+        for (int w = x; w >= price[i]; w--) {
+            // o no se compra el libro i, o se compra y se suma sus páginas
+            dp[w] = max(dp[w], dp[w - price[i]] + pages[i]);
         }
     }
-    cout << dp[W] << "\n";
+    cout << dp[x] << "\n";
     return 0;
 }
