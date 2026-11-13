@@ -8,8 +8,6 @@ const ll INF = numeric_limits<ll>::max();
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
-// #define MOD 3245284303;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
@@ -17,55 +15,45 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
-class Compare {
-public:
-    // Retorna True si el orden NO es correcto
-    bool operator()(int a, int b){
-        return a < b;
-    }
-};
+/*
+ * Algoritmo : Cola de prioridad (min-heap) para asignar recursos
+ * Problema  : CSES 1164 - Room Allocation (https://cses.fi/problemset/task/1164)
+ * Entrada   : n, luego n pares "llegada salida"
+ * Salida    : mínimo de habitaciones y la habitación de cada cliente
+ * Complejidad: tiempo O(n log n), memoria O(n)
+ */
 
-int main(){
+int main() {
     fastio;
-    
-    // --- Minheap ---
-    priority_queue<int, vector<int>, greater<int>> minheap;
-    vector<int> data = {5, 3, 8, 1, 7};
-    
-    for (int x : data) {
-        minheap.push(x);
+    int n;
+    cin >> n;
+    vector<array<int, 3>> c(n);  // {llegada, salida, índice}
+    for (int i = 0; i < n; i++) {
+        cin >> c[i][0] >> c[i][1];
+        c[i][2] = i;
     }
-    
-    cout << "Minheap: ";
-    priority_queue<int, vector<int>, greater<int>> temp_min = minheap;
-    while (!temp_min.empty()) {
-        cout << temp_min.top() << " ";
-        temp_min.pop();
+    sort(all(c));
+
+    // min-heap de {salida, habitación}
+    // min-heap de {salida, habitación}: la habitación que se libera primero
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> heap;
+    vector<int> room(n);
+    int rooms = 0;
+    for (auto &cl : c) {
+        int r;
+        // si la habitación más pronta ya se liberó, se reutiliza
+        if (!heap.empty() && heap.top().first < cl[0]) {
+            r = heap.top().second;
+            heap.pop();
+        }
+        // si no, se abre una habitación nueva
+        else r = ++rooms;
+        room[cl[2]] = r;
+        heap.push({cl[1], r});
     }
-    cout << endl;
-    
-    int min_val = minheap.top();
-    minheap.pop();
-    cout << "Elemento mínimo extraído: " << min_val << endl;
-    
-    // --- Maxheap ---
-    priority_queue<int> maxheap;
-    
-    for (int x : data) {
-        maxheap.push(x);
-    }
-    
-    cout << "Maxheap: ";
-    priority_queue<int> temp_max = maxheap;
-    while (!temp_max.empty()) {
-        cout << temp_max.top() << " ";
-        temp_max.pop();
-    }
-    cout << endl;
-    
-    int max_val = maxheap.top();
-    maxheap.pop();
-    cout << "Elemento máximo extraído: " << max_val << endl;
-    
+
+    cout << rooms << "\n";
+    for (int x : room) cout << x << ' ';
+    cout << "\n";
     return 0;
 }
