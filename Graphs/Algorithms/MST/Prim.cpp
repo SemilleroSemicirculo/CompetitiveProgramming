@@ -8,8 +8,6 @@ const ll INF = numeric_limits<ll>::max();
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
-// #define MOD 3245284303;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
@@ -17,65 +15,48 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
-struct Edge {
-    ll v, weight;
-    Edge(ll v, ll w) : v(v), weight(w) {}
-};
-
+/*
+ * Algoritmo : Prim (árbol de expansión mínima con cola de prioridad)
+ * Problema  : CSES 1675 - Road Reparation (https://cses.fi/problemset/task/1675)
+ * Entrada   : n m, luego m aristas "a b c" (costo c)
+ * Salida    : el costo mínimo para conectar todo, o IMPOSSIBLE
+ * Complejidad: tiempo O(m log n), memoria O(n + m)
+ */
 
 int main() {
     fastio;
-    ll n = 5;
-    vector<vector<Edge>> G(n);
-    
-    // Example usage with sample graph
-    ll start = 0;
-    ll mst_weight = 0;
-    
-    vector<bool> visited(n, false);
-    vector<ll> key(n, INF);
-    vector<ll> parent(n);
-    
-    // Initialize parent array
-    for (int i = 0; i < n; i++) {
-        parent[i] = i;
+    int n, m;
+    cin >> n >> m;
+    vector<vector<pair<int, ll>>> G(n + 1);
+    for (int i = 0; i < m; i++) {
+        int a, b;
+        ll c;
+        cin >> a >> b >> c;
+        G[a].push_back({b, c});
+        G[b].push_back({a, c});
     }
-    
-    // Min heap: (weight, vertex)
-    priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> pq;
-    
-    pq.push({0, start});
-    key[start] = 0;
-    
+
+    vector<bool> inTree(n + 1, false);
+    // min-heap de {peso de la arista, nodo} para crecer el árbol desde el nodo 1
+    priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> pq;
+    pq.push({0, 1});
+    ll total = 0;
+    int used = 0;
     while (!pq.empty()) {
-        ll w = pq.top().first;
-        ll u = pq.top().second;
+        auto [w, u] = pq.top();
         pq.pop();
-        
-        if (visited[u]) {
-            continue;
-        }
-        
-        visited[u] = true;
-        mst_weight += w;
-        
-        for (const Edge& edge : G[u]) {
-            ll v = edge.v;
-            ll weight = edge.weight;
-                        
-            if (!visited[v] && weight < key[v]) {
-                key[v] = weight;
-                parent[v] = u;
-                pq.push({key[v], v});
-            }
-        }
+        // el nodo ya está en el árbol
+        if (inTree[u]) continue;
+        inTree[u] = true;
+        // se agrega el nodo con la arista más barata que lo conecta
+        total += w;
+        used++;
+        for (auto [v, c] : G[u])
+            if (!inTree[v]) pq.push({c, v});
     }
-    
-    // Build MST edges
-    vector<tuple<ll, ll, ll>> MST;
-    for (ll i = 0; i < n; i++) {
-        if (parent[i] != i) {
-            MST.push_back({i, parent[i], key[i]});
-        }
-    }
+
+    // si no entraron todos, el grafo no es conexo
+    if (used != n) cout << "IMPOSSIBLE\n";
+    else cout << total << "\n";
+    return 0;
 }

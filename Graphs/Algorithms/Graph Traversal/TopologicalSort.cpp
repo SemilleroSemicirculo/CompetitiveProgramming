@@ -15,12 +15,21 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Orden topológico (Kahn)
+ * Problema  : CSES 1679 - Course Schedule (https://cses.fi/problemset/task/1679)
+ * Entrada   : n m, luego m aristas dirigidas "a b"
+ * Salida    : un orden topológico, o IMPOSSIBLE
+ * Complejidad: tiempo O(n + m), memoria O(n + m)
+ */
+
 int main() {
     fastio;
     ll n, m;
     cin >> n >> m;
 
     vector<vector<ll>> G(n);
+    // indeg[v] = aristas que entran a v
     vector<ll> indeg(n, 0);
     for (ll i = 0; i < m; ++i) {
         ll u, v;
@@ -31,6 +40,7 @@ int main() {
     }
 
     // Kahn: se procesan primero los nodos sin aristas entrantes
+    // nodos sin dependencias pendientes
     queue<ll> q;
     for (ll i = 0; i < n; ++i)
         if (indeg[i] == 0) q.push(i);
@@ -40,6 +50,7 @@ int main() {
         ll v = q.front(); q.pop();
         order.push_back(v);
         for (ll u : G[v]) {
+            // al sacar v se "borran" sus aristas; u queda libre al llegar a 0
             if (--indeg[u] == 0) q.push(u);
         }
     }

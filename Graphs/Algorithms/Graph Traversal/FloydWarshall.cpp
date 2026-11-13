@@ -15,27 +15,41 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Floyd-Warshall (distancias entre todos los pares)
+ * Problema  : CSES 1672 - Shortest Routes II (https://cses.fi/problemset/task/1672)
+ * Entrada   : n m q, luego m aristas no dirigidas "a b c" y q consultas "a b"
+ * Salida    : la distancia mínima de cada consulta, o -1 si no hay camino
+ * Complejidad: tiempo O(n^3 + q), memoria O(n^2)
+ */
+
 int main() {
     fastio;
-    int n;
-    cin >> n;
-    vector<vector<ll>> d(n, vector<ll>(n));
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            cin >> d[i][j];
+    int n, m, q;
+    cin >> n >> m >> q;
+    // inf = INF / 4 para que dist[i][k] + dist[k][j] no desborde
+    const ll inf = INF / 4;  // evita overflow al sumar
+    vector<vector<ll>> dist(n + 1, vector<ll>(n + 1, inf));
+    for (int i = 1; i <= n; i++) dist[i][i] = 0;
+    for (int i = 0; i < m; i++) {
+        int a, b;
+        ll c;
+        cin >> a >> b >> c;
+        dist[a][b] = min(dist[a][b], c);
+        dist[b][a] = min(dist[b][a], c);
+    }
 
-    // Floyd–Warshall: d[i][j] = min distance from i to j
-    for (int k = 0; k < n; k++)
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                if (d[i][k] < INF && d[k][j] < INF)
-                    d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+    // k = nodo intermedio permitido: se prueba pasar por k para cada par (i, j)
+    for (int k = 1; k <= n; k++)
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= n; j++)
+                if (dist[i][k] + dist[k][j] < dist[i][j])
+                    dist[i][j] = dist[i][k] + dist[k][j];
 
-    // (opcional) imprimir la matriz resultante
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cout << d[i][j] << (j+1<n?' ':'\n');
-        }
+    while (q--) {
+        int a, b;
+        cin >> a >> b;
+        cout << (dist[a][b] >= inf ? -1 : dist[a][b]) << "\n";
     }
     return 0;
 }
