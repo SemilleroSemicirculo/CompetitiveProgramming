@@ -30,15 +30,19 @@ int main(){
     vector<ll> a(n); for(auto &x: a) cin >> x;
 
 
+    // DP[i] = longitud de la LIS que termina en a[i]
     vector<ll> DP(n, 1);
     for(int i = 1; i < n; i++){
+        // se prueba extender cada subsecuencia anterior más pequeña
         for(int j = 0; j < i; j++){
             if(a[j] < a[i]){
+                // a[i] se agrega al final de la LIS que termina en a[j]
                 DP[i] = max(DP[i], 1 + DP[j]);
             }
         }
     }
 
+    // la respuesta es el mejor DP[i] (O(n^2), lento para n grande)
     cout << *max_element(all(DP)) << "\n";
     
     return 0;

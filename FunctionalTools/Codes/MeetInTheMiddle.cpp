@@ -24,6 +24,7 @@ const ll INF = numeric_limits<ll>::max();
  */
 
 // todas las sumas de subconjuntos de a[l..r)
+// genera 2^(r-l) sumas duplicando la lista con cada elemento
 vector<ll> subsetSums(const vector<ll> &a, int l, int r) {
     vector<ll> sums = {0};
     for (int i = l; i < r; i++) {
@@ -41,10 +42,13 @@ int main() {
     vector<ll> a(n);
     for (auto &v : a) cin >> v;
 
+    // se divide el arreglo en dos mitades
     vector<ll> L = subsetSums(a, 0, n / 2), R = subsetSums(a, n / 2, n);
+    // R ordenado para buscar con búsqueda binaria
     sort(all(R));
     ll count = 0;
     for (ll s : L)
+        // para cada suma de la mitad izquierda se cuentan las de la derecha que completan x
         count += upper_bound(all(R), x - s) - lower_bound(all(R), x - s);
     cout << count << "\n";
     return 0;

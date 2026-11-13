@@ -27,6 +27,7 @@ int main() {
     fastio;
     int n;
     cin >> n;
+    // se ordenan los clientes por hora de llegada
     vector<array<int, 3>> c(n);  // {llegada, salida, índice}
     for (int i = 0; i < n; i++) {
         cin >> c[i][0] >> c[i][1];
@@ -35,15 +36,18 @@ int main() {
     sort(all(c));
 
     // min-heap de {salida, habitación}
+    // min-heap de {salida, habitación}: la habitación que se libera primero
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> heap;
     vector<int> room(n);
     int rooms = 0;
     for (auto &cl : c) {
         int r;
+        // si la habitación más pronta ya se liberó, se reutiliza
         if (!heap.empty() && heap.top().first < cl[0]) {
             r = heap.top().second;
             heap.pop();
         }
+        // si no, se abre una habitación nueva
         else r = ++rooms;
         room[cl[2]] = r;
         heap.push({cl[1], r});

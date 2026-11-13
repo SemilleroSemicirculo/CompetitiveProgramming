@@ -30,7 +30,9 @@ int main(){
 		ll n; cin >> n;
 		if(n == 0) break;
 		
+		// TeamQueue[x] = cola del equipo al que pertenece x
 		map<ll, queue<ll>*> TeamQueue;
+		// cola de equipos que tienen alguien esperando
 		queue<queue<ll>*> Queue;
 
 		for(int i = 0; i < n; i++){
@@ -46,7 +48,9 @@ int main(){
 		while (true)
 		{
 			string s; cin >> s;
+			// fin del caso
 			if(s == "STOP") break;
+			// el nuevo entra a la cola de su equipo; si el equipo estaba vacío, el equipo entra al final
 			else if(s == "ENQUEUE"){
 				ll x; cin >> x;
 				TeamQueue[x]->push(x);
@@ -55,10 +59,12 @@ int main(){
 				}
 			}
 			else{
+				// DEQUEUE: sale el primero del equipo que está al frente
 				ll x = Queue.front()->front();
 				cout << x << "\n";
 				Queue.front()->pop();
 
+				// si el equipo se vacía, deja la cola de equipos
 				if(Queue.front()->size() == 0) Queue.pop();
 			}
 		}

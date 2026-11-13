@@ -30,11 +30,13 @@ int main() {
     vector<int> a(n);
     for (auto &x : a) cin >> x;
     // comprimir valores
+    // se comprimen los valores a 0..k-1
     vector<int> vals = a;
     sort(all(vals));
     vals.erase(unique(all(vals)), vals.end());
     for (auto &x : a) x = lower_bound(all(vals), x) - vals.begin();
 
+    // tamaño de bloque ≈ √n
     int block = max(1, (int)sqrt(n));
     vector<array<int, 3>> queries(q);  // {l, r, índice}
     for (int i = 0; i < q; i++) {
@@ -42,16 +44,19 @@ int main() {
         queries[i][0]--, queries[i][1]--;
         queries[i][2] = i;
     }
+    // se ordenan las consultas por bloque del extremo izquierdo (y alternando el derecho)
     sort(all(queries), [&](const array<int, 3> &x, const array<int, 3> &y) {
         int bx = x[0] / block, by = y[0] / block;
         if (bx != by) return bx < by;
         return (bx & 1) ? x[1] > y[1] : x[1] < y[1];
     });
 
+    // cnt[v] = apariciones de v en la ventana actual, distinct = valores distintos
     vector<int> cnt(vals.size(), 0), ans(q);
     int distinct = 0, L = 0, R = -1;
     auto add = [&](int i) { if (cnt[a[i]]++ == 0) distinct++; };
     auto del = [&](int i) { if (--cnt[a[i]] == 0) distinct--; };
+    // se mueven los extremos de la ventana de una consulta a la siguiente
     for (auto &[l, r, id] : queries) {
         while (L > l) add(--L);
         while (R < r) add(++R);

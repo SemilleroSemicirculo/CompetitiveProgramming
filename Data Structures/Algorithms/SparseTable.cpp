@@ -23,15 +23,18 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n log n + q), memoria O(n log n)
  */
 
+// st[j][i] = mínimo del rango que empieza en i con longitud 2^j
 struct SparseTable {
     int n, LOG;
     vector<vector<ll>> st;
 
     SparseTable(const vector<ll> &a) {
         n = a.size();
+        // cantidad de niveles necesarios
         LOG = 32 - __builtin_clz(n);
         st.assign(LOG, vector<ll>(n));
         st[0] = a;
+        // cada nivel combina dos rangos del nivel anterior
         for (int j = 1; j < LOG; j++)
             for (int i = 0; i + (1 << j) <= n; i++)
                 st[j][i] = min(st[j - 1][i], st[j - 1][i + (1 << (j - 1))]);
@@ -39,6 +42,7 @@ struct SparseTable {
 
     // minimo en el rango [l..r] (0-indexado), O(1)
     ll query(int l, int r) {
+        // se cubre [l..r] con dos rangos de longitud 2^j que se pueden solapar (válido para el mínimo)
         int j = 31 - __builtin_clz(r - l + 1);
         return min(st[j][l], st[j][r - (1 << j) + 1]);
     }
@@ -54,6 +58,7 @@ int main() {
     SparseTable table(a);
     while (q--) {
         int l, r; cin >> l >> r;
+        // consultas dadas a base 1
         l--; r--;
         cout << table.query(l, r) << "\n";
     }

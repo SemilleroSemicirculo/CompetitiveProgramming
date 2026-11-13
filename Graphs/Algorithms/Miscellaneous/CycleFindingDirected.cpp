@@ -23,12 +23,14 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n + m), memoria O(n + m)
  */
 
+// on_stack = nodos en el camino actual de la DFS, parent[] sirve para reconstruir el ciclo
 vector<bool> on_stack;
 vector<bool> vis;
 vector<vector<ll>> ady;
 vector<ll> cycle;
 vector<ll> parent;
  
+// devuelve true apenas encuentra un ciclo
 bool DFS(ll v){
     vis[v] = true;
     on_stack[v] = true;
@@ -37,18 +39,22 @@ bool DFS(ll v){
         if (!vis[u]) {
             parent[u] = v;
             if (DFS(u)) return true;
+        // arista hacia un nodo del camino actual: ciclo dirigido
         } else if (on_stack[u]) {
             cycle.clear();
             cycle.push_back(u);
+            // se retrocede por los padres desde v hasta u
             for (ll x = v; x != u; x = parent[x]) {
                 cycle.push_back(x);
             }
             cycle.push_back(u);
+            // se invierte para imprimirlo en el sentido de las aristas
             reverse(all(cycle));
             return true;
         }
     }
  
+    // v ya no está en el camino actual
     on_stack[v] = false;
     return false;
 }
@@ -69,6 +75,7 @@ int main(){
  
     for (int i = 0; i < n; i++){
         if (!vis[i]) {
+            // se prueba cada componente
             if (DFS(i)) {
                 cout << cycle.size() << "\n";
                 for (auto node : cycle) cout << node + 1 << " ";

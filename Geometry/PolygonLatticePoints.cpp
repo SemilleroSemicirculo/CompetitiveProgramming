@@ -34,12 +34,15 @@ int main() {
     for (int i = 0; i < n; i++) {
         auto [x1, y1] = p[i];
         auto [x2, y2] = p[(i + 1) % n];
+        // Shoelace: suma de x1*y2 - x2*y1
         area2 += x1 * y2 - x2 * y1;
+        // puntos enteros en cada arista = gcd(|dx|, |dy|)
         boundary += gcd(abs(x2 - x1), abs(y2 - y1));
     }
     area2 = abs(area2);
 
     // Pick: A = I + B/2 - 1  =>  I = (2A - B + 2) / 2
+    // de Pick: A = I + B/2 - 1
     ll inside = (area2 - boundary + 2) / 2;
     cout << inside << ' ' << boundary << "\n";
     return 0;

@@ -27,12 +27,14 @@ int main() {
     fastio;
     int n, m;
     cin >> n >> m;
+    // secuencias de enteros a (n) y b (m)
     vector<int> a(n), b(m);
     for (auto &x : a) cin >> x;
     for (auto &x : b) cin >> x;
 
     // LCS[i][j] = longitud de la LCS de a[0..i) y b[0..j)
     vector<vector<int>> LCS(n + 1, vector<int>(m + 1, 0));
+    // si los últimos coinciden se extiende la LCS; si no, se descarta uno de los dos
     for (int i = 1; i <= n; ++i)
         for (int j = 1; j <= m; ++j)
             if (a[i - 1] == b[j - 1])
@@ -41,6 +43,7 @@ int main() {
                 LCS[i][j] = max(LCS[i - 1][j], LCS[i][j - 1]);
 
     // reconstrucción desde el final
+    // se camina desde (n, m) hacia atrás para recuperar una LCS
     vector<int> res;
     int i = n, j = m;
     while (i > 0 && j > 0) {
@@ -51,6 +54,7 @@ int main() {
         else if (LCS[i - 1][j] >= LCS[i][j - 1]) i--;
         else j--;
     }
+    // se construyó al revés
     reverse(all(res));
 
     cout << LCS[n][m] << "\n";

@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(k^2 log k), memoria O(k)
  */
 
+// comparador para que el heap sea un min-heap por la suma
 class comp{
 	public:
 		bool operator()(tuple<ll, ll, ll>& a, tuple<ll, ll, ll>&b){
@@ -30,17 +31,21 @@ class comp{
 		}
 };
 
+// mezcla dos listas ordenadas y devuelve las k menores sumas a[i] + b[j]
 vector<ll> merge(vector<ll> &a, vector<ll> &b, int k){
 	vector<ll> res(k);
 
 	priority_queue<tuple<ll, ll, ll>, vector<tuple<ll, ll, ll>>, comp> heap;
 	ll suma, ii, j;
 	set<tuple<ll, ll>> vis;
+	// la menor suma posible es a[0] + b[0]
 	heap.push({a[0] + b[0], 0, 0});
 	for(int i = 0; i < k; i++){
+		// se saca la menor suma pendiente
 		auto [suma, ii, j] = heap.top(); heap.pop();
 		res[i] = suma;
 		
+		// se agregan los dos vecinos (i+1, j) y (i, j+1); vis evita repetirlos
 		if(ii+1 < k && vis.find({ii+1, j}) == vis.end()){
 			tuple<ll, ll, ll> first = {a[ii+1] + b[j], ii+1, j};
 			heap.push(first);
@@ -57,6 +62,8 @@ vector<ll> merge(vector<ll> &a, vector<ll> &b, int k){
 }
  
 int main(){
+	// varios casos: se mezcla fila por fila quedándose siempre con las k menores
+	fastio;
 	int k; 
 	while(cin >> k){
 		vector<ll> res(k); for(auto&x:res){cin >> x;}

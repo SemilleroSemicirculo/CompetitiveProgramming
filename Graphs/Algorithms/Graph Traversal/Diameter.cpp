@@ -23,9 +23,11 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n), memoria O(n)
  */
 
+// árbol como lista de adyacencia; dist_dfs[v] = distancia desde la raíz de la DFS actual
 vector<vector<int>> g;
 vector<int> dist_dfs;
 
+// DFS que devuelve el nodo más lejano y su distancia
 pair<int,int> dfs_far(int u, int p) {
     // retorna {nodo más lejano, distancia a él}
     pair<int,int> best = {u, dist_dfs[u]};
@@ -51,10 +53,12 @@ int main() {
 
     dist_dfs.assign(n+1, 0);
     // 1ª DFS: desde 1 para hallar vértice A más lejano
+    // el nodo más lejano de cualquier nodo es un extremo del diámetro
     auto a = dfs_far(1, 0).first;
 
     // 2ª DFS: desde A para hallar distancia máxima (diámetro)
     dist_dfs.assign(n+1, 0);
+    // la mayor distancia desde ese extremo es el diámetro
     auto b = dfs_far(a, 0);
     cout << b.second << "\n";
 

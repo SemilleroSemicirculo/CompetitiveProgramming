@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n log n), memoria O(n)
  */
 
+// punto del plano con coordenadas enteras
 struct pt {
     ll x, y;  // Funcionan como parejas
     bool operator==(pt const &t) const {
@@ -30,6 +31,7 @@ struct pt {
     }
 };
 
+// signo del producto cruz (b - a) x (c - a)
 int orientation(pt a, pt b, pt c) {
     ll v = a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y);  // Producto cruz
     if (v < 0) return -1;  // a-b-c Horario
@@ -45,6 +47,7 @@ bool cw(pt a, pt b, pt c, bool include_collinear) {
 
 bool collinear(pt a, pt b, pt c) { return orientation(a, b, c) == 0; }
 
+// Graham scan: se ordena por ángulo alrededor del punto más bajo
 void convex_hull(vector<pt> &a, bool include_collinear = false) {
     pt p0 = *min_element(all(a), [](pt a, pt b) {
         return make_pair(a.y, a.x) < make_pair(b.y, b.x);
@@ -56,12 +59,14 @@ void convex_hull(vector<pt> &a, bool include_collinear = false) {
                  < (p0.x - b.x) * (p0.x - b.x) + (p0.y - b.y) * (p0.y - b.y);
         return o < 0;  // Criterio de comparacion para ordenar
     });
+    // con puntos colineales en el borde final, se invierte esa última parte
     if (include_collinear) {
         int i = (int)a.size() - 1;
         while (i >= 0 && collinear(p0, a[i], a.back())) i--;
         reverse(a.begin() + i + 1, a.end());
     }
 
+    // pila de la envolvente
     vector<pt> st;
     for (int i = 0; i < (int)a.size(); i++) {
         // Verifica si los dos anteriores con el actual van en sentido horario
@@ -70,6 +75,7 @@ void convex_hull(vector<pt> &a, bool include_collinear = false) {
         st.push_back(a[i]);
     }
 
+    // caso degenerado de puntos repetidos
     if (include_collinear == false && st.size() == 2 && st[0] == st[1])
         st.pop_back();
 

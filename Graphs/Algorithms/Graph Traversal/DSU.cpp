@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(m α(n)), memoria O(n)
  */
 
+// Union-Find: parent[x] es el padre en el bosque y size el tamaño de cada conjunto
 struct DSU {
     vector<int> parent, size;
 
@@ -32,10 +33,12 @@ struct DSU {
         iota(all(parent), 0);
     }
 
+    // compresión de caminos
     int find(int x) {
         return parent[x] == x ? x : parent[x] = find(parent[x]);
     }
 
+    // unión por tamaño: el conjunto pequeño se cuelga del grande
     bool unite(int a, int b) {
         a = find(a), b = find(b);
         if (a == b) return false;
@@ -51,6 +54,7 @@ int main() {
     int n, m;
     cin >> n >> m;
     DSU dsu(n);
+    // comps = componentes actuales, biggest = tamaño de la mayor
     int comps = n, biggest = 1;
     for (int i = 0; i < m; i++) {
         int a, b;

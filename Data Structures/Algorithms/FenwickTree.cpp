@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O((n + q) log n), memoria O(n)
  */
 
+// Fenwick Tree (BIT): bit[i] guarda la suma de un bloque de tamaño (i & -i) que termina en i
 struct Fenwick {
     int n;
     vector<ll> bit;
@@ -52,6 +53,7 @@ int main() {
     int n, q;
     cin >> n >> q;
     vector<ll> a(n + 1, 0);
+    // a[] se guarda aparte para saber cuánto cambiar al actualizar
     Fenwick fw(n);
     for (int i = 1; i <= n; i++) {
         cin >> a[i];
@@ -63,6 +65,7 @@ int main() {
         if (type == 1) {
             // a[k] = u
             int k; ll u; cin >> k >> u;
+            // una asignación es sumar la diferencia
             fw.add(k, u - a[k]);
             a[k] = u;
         } else {

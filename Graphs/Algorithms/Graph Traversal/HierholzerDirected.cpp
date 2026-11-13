@@ -28,6 +28,7 @@ int main() {
     int n, m;
     cin >> n >> m;
     vector<vector<int>> G(n + 1);
+    // grados de entrada y salida de cada nodo
     vector<int> in(n + 1, 0), out(n + 1, 0);
     for (int i = 0; i < m; i++) {
         int a, b;
@@ -37,6 +38,7 @@ int main() {
     }
 
     // condiciones del camino de 1 a n
+    // el camino de 1 a n existe si out(1) = in(1) + 1, in(n) = out(n) + 1 y los demás grados coinciden
     bool ok = out[1] - in[1] == 1 && in[n] - out[n] == 1;
     for (int i = 2; i < n; i++) ok &= in[i] == out[i];
     if (!ok) {
@@ -60,6 +62,7 @@ int main() {
     }
     reverse(all(path));
 
+    // si no se usaron las m aristas, el grafo no es conexo
     if ((int)path.size() != m + 1 || path[0] != 1 || path.back() != n) {
         cout << "IMPOSSIBLE\n";
         return 0;

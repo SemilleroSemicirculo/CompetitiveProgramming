@@ -63,9 +63,11 @@ struct Point3d {
 	Point3d operator/(ld t) const {
 		return Point3d(*this) /= t;
 	}
+	// producto punto
 	static ld dot(Point3d a,Point3d b) {
 		return a.x * b.x + a.y * b.y + a.z * b.z;
 	}
+	// producto cruz
 	static Point3d cross(Point3d a, Point3d b) {
 		return Point3d(a.y * b.z - a.z * b.y,
 			a.z * b.x - a.x * b.z,
@@ -77,12 +79,15 @@ struct Point3d {
 	static ld abs(Point3d a) {//norma normal xd
 		return sqrt(norm(a));
 	}
+	// proyección de a sobre b: b * (a·b / |b|²)
 	static Point3d proj(Point3d a, Point3d b) {// proyeccion de a en b
 		return b*(dot(a, b) / norm(b));
 	}
+	// ángulo entre dos vectores
 	static ld angle(Point3d a, Point3d b) {
 		return acos(dot(a, b) / abs(a) / abs(b));
 	}
+	// igualdad con tolerancia EPS por ser reales
 	bool operator==(const Point3d &other) const {
     		const double EPS = 1e-6;
 		return fabs(x - other.x) < EPS && fabs(y - other.y) < EPS && fabs(z - other.z) < EPS;
@@ -92,6 +97,7 @@ Point3d operator*(ld a, Point3d b) {
 	return b * a;
 }
 
+// lee los vectores A y B y muestra cada operación
 int main() {
     fastio;
     precision(10);

@@ -25,8 +25,10 @@ const ll INF = numeric_limits<ll>::max();
 
 const ll MODM = 1000000007;  // este problema pide módulo 10^9+7
 
+// matriz cuadrada
 typedef vector<vector<ll>> Matrix;
 
+// producto de matrices módulo MODM
 Matrix multiply(const Matrix &A, const Matrix &B) {
     int k = A.size();
     Matrix C(k, vector<ll>(k, 0));
@@ -37,6 +39,7 @@ Matrix multiply(const Matrix &A, const Matrix &B) {
     return C;
 }
 
+// exponenciación binaria: eleva la matriz en O(log e) multiplicaciones
 Matrix power(Matrix A, ll e) {
     int k = A.size();
     Matrix R(k, vector<ll>(k, 0));
@@ -54,6 +57,7 @@ int main() {
     ll n;
     cin >> n;
     // [F(n+1) F(n); F(n) F(n-1)] = [[1,1],[1,0]]^n
+    // matriz de Fibonacci
     Matrix M = {{1, 1}, {1, 0}};
     cout << power(M, n)[0][1] << "\n";
     return 0;

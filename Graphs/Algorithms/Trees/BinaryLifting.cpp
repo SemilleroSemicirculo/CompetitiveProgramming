@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O((n + q) log k), memoria O(n log k)
  */
 
+// 2^30 > 10^9, suficiente para k hasta 10^9
 const int LOG = 30;
 
 int main() {
@@ -30,8 +31,10 @@ int main() {
     int n, q;
     cin >> n >> q;
     // up[j][v] = nodo al que se llega desde v tras 2^j pasos
+    // up[j][v] = nodo al que se llega desde v tras 2^j pasos
     vector<vector<int>> up(LOG, vector<int>(n + 1));
     for (int v = 1; v <= n; v++) cin >> up[0][v];
+    // cada nivel sale de duplicar el anterior
     for (int j = 1; j < LOG; j++)
         for (int v = 1; v <= n; v++)
             up[j][v] = up[j - 1][up[j - 1][v]];
@@ -40,6 +43,7 @@ int main() {
         int x, k;
         cin >> x >> k;
         for (int j = 0; j < LOG; j++)
+            // se descompone k en binario y se salta por cada bit encendido
             if (k >> j & 1) x = up[j][x];
         cout << x << "\n";
     }

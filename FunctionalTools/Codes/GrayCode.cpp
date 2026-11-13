@@ -27,13 +27,17 @@ int main(){
     fastio;
  
     ll n; cin >> n;
+    // hay 2^n códigos
     for(int i = 0; i < (1<<n); ++i){
+        // código Gray del número i: i XOR (i >> 1)
         ll gn = (i^(i >> 1));
+        // se escribe gn en binario con n bits
         string res = "";
         for(int i = 0; i < n; i++){
             if(gn & (1 << i)) res += "1";
             else res += "0";
         }
+        // los bits se armaron del menos al más significativo, se invierten
         reverse(all(res));
         cout << res  << "\n";
     }

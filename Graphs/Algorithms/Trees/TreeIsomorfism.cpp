@@ -104,6 +104,7 @@ void solve_case() {
     cout << "NO\n";
 }
 
+// se resuelve cada caso de prueba por separado
 int main() {
     fastio;
     int T;

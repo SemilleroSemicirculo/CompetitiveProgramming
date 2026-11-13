@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O((n + q) log n), memoria O(n)
  */
 
+// árbol iterativo: las hojas están en t[n..2n) y cada padre guarda el mínimo de sus hijos
 struct SegmentTree {
     int n;
     vector<ll> t;
@@ -34,11 +35,13 @@ struct SegmentTree {
         for (int i = n - 1; i > 0; i--) t[i] = min(t[2 * i], t[2 * i + 1]);
     }
 
+    // se cambia la hoja y se recalcula hacia la raíz
     void update(int p, ll value) {
         for (t[p += n] = value; p > 1; p >>= 1) t[p >> 1] = min(t[p], t[p ^ 1]);
     }
 
     // mínimo en [l, r)
+    // mínimo en [l, r): se sube juntando los nodos que cubren el rango
     ll query(int l, int r) {
         ll res = INF;
         for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
@@ -59,6 +62,7 @@ int main() {
     while (q--) {
         int type;
         cin >> type;
+        // tipo 1 = asignar, tipo 2 = consultar (a base 1)
         if (type == 1) {
             int k;
             ll u;

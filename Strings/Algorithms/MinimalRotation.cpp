@@ -25,8 +25,10 @@ const ll INF = numeric_limits<ll>::max();
 
 // índice de inicio de la rotación mínima
 int minimalRotation(const string &s) {
+    // la rotación mínima es una subcadena de s + s
     string t = s + s;
     int n = s.size(), i = 0, j = 1, k = 0;
+    // se comparan dos candidatos i y j; el peor se descarta saltando k + 1 posiciones
     while (i < n && j < n && k < n) {
         char a = t[i + k], b = t[j + k];
         if (a == b) { k++; continue; }
@@ -35,6 +37,7 @@ int minimalRotation(const string &s) {
         if (i == j) j++;
         k = 0;
     }
+    // el candidato que sobrevive
     return min(i, j);
 }
 

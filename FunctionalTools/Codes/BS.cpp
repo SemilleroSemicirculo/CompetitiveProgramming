@@ -24,9 +24,11 @@ const ll INF = numeric_limits<ll>::max();
  */
 
 // devuelve el índice de target en a[] o -1 si no existe
+// mitad del rango en cada paso: se descarta la mitad donde no puede estar
 int binary_search_manual(const vector<ll>& a, ll target) {
     int lo = 0, hi = int(a.size()) - 1;
     while (lo <= hi) {
+        // mid se calcula así para evitar overflow
         int mid = lo + (hi - lo) / 2;
         if (a[mid] == target) return mid;
         if (a[mid] < target) lo = mid + 1;
@@ -42,6 +44,7 @@ int main() {
     vector<ll> a(n);
     for (int i = 0; i < n; i++) cin >> a[i];
     // asume a[] ordenado
+    // la búsqueda exige el arreglo ordenado
     int idx = binary_search_manual(a, target);
     if (idx != -1) cout << "FOUND at index " << idx << "\n";
     else cout << "NOT FOUND\n";

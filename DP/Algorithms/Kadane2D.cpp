@@ -27,17 +27,21 @@ int main() {
     fastio;
     int R, C;
     cin >> R >> C;
+    // mat[i][j] = valor de la celda (i, j)
     vector<vector<ll>> mat(R, vector<ll>(C));
     for (int i = 0; i < R; i++)
         for (int j = 0; j < C; j++)
             cin >> mat[i][j];
 
+    // se parte de -INF porque todos los valores pueden ser negativos
     ll best = -INF;
     // fijar fila superior y fila inferior
     for (int top = 0; top < R; top++) {
+        // colSum[j] = suma de la columna j entre las filas top y bot
         vector<ll> colSum(C, 0);
         for (int bot = top; bot < R; bot++) {
             for (int j = 0; j < C; j++)
+                // al bajar bot se suma una fila más a cada columna
                 colSum[j] += mat[bot][j];
             // aplicar Kadane 1D sobre colSum
             ll curr = colSum[0];

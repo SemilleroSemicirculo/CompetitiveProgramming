@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(m log m), memoria O(n + m)
  */
 
+// DSU para detectar si una arista une componentes distintas
 struct DSU {
     vector<int> parent, size;
 
@@ -52,18 +53,21 @@ int main() {
     cin >> n >> m;
     vector<array<ll, 3>> edges(m);  // {peso, a, b}
     for (auto &e : edges) cin >> e[1] >> e[2] >> e[0];
+    // se procesan las aristas de menor a mayor peso
     sort(all(edges));
 
     DSU dsu(n);
     ll total = 0;
     int used = 0;
     for (auto &[w, a, b] : edges) {
+        // la arista se usa solo si no forma ciclo
         if (dsu.unite(a, b)) {
             total += w;
             used++;
         }
     }
 
+    // un árbol de expansión tiene n-1 aristas; si faltan, el grafo no es conexo
     if (used != n - 1) cout << "IMPOSSIBLE\n";
     else cout << total << "\n";
     return 0;

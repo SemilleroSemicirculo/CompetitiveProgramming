@@ -23,10 +23,12 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(|s| + |t|) esperado, memoria O(|s|)
  */
 
+// dos módulos y una base para reducir colisiones
 ll P1 = 1000000007;
 ll P2 = 998244353;
 ll base = 60;
 
+// Pot[i] = base^i mod P
 vector<ll> Pot1(1000003, 1);
 vector<ll> Pot2(1000003, 1);
 
@@ -38,6 +40,7 @@ ll mod(ll x, ll n) {
     return (x % n + n) % n;
 }
 
+// hash polinomial de una cadena junto con su tamaño
 struct Hash {
     ll hash_1, hash_2, size;
 
@@ -45,12 +48,14 @@ struct Hash {
     Hash(ll h1, ll h2, ll s) { hash_1 = h1; hash_2 = h2; size = s; }
     Hash(char s) { hash_1 = code(s), hash_2 = code(s), size = 1; }
 
+    // concatenación de dos hashes
     Hash operator+(const Hash &other) const {
         return Hash(mod(hash_1 * Pot1[other.size] + other.hash_1, P1),
                     mod(hash_2 * Pot2[other.size] + other.hash_2, P2),
                     size + other.size);
     }
 
+    // quita un prefijo (hash del sufijo)
     Hash operator-(const Hash &other) const {
         return Hash(mod(hash_1 - other.hash_1 * Pot1[size - other.size], P1),
                     mod(hash_2 - other.hash_2 * Pot2[size - other.size], P2),
@@ -64,6 +69,7 @@ struct Hash {
 
 int main() {
     fastio;
+    // potencias precalculadas
     for (int i = 1; i < (int)Pot1.size(); i++) {
         Pot1[i] = (base * Pot1[i - 1]) % P1;
         Pot2[i] = (base * Pot2[i - 1]) % P2;
@@ -77,6 +83,7 @@ int main() {
     }
 
     // text[i] = hash del prefijo s1[0..i]
+    // text[i] = hash del prefijo s1[0..i]
     vector<Hash> text;
     text.push_back(Hash(s1.front()));
     for (int i = 1; i < (int)s1.size(); i++)
@@ -86,6 +93,7 @@ int main() {
     for (auto c : s2) pattern = pattern + Hash(c);
 
     int count = 0;
+    // se compara el hash de cada ventana con el del patrón
     for (int i = 0; i + s2.size() <= s1.size(); i++) {
         Hash search;
         if (i == 0) search = text[s2.size() - 1];

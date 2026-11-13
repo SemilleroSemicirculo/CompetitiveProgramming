@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O((n + q) log n), memoria O(n)
  */
 
+// Data: información que guarda cada nodo (suma del rango y su tamaño)
 struct Data {
     ll suma, size;
     Data(): suma(0), size(0) {}
@@ -35,6 +36,7 @@ struct Data {
 };
 
 // Primero se asigna "value" (si set) y luego se suma "add"
+// Lazy: actualización pendiente que se aplica a los hijos cuando hace falta
 struct Lazy {
     bool set;
     ll value, add;
@@ -57,6 +59,7 @@ struct Lazy {
     }
 };
 
+// Segment Tree con propagación perezosa
 struct SegmentTree {
     int n;
     vector<Data> data;
@@ -69,6 +72,7 @@ struct SegmentTree {
         build(A, 1, 0, n - 1);
     }
 
+    // construye el árbol recursivamente
     void build(const vector<ll> &A, int index, int left, int right) {
         if (left == right) { data[index] = Data(A[left]); return; }
         int mid = (left + right) / 2;
@@ -77,11 +81,13 @@ struct SegmentTree {
         data[index] = Data(data[2 * index], data[2 * index + 1]);
     }
 
+    // aplica una actualización a un nodo y la deja pendiente para sus hijos
     void apply(int index, const Lazy &l) {
         l.updateData(data[index]);
         lazy[index].updateLazy(l);
     }
 
+    // empuja la actualización pendiente a los hijos
     void propagate(int index) {
         if (lazy[index].empty()) return;
         apply(2 * index, lazy[index]);
@@ -89,6 +95,7 @@ struct SegmentTree {
         lazy[index] = Lazy();
     }
 
+    // actualiza el rango [lower, upper]
     void update(int index, int left, int right, int lower, int upper, const Lazy &value) {
         if (left > upper || right < lower) return;
         if (lower <= left && right <= upper) { apply(index, value); return; }
@@ -99,6 +106,7 @@ struct SegmentTree {
         data[index] = Data(data[2 * index], data[2 * index + 1]);
     }
 
+    // suma en el rango [lower, upper]
     ll query(int index, int left, int right, int lower, int upper) {
         if (left > upper || right < lower) return 0;
         if (lower <= left && right <= upper) return data[index].suma;
@@ -117,6 +125,7 @@ int main() {
 
     SegmentTree Tree(a);
     while (q--) {
+        // tipo de consulta y rango a base 1 (se pasa a base 0)
         int type, l, r;
         cin >> type >> l >> r;
         l--, r--;

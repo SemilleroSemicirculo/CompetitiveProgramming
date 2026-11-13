@@ -25,13 +25,17 @@ const ll INF = numeric_limits<ll>::max();
 
 int n;
 vector<vector<int>> G;
+// tin[u]/tout[u] = intervalo del subárbol de u en el recorrido
 vector<int> tin, tout;
+// Fenwick Tree sobre las posiciones del recorrido
 vector<ll> bit;
 
+// suma v en la posición i
 void add(int i, ll v) {
     for (; i <= n; i += i & -i) bit[i] += v;
 }
 
+// suma del prefijo [1..i]
 ll sum(int i) {
     ll s = 0;
     for (; i > 0; i -= i & -i) s += bit[i];
@@ -73,11 +77,13 @@ int main() {
     }
 
     bit.assign(n + 2, 0);
+    // cada nodo ocupa la posición tin[i]
     for (int i = 1; i <= n; i++) add(tin[i], val[i]);
 
     while (q--) {
         int type, s;
         cin >> type >> s;
+        // actualizar un nodo = sumar la diferencia en su posición; consultar = suma del intervalo del subárbol
         if (type == 1) {
             ll x;
             cin >> x;

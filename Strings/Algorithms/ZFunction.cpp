@@ -28,8 +28,11 @@ vector<int> z_function(const string &s) {
     int n = s.size();
     vector<int> z(n, 0);
     for (int i = 1, l = 0, r = 0; i < n; i++) {
+        // dentro del intervalo [l, r) ya hay información reutilizable
         if (i < r) z[i] = min(r - i, z[i - l]);
+        // se extiende comparando caracter a caracter
         while (i + z[i] < n && s[z[i]] == s[i + z[i]]) z[i]++;
+        // se actualiza el intervalo más a la derecha
         if (i + z[i] > r) l = i, r = i + z[i];
     }
     return z;
@@ -46,6 +49,7 @@ int main() {
 
     ll count = 0;
     for (int i = t.size() + 1; i < (int)combined.size(); i++)
+        // coincidencia completa del patrón en esa posición
         if (z[i] == (int)t.size()) count++;
 
     cout << count << "\n";

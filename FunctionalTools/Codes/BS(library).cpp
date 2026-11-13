@@ -30,10 +30,12 @@ int main() {
     vector<ll> a(n);
     for (int i = 0; i < n; i++) cin >> a[i];
     // asume a[] ordenado
+    // binary_search solo responde si existe
     bool found = binary_search(all(a), target);
     if (found) {
         cout << "FOUND\n";
         // posición con lower_bound:
+        // lower_bound da la primera posición con valor >= target
         int idx = int(lower_bound(all(a), target) - a.begin());
         cout << "at index " << idx << "\n";
     } else {

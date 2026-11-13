@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n + m), memoria O(n + m)
  */
 
+// cada arista guarda su destino y un id para marcarla como usada
 struct Edge{
     ll to, id;
 };
@@ -31,18 +32,22 @@ int main(){
     fastio;
 
     ll n, m; cin >> n >> m;
+    // lista de adyacencia; used[id] indica si la arista ya se recorrió
     vector<vector<Edge>> ady(n, vector<Edge>());
     vector<bool> used(m, false);
 
     for(int i = 0; i < m; i++){
         ll u, v; cin >> u >> v;
+        // nodos a base 0
         u--; v--;
         ady[u].push_back({v, i});
         ady[v].push_back({u, i});
     }
 
+    // cycle = circuito resultante (se arma al desapilar)
     vector<ll> cycle;
     vector<bool> vis(n, false);
+    // primero se verifica que todos los nodos con aristas sean alcanzables desde 0
     stack<ll> ss; ss.push(0);
 
     while (!ss.empty())
@@ -54,6 +59,7 @@ int main(){
         vis[v] = true;
     }
 
+    // condición de Euler: todos los grados pares y un solo componente conexo
     bool agg = true;
     for(int i = 0; i < n; i++){
         if(ady[i].size() == 0) vis[i] = true;
@@ -62,14 +68,17 @@ int main(){
         if(vis[i] == false) agg = false;
     }
     
+    // si no se cumple la condición no existe el ciclo
     if(!agg){
         cout << "IMPOSSIBLE" << "\n";
         return 0;
     }
 
     ss.push(0);
+    // Hierholzer iterativo: se avanza por aristas libres y se desapila al quedar sin salida
     while (!ss.empty()){
         ll v = ss.top();
+        // se descartan aristas ya usadas desde el otro extremo
         while (!ady[v].empty() && used[ady[v].back().id]) ady[v].pop_back();
         
         if(!ady[v].empty()){
@@ -78,6 +87,7 @@ int main(){
             ss.push(edge.to);
         }
         else{
+            // nodo sin salidas: entra al circuito (queda en orden inverso, válido por ser un ciclo)
             cycle.push_back(v);
             ss.pop();
         }

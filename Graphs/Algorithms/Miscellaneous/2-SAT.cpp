@@ -23,13 +23,18 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n + m), memoria O(n + m)
  */
 
+// Tarjan: componentes fuertemente conexas (SCC) con una sola DFS
 struct Tarjan{
+    // tempo = contador de descubrimiento
     ll tempo = 0;
     vector<vector<ll>> ady;
+    // discovered[v] = momento en que se visitó v, low[v] = menor tiempo alcanzable desde su subárbol
     vector<ll> discovered;
     vector<ll> low;
+    // pila de nodos de la SCC actual; in_stack evita usar aristas hacia SCC ya cerradas
     stack<ll> ss;
     vector<bool> in_stack;
+    // SCC = lista de componentes, SCC_index[v] = componente de v
     vector<vector<ll>> SCC;
     vector<ll> SCC_index;
  
@@ -45,6 +50,7 @@ struct Tarjan{
         ady[u].push_back(v);
     }
  
+    // DFS de Tarjan
     void DFS(ll v){
         discovered[v] = tempo;
         low[v] = tempo;
@@ -54,15 +60,18 @@ struct Tarjan{
         in_stack[v] = true;
  
         for(auto u: ady[v]){
+            // arista de árbol: se baja y se actualiza low con el hijo
             if(discovered[u] == -1){
                 DFS(u);
                 low[v] = min(low[v], low[u]);
             }
+            // arista hacia atrás dentro de la misma componente
             else if(in_stack[u]){
                 low[v] = min(low[v], discovered[u]);
             }
         }
  
+        // v es la raíz de una SCC: se desapila hasta v
         if(low[v] == discovered[v]){
             vector<ll> newSCC;
             ll w;
@@ -81,16 +90,20 @@ int main(){
     fastio;
     
     ll n, m; cin >> n >> m;
+    // 2-SAT: n cláusulas y m variables; el nodo x es "x verdadero" y x+m es su negación
     Tarjan tarjan(2*m+1);
  
+    // negación de un literal
     auto negation = [&](ll u){
         if(u > m) return u - m;
         else return u + m;
     };
  
     for(int i = 0; i < n; i++){
+        // cada cláusula (a ∨ b) agrega las implicaciones ¬a → b y ¬b → a
         char type1, type2; ll u, v; 
         cin >> type1 >> u >> type2  >> v;
+        // se lee "+ x" como literal x; se guarda su negación para armar las implicaciones
         if(type1 == '+') u = negation(u);
         if(type2 == '+') v = negation(v);
  
@@ -98,12 +111,14 @@ int main(){
         tarjan.add_edge(negation(v), u);
     }
  
+    // SCC sobre el grafo de implicaciones
     for(int i = 1; i < 2*m+1; i++){
         if(tarjan.discovered[i] == -1){
             tarjan.DFS(i);
         }
     }
  
+    // si x y ¬x están en la misma SCC no hay solución
     bool agg = true;
     for(int i = 1; i <= m; i++){
         if(tarjan.SCC_index[i] == tarjan.SCC_index[negation(i)]){
@@ -116,6 +131,7 @@ int main(){
         cout << "IMPOSSIBLE" << "\n";
     }
     else{
+        // x es verdadera si su SCC sale después que la de ¬x en el orden topológico (Tarjan numera al revés)
         string res = "";
         for(int i = 1; i <= m; i++){
             if(tarjan.SCC_index[i] < tarjan.SCC_index[negation(i)]) res += '-';

@@ -24,9 +24,11 @@ const ll INF = numeric_limits<ll>::max();
  */
 
 int n;
+// capacity[u][v] = capacidad residual; adj solo para recorrer vecinos
 vector<vector<ll>> capacity;
 vector<vector<int>> adj;
 
+// BFS que busca un camino aumentante; devuelve el cuello de botella
 // BFS que busca un camino aumentante; devuelve el cuello de botella
 ll bfs(int s, int t, vector<int> &parent) {
     fill(all(parent), -1);
@@ -48,6 +50,7 @@ ll bfs(int s, int t, vector<int> &parent) {
     return 0;
 }
 
+// se aumenta el flujo mientras haya camino
 ll maxflow(int s, int t) {
     ll flow = 0;
     vector<int> parent(n + 1);
@@ -56,6 +59,7 @@ ll maxflow(int s, int t) {
         int cur = t;
         while (cur != s) {
             int prev = parent[cur];
+            // se resta en la arista y se suma en la inversa
             capacity[prev][cur] -= new_flow;
             capacity[cur][prev] += new_flow;
             cur = prev;
@@ -78,6 +82,7 @@ int main() {
             adj[a].push_back(b);
             adj[b].push_back(a);
         }
+        // se suman capacidades si hay aristas repetidas
         capacity[a][b] += c;
     }
     cout << maxflow(1, n) << "\n";

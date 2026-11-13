@@ -27,6 +27,7 @@ int main() {
     fastio;
     int n;
     cin >> n;
+    // eventos: +1 al llegar y -1 al salir
     vector<pair<int, int>> events;  // {tiempo, +1 llega / -1 sale}
     for (int i = 0; i < n; i++) {
         int a, b;
@@ -34,10 +35,12 @@ int main() {
         events.push_back({a, 1});
         events.push_back({b, -1});
     }
+    // a igual tiempo, las salidas (-1) van antes que las llegadas
     sort(all(events));
 
     int cur = 0, best = 0;
     for (auto [t, d] : events) {
+        // cur = clientes presentes en este momento
         cur += d;
         best = max(best, cur);
     }

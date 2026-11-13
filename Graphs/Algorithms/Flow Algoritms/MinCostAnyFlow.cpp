@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(K · E log V), memoria O(V + E)
  */
 
+// cada arista guarda destino, índice de su inversa, capacidad y costo
 struct MinCostFlow {
     struct Edge { ll to, rev, cap, cost; };
     
@@ -31,6 +32,7 @@ struct MinCostFlow {
     
     MinCostFlow(ll n=0): n(n), adj(n) {}
 
+    // agrega la arista y su inversa (capacidad 0 y costo negativo)
     ll add_edge(ll u, ll v, ll cap, ll cost){
         ll iu = adj[u].size();
         ll iv = adj[v].size();
@@ -60,6 +62,7 @@ struct MinCostFlow {
             if(!any) break;
         }
 
+        // cada vuelta envía flujo por el camino más barato del grafo residual (Dijkstra con potenciales)
         while(flow < K){
             fill(all(dist), INF); dist[s] = 0;
 
@@ -86,6 +89,7 @@ struct MinCostFlow {
             for(int v = 0; v < n; ++v)
                 if(dist[v] < INF) potential[v] += dist[v];
 
+            // cuello de botella del camino encontrado
             ll add = K - flow;
             int v = t;
             while(v != s){
@@ -102,6 +106,7 @@ struct MinCostFlow {
                 v = parent_vertex[v];
             }
 
+            // potential[t] es el costo real del camino más corto
             flow += add;
             cost += add * potential[t]; // potential[t] equals actual shortest path cost
         }
@@ -115,6 +120,7 @@ int main() {
     int n, m;
     ll K;
     cin >> n >> m >> K;
+    // nodos numerados de 1 a n
     MinCostFlow mcf(n + 1);
     for (int i = 0; i < m; i++) {
         int u, v;

@@ -35,9 +35,11 @@ int main() {
         G[b].push_back(a);
     }
 
+    // color 1 o 2 por nodo (0 = aún sin color)
     vector<int> color(n + 1, 0);  // 0 = sin color
     for (int s = 1; s <= n; s++) {
         if (color[s]) continue;
+        // cada componente se colorea desde un nodo cualquiera
         color[s] = 1;
         queue<int> q;
         q.push(s);
@@ -46,9 +48,11 @@ int main() {
             q.pop();
             for (int v : G[u]) {
                 if (color[v] == 0) {
+                    // los vecinos reciben el color opuesto
                     color[v] = 3 - color[u];
                     q.push(v);
                 }
+                // dos vecinos del mismo color: hay un ciclo impar, no es bipartito
                 else if (color[v] == color[u]) {
                     cout << "IMPOSSIBLE\n";
                     return 0;

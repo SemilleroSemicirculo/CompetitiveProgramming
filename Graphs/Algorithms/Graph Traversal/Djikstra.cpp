@@ -35,15 +35,19 @@ int main() {
         G[a].push_back({b, c});
     }
 
+    // dist[v] = mejor distancia conocida desde 1
     vector<ll> dist(n + 1, INF);
+    // min-heap de {distancia, nodo}
     priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> pq;
     dist[1] = 0;
     pq.push({0, 1});
     while (!pq.empty()) {
         auto [d, u] = pq.top();
         pq.pop();
+        // entrada vieja del heap: ya hay una distancia mejor
         if (d > dist[u]) continue;
         for (auto [v, w] : G[u]) {
+            // relajación de la arista u -> v
             if (dist[u] + w < dist[v]) {
                 dist[v] = dist[u] + w;
                 pq.push({dist[v], v});

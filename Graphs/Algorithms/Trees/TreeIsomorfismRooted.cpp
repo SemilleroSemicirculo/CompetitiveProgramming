@@ -23,11 +23,14 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n log n), memoria O(n)
  */
 
+// cada lista ordenada de ids de hijos recibe un id único
 map<vector<int>, int> ids;  // compartido entre los dos árboles de cada caso
 
 // id canónico de cada nodo: depende de los ids ordenados de sus hijos
+// calcula el id canónico de la raíz del árbol
 int canonical(const vector<vector<int>> &G) {
     int n = G.size() - 1;
+    // BFS para obtener un orden y el padre de cada nodo
     vector<int> parent(n + 1, 0), order;
     order.push_back(1);
     for (int i = 0; i < (int)order.size(); i++) {
@@ -41,6 +44,7 @@ int canonical(const vector<vector<int>> &G) {
 
     vector<int> id(n + 1);
     vector<vector<int>> children(n + 1);
+    // se procesa de las hojas hacia la raíz
     for (int i = n - 1; i >= 0; i--) {  // de las hojas hacia la raíz
         int u = order[i];
         sort(all(children[u]));
@@ -72,6 +76,7 @@ int main() {
             B[a].push_back(b);
             B[b].push_back(a);
         }
+        // árboles con raíz isomorfos si las raíces tienen el mismo id
         cout << (canonical(A) == canonical(B) ? "YES" : "NO") << "\n";
     }
     return 0;

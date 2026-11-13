@@ -25,6 +25,7 @@ const ll INF = numeric_limits<ll>::max();
 
 const int MODW = 1000000007;  // este problema pide módulo 10^9+7
 
+// cada nodo tiene un hijo por letra y marca si termina una palabra
 struct Node {
     int children[26];
     bool flag = false;
@@ -34,12 +35,14 @@ struct Node {
     }
 };
 
+// árbol de prefijos
 struct Trie {
     vector<Node> Tree;
     Trie() {
         Tree.emplace_back();
     }
 
+    // inserta una palabra letra por letra
     void insert(const string &word) {
         int v = 0;
         for (char ch : word) {
@@ -53,6 +56,7 @@ struct Trie {
         Tree[v].flag = true;
     }
 
+    // la palabra existe si el camino existe y termina marcada
     bool search(const string &word) {
         int v = 0;
         for (char ch : word) {
@@ -63,6 +67,7 @@ struct Trie {
         return Tree[v].flag;
     }
 
+    // basta con que exista el camino del prefijo
     bool startsWith(const string &prefix) {
         int v = 0;
         for (char ch : prefix) {
@@ -88,8 +93,10 @@ int main() {
 
     // dp[i] = formas de construir el sufijo s[i..]
     int n = s.size();
+    // dp[i] = formas de construir el sufijo s[i..]
     vector<ll> dp(n + 1, 0);
     dp[n] = 1;
+    // desde cada posición se baja por el trie y cada palabra completa suma dp[j + 1]
     for (int i = n - 1; i >= 0; i--) {
         int v = 0;
         for (int j = i; j < n; j++) {

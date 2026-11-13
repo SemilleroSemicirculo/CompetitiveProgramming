@@ -25,10 +25,12 @@ const ll INF = numeric_limits<ll>::max();
 
 typedef pair<ll, ll> pt;
 
+// producto cruz (b - a) x (c - a)
 ll cross(pt a, pt b, pt c) {  // (b - a) x (c - a)
     return (b.first - a.first) * (c.second - a.second) - (b.second - a.second) * (c.first - a.first);
 }
 
+// p está en el segmento ab: colineal y dentro de su caja
 bool onSegment(pt a, pt b, pt p) {
     return cross(a, b, p) == 0 &&
            min(a.first, b.first) <= p.first && p.first <= max(a.first, b.first) &&
@@ -49,14 +51,17 @@ int main() {
         int crossings = 0;
         for (int i = 0; i < n; i++) {
             pt a = poly[i], b = poly[(i + 1) % n];
+            // si está sobre una arista, es borde
             if (onSegment(a, b, p)) { boundary = true; break; }
             // rayo hacia la derecha: cuenta aristas que cruzan la altura de p
+            // rayo horizontal: se cuentan aristas que cruzan la altura de p a su derecha
             if ((a.second > p.second) != (b.second > p.second)) {
                 ll c = cross(a, b, p);
                 if ((c > 0) == (b.second > a.second)) crossings++;
             }
         }
         if (boundary) cout << "BOUNDARY\n";
+        // cantidad impar de cruces = adentro
         else cout << (crossings % 2 ? "INSIDE" : "OUTSIDE") << "\n";
     }
     return 0;

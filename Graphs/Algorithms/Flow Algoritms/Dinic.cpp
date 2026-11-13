@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(V^2 · E), memoria O(V + E)
  */
 
+// Dinic: cada fase arma un grafo por niveles (BFS) y envía flujo bloqueante (DFS)
 struct Dinic {
     struct Edge {
         int to;
@@ -35,6 +36,7 @@ struct Dinic {
 
     Dinic(int n): n(n), G(n + 1), level(n + 1), it(n + 1) {}
 
+    // arista y su inversa (capacidad 0) en posiciones consecutivas: id ^ 1 es la inversa
     void addEdge(int u, int v, ll cap) {
         G[u].push_back(edges.size());
         edges.push_back({v, cap});
@@ -42,6 +44,7 @@ struct Dinic {
         edges.push_back({u, 0});
     }
 
+    // niveles desde s; devuelve si t es alcanzable
     bool bfs(int s, int t) {
         fill(all(level), -1);
         queue<int> q;
@@ -60,6 +63,7 @@ struct Dinic {
         return level[t] != -1;
     }
 
+    // empuja flujo solo por aristas que suben un nivel; it[v] recuerda por dónde seguir
     ll dfs(int v, int t, ll pushed) {
         if (v == t || pushed == 0) return pushed;
         for (int &i = it[v]; i < (int)G[v].size(); i++) {
@@ -76,6 +80,7 @@ struct Dinic {
         return 0;
     }
 
+    // mientras exista camino, se repiten fases
     ll maxflow(int s, int t) {
         ll flow = 0;
         while (bfs(s, t)) {

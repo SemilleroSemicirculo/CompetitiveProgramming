@@ -27,15 +27,18 @@ typedef pair<ll, ll> pt;
 
 int sgn(ll v) { return (v > 0) - (v < 0); }
 
+// signo del producto cruz: 1 antihorario, -1 horario, 0 colineal
 int orient(pt a, pt b, pt c) {
     return sgn((b.first - a.first) * (c.second - a.second) - (b.second - a.second) * (c.first - a.first));
 }
 
+// los rectángulos de los segmentos deben solaparse (caso colineal)
 bool inBox(pt a, pt b, pt c, pt d) {  // las cajas de ab y cd se solapan
     return max(min(a.first, b.first), min(c.first, d.first)) <= min(max(a.first, b.first), max(c.first, d.first)) &&
            max(min(a.second, b.second), min(c.second, d.second)) <= min(max(a.second, b.second), max(c.second, d.second));
 }
 
+// los extremos de cada segmento quedan a lados opuestos del otro (o tocan)
 bool intersect(pt a, pt b, pt c, pt d) {
     return inBox(a, b, c, d) &&
            orient(a, b, c) * orient(a, b, d) <= 0 &&

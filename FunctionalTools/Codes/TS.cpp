@@ -24,6 +24,7 @@ const ll INF = numeric_limits<ll>::max();
  */
 
 // asume f es unimodal (primero crece luego decrece) en [l..r]
+// se descarta un tercio del intervalo en cada paso
 ll ternary_search(int l, int r, function<ll(int)> f) {
     while (r - l > 3) {
         int m1 = l + (r - l) / 3;
@@ -33,6 +34,7 @@ ll ternary_search(int l, int r, function<ll(int)> f) {
         else
             r = m2;
     }
+    // al quedar pocos valores se revisan uno por uno
     ll best = f(l);
     for (int i = l+1; i <= r; i++)
         best = max(best, f(i));

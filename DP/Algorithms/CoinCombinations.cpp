@@ -33,7 +33,9 @@ int main() {
     for (auto &c : coin) cin >> c;
 
     // combinaciones: la moneda va en el bucle externo (el orden no importa)
+    // dp[s] = formas de sumar s
     vector<int> dp(x + 1, 0);
+    // hay una forma de sumar 0: no usar monedas
     dp[0] = 1;
     for (int c : coin)
         for (int s = c; s <= x; s++)

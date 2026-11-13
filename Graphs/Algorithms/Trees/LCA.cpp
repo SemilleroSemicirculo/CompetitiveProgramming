@@ -53,6 +53,7 @@ int main() {
     }
 
     // binary lifting table
+    // up[i][j] = ancestro 2^j veces arriba de i
     const int LOG = 19; // since 2^18 > 2e5
     vector<array<ll, LOG>> up(n + 1);
     for (ll i = 1; i <= n; ++i) {
@@ -64,6 +65,7 @@ int main() {
         }
     }
 
+    // LCA: se igualan profundidades y luego se sube a la vez mientras los ancestros difieran
     auto lca = [&](ll a, ll b) {
         if (depth[a] < depth[b]) swap(a, b);
         ll diff = depth[a] - depth[b];

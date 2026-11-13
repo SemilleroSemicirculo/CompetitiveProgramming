@@ -32,14 +32,18 @@ int main() {
     for (auto &x : k) cin >> x;
 
     // la respuesta es monótona: si en "time" alcanza, en más tiempo también
+    // cota superior: la máquina más rápida sola produce t productos en k_min * t
     ll lo = 1, hi = *min_element(all(k)) * t;
+    // se busca el menor tiempo que alcanza
     while (lo < hi) {
         ll mid = lo + (hi - lo) / 2;
         ll made = 0;
         for (ll x : k) {
+            // cada máquina produce mid / k_i productos
             made += mid / x;
             if (made >= t) break;
         }
+        // alcanza: se prueba con menos tiempo; si no, con más
         if (made >= t) hi = mid;
         else lo = mid + 1;
     }

@@ -36,6 +36,7 @@ int main() {
         adj[b].push_back(a);
     }
 
+    // DFS iterativo: order guarda los nodos en preorden y parent su padre
     vector<int> parent(n+1, 0), order;
     order.reserve(n);
     stack<pair<int, int>> st;
@@ -51,6 +52,7 @@ int main() {
         }
     }
 
+    // dp[u] = tamaño del subárbol de u (se llena de las hojas hacia la raíz)
     vector<int> dp(n+1, 1);
     for (int i = n-1; i >= 0; --i) {
         int u = order[i];
@@ -60,8 +62,10 @@ int main() {
         }
     }
 
+    // centroide: ningún subárbol puede tener más de n/2 nodos
     int limit = n / 2;
     int u = 1;
+    // se baja siempre hacia el hijo con subárbol demasiado grande
     while (true) {
         bool moved = false;
         for (int v : adj[u]) {
@@ -74,6 +78,7 @@ int main() {
         }
         if (moved) continue;
 
+        // si tampoco la parte "de arriba" es grande, u es el centroide
         if (n - dp[u] <= limit) {
             cout << u << '\n';
             break;

@@ -23,13 +23,18 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n + m), memoria O(n + m)
  */
 
+// Tarjan: componentes fuertemente conexas (SCC) con una sola DFS
 struct Tarjan{
+    // tempo = contador de descubrimiento
     ll tempo = 0;
     vector<vector<ll>> ady;
+    // discovered[v] = momento en que se visitó v, low[v] = menor tiempo alcanzable desde su subárbol
     vector<ll> discovered;
     vector<ll> low;
+    // pila de nodos de la SCC actual; in_stack evita usar aristas hacia SCC ya cerradas
     stack<ll> ss;
     vector<bool> in_stack;
+    // SCC = lista de componentes, SCC_index[v] = componente de v
     vector<vector<ll>> SCC;
     vector<ll> SCC_index;
  
@@ -45,6 +50,7 @@ struct Tarjan{
         ady[u].push_back(v);
     }
  
+    // DFS de Tarjan
     void DFS(ll v){
         discovered[v] = tempo;
         low[v] = tempo;
@@ -54,15 +60,18 @@ struct Tarjan{
         in_stack[v] = true;
  
         for(auto u: ady[v]){
+            // arista de árbol: se baja y se actualiza low con el hijo
             if(discovered[u] == -1){
                 DFS(u);
                 low[v] = min(low[v], low[u]);
             }
+            // arista hacia atrás dentro de la misma componente
             else if(in_stack[u]){
                 low[v] = min(low[v], discovered[u]);
             }
         }
  
+        // v es la raíz de una SCC: se desapila hasta v
         if(low[v] == discovered[v]){
             vector<ll> newSCC;
             ll w;
@@ -81,6 +90,7 @@ int main(){
     fastio;
     
     ll n, m; cin >> n >> m;
+    // se leen n nodos y m aristas dirigidas
     Tarjan tarjan(n);
  
     for(int i = 0; i < m; i++){
@@ -95,13 +105,16 @@ int main(){
         }
     }
  
+    // una sola SCC = fuertemente conexo
     if(tarjan.SCC.size() == 1){
         cout << "YES" << "\n";
     }
     else{
+        // hay que mostrar un par (a, b) tal que no se pueda ir de a a b
         cout << "NO" << "\n";
         for(int i = 0; i < n; i++){
             for(auto j: tarjan.ady[i]){
+                // una arista i->j entre componentes distintas: no existe camino de j a i
                 if(tarjan.SCC_index[i] != tarjan.SCC_index[j]){
                     cout << j+1 << " " << i+1 << "\n";
                     return 0;
@@ -110,6 +123,7 @@ int main(){
         }
  
         for(int i = 0; i < n; i++){
+            // si no, algún nodo no está en la componente 0: no se llega a ella desde ahí
             if(tarjan.SCC_index[i] != 0){
                 cout << i+1 << " " << tarjan.SCC.front().front()+1 << "\n";
                 return 0; 

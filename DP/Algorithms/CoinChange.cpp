@@ -26,6 +26,7 @@ const ll INF = numeric_limits<ll>::max();
 int main() {
     fastio;
     int n, target;
+    // n = cantidad de tipos de moneda, target = suma objetivo
     cin >> n >> target;
     vector<int> coins(n);
     for (int i = 0; i < n; i++) cin >> coins[i];
@@ -33,13 +34,16 @@ int main() {
     // dp[x] = mínimo número de monedas para sumar x
     vector<int> dp(target+1, INT_MAX);
     dp[0] = 0;
+    // cada moneda se puede usar muchas veces (mochila no acotada)
     for (int c : coins) {
         for (int x = c; x <= target; x++) {
+            // solo se usa dp[x-c] si ya era alcanzable
             if (dp[x-c] != INT_MAX)
                 dp[x] = min(dp[x], dp[x-c] + 1);
         }
     }
 
+    // si dp[target] sigue en INT_MAX no hay forma de formarlo
     int ans = dp[target];
     cout << (ans == INT_MAX ? -1 : ans) << "\n";
     return 0;

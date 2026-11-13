@@ -27,14 +27,18 @@ int main() {
     fastio;
     int n, x;
     cin >> n >> x;
+    // price[i] = costo del libro i, pages[i] = páginas que da
     vector<int> price(n), pages(n);
     for (auto &p : price) cin >> p;
     for (auto &p : pages) cin >> p;
 
     // dp[w] = máximo de páginas con presupuesto w
     vector<ll> dp(x + 1, 0);
+    // cada libro se usa una sola vez (mochila 0/1)
     for (int i = 0; i < n; i++) {
+        // el presupuesto se recorre de mayor a menor para no reusar el mismo libro
         for (int w = x; w >= price[i]; w--) {
+            // o no se compra el libro i, o se compra y se suma sus páginas
             dp[w] = max(dp[w], dp[w - price[i]] + pages[i]);
         }
     }

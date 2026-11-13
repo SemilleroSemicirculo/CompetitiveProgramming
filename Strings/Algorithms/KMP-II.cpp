@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(|s| + |t|), memoria O(|t|)
  */
 
+// LP[i] = longitud del mayor prefijo que también es sufijo de s[0..i]
 vector<int> KMP(const string &s) {
     vector<int> LP(s.size(), 0);
     for (int i = 1; i < (int)s.size(); i++) {
@@ -35,6 +36,7 @@ vector<int> KMP(const string &s) {
 }
 
 // posiciones (base 0) de pattern dentro de text
+// recorre el texto reutilizando LP del patrón para no retroceder
 vector<int> PatternSearch(const string &text, const string &pattern) {
     vector<int> lp = KMP(pattern);
     vector<int> result;
@@ -42,6 +44,7 @@ vector<int> PatternSearch(const string &text, const string &pattern) {
     for (int i = 0; i < (int)text.size(); i++) {
         while (j > 0 && text[i] != pattern[j]) j = lp[j - 1];
         if (text[i] == pattern[j]) j++;
+        // coincidencia completa; se sigue con el borde más largo
         if (j == (int)pattern.size()) {
             result.push_back(i - pattern.size() + 1);
             j = lp[j - 1];

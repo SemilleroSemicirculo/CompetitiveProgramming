@@ -30,6 +30,7 @@ vector<bool> removed;
 ll answer = 0;
 int maxDepth;
 
+// tamaño de cada subárbol (ignorando centroides ya removidos)
 int calcSize(int u, int p) {
     sz[u] = 1;
     for (int v : G[u])
@@ -37,6 +38,7 @@ int calcSize(int u, int p) {
     return sz[u];
 }
 
+// baja hacia el hijo con más de la mitad de los nodos
 int findCentroid(int u, int p, int total) {
     for (int v : G[u])
         if (v != p && !removed[v] && sz[v] * 2 > total) return findCentroid(v, u, total);
@@ -44,6 +46,7 @@ int findCentroid(int u, int p, int total) {
 }
 
 // cuenta caminos que pasan por el centroide usando cnt[d] = nodos a profundidad d ya vistos
+// recorre un subárbol: con fill se registra la profundidad, sin fill se cuentan caminos de longitud k
 void collect(int u, int p, int depth, bool fill) {
     if (depth > k) return;
     if (fill) cnt[depth]++;
@@ -53,6 +56,7 @@ void collect(int u, int p, int depth, bool fill) {
         if (v != p && !removed[v]) collect(v, u, depth + 1, fill);
 }
 
+// 1) se halla el centroide, 2) se cuentan los caminos que pasan por él, 3) se repite en cada parte
 void decompose(int root) {
     int total = calcSize(root, 0);
     int c = findCentroid(root, 0, total);
@@ -63,10 +67,12 @@ void decompose(int root) {
     for (int v : G[c]) {
         if (removed[v]) continue;
         maxDepth = 0;
+        // primero se consulta contra los subárboles anteriores
         collect(v, c, 1, false);  // primero se consulta contra los subárboles anteriores
         collect(v, c, 1, true);   // luego se agrega este subárbol
         used = max(used, maxDepth);
     }
+    // se limpia cnt para el siguiente centroide
     for (int d = 0; d <= min(used, k); d++) cnt[d] = 0;
 
     for (int v : G[c])

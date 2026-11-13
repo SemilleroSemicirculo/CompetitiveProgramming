@@ -27,6 +27,7 @@ int main() {
     fastio;
     int n, m, q;
     cin >> n >> m >> q;
+    // inf = INF / 4 para que dist[i][k] + dist[k][j] no desborde
     const ll inf = INF / 4;  // evita overflow al sumar
     vector<vector<ll>> dist(n + 1, vector<ll>(n + 1, inf));
     for (int i = 1; i <= n; i++) dist[i][i] = 0;
@@ -38,6 +39,7 @@ int main() {
         dist[b][a] = min(dist[b][a], c);
     }
 
+    // k = nodo intermedio permitido: se prueba pasar por k para cada par (i, j)
     for (int k = 1; k <= n; k++)
         for (int i = 1; i <= n; i++)
             for (int j = 1; j <= n; j++)

@@ -35,10 +35,12 @@ int main() {
         G[b].push_back(a);
     }
 
+    // dist[v] = aristas desde 1, parent[v] = nodo anterior en el camino mínimo
     vector<int> dist(n + 1, -1), parent(n + 1, 0);
     queue<int> q;
     dist[1] = 0;
     q.push(1);
+    // BFS: visita por capas, así la primera vez que se llega a un nodo es por el camino más corto
     while (!q.empty()) {
         int u = q.front();
         q.pop();
@@ -54,6 +56,7 @@ int main() {
         cout << "IMPOSSIBLE\n";
         return 0;
     }
+    // se reconstruye el camino desde n hasta 1 con parent[]
     vector<int> path;
     for (int v = n; v != 0; v = parent[v]) path.push_back(v);
     reverse(all(path));

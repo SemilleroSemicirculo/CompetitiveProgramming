@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n), memoria O(n)
  */
 
+// módulo no negativo para índices circulares
 ll mod(ll x, ll n) {
     return (x % n + n) % n;
 }
@@ -36,6 +37,7 @@ int main() {
 
     ll res = 0;
     for (int i = 0; i < n; i++) {
+        // término x_i * (y_{i+1} - y_{i-1}) de la fórmula del Shoelace
         res += points[i].first * (points[mod(i + 1, n)].second - points[mod(i - 1, n)].second);
     }
 

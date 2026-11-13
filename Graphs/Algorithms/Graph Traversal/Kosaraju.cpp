@@ -23,10 +23,12 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n + m), memoria O(n + m)
  */
 
+// G = grafo y GT = grafo con las aristas invertidas
 vector<vector<int>> G, GT;
 vector<int> order, comp;
 vector<bool> visited;
 
+// primera pasada: se guarda el orden de salida de cada nodo
 void dfs1(int u) {
     visited[u] = true;
     for (int v : G[u])
@@ -34,6 +36,7 @@ void dfs1(int u) {
     order.push_back(u);  // orden de salida
 }
 
+// segunda pasada sobre GT: todo lo alcanzado forma una SCC
 void dfs2(int u, int c) {
     comp[u] = c;
     for (int v : GT[u])
@@ -60,6 +63,7 @@ int main() {
 
     // segunda pasada sobre el grafo transpuesto en orden de salida inverso
     int c = 0;
+    // se procesan los nodos en orden de salida decreciente
     for (int i = n - 1; i >= 0; i--)
         if (comp[order[i]] == 0) dfs2(order[i], ++c);
 

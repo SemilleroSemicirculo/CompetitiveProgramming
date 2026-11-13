@@ -26,8 +26,10 @@ const ll INF = numeric_limits<ll>::max();
 // d1[i] = radio de palíndromos impares centrados en i, d2[i] = radio de los pares
 string longestPalindrome(const string &s) {
     int n = s.size();
+    // d1 = radios de palíndromos impares, d2 = radios de los pares (centro entre dos letras)
     vector<int> d1(n), d2(n);
     for (int i = 0, l = 0, r = -1; i < n; i++) {
+        // se reutiliza el palíndromo simétrico dentro de [l, r]
         int k = (i > r) ? 1 : min(d1[l + r - i], r - i + 1);
         while (i - k >= 0 && i + k < n && s[i - k] == s[i + k]) k++;
         d1[i] = k--;
@@ -40,6 +42,7 @@ string longestPalindrome(const string &s) {
         if (i + k > r) l = i - k - 1, r = i + k;
     }
 
+    // se elige el más largo entre impares y pares
     int best = 0, start = 0;
     for (int i = 0; i < n; i++) {
         if (2 * d1[i] - 1 > best) best = 2 * d1[i] - 1, start = i - d1[i] + 1;

@@ -37,6 +37,7 @@ int main() {
     }
 
     vector<bool> inTree(n + 1, false);
+    // min-heap de {peso de la arista, nodo} para crecer el árbol desde el nodo 1
     priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> pq;
     pq.push({0, 1});
     ll total = 0;
@@ -44,14 +45,17 @@ int main() {
     while (!pq.empty()) {
         auto [w, u] = pq.top();
         pq.pop();
+        // el nodo ya está en el árbol
         if (inTree[u]) continue;
         inTree[u] = true;
+        // se agrega el nodo con la arista más barata que lo conecta
         total += w;
         used++;
         for (auto [v, c] : G[u])
             if (!inTree[v]) pq.push({c, v});
     }
 
+    // si no entraron todos, el grafo no es conexo
     if (used != n) cout << "IMPOSSIBLE\n";
     else cout << total << "\n";
     return 0;

@@ -23,9 +23,11 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n + m), memoria O(n + m)
  */
 
+// visited[u] indica si u ya fue explorado
 vector<vector<int>> G;
 vector<bool> visited;
 
+// explora toda la componente de u
 void dfs(int u) {
     visited[u] = true;
     for (int v : G[u])
@@ -46,6 +48,7 @@ int main() {
     }
 
     // un representante por componente; se unen en cadena
+    // un representante por cada componente conexa
     vector<int> reps;
     for (int i = 1; i <= n; i++) {
         if (!visited[i]) {
@@ -54,6 +57,7 @@ int main() {
         }
     }
 
+    // se necesitan (componentes - 1) caminos para unirlas
     cout << reps.size() - 1 << "\n";
     for (int i = 1; i < (int)reps.size(); i++)
         cout << reps[i - 1] << ' ' << reps[i] << "\n";

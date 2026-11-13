@@ -29,6 +29,7 @@ int main() {
     cin >> n >> m;
 
     vector<vector<ll>> G(n);
+    // indeg[v] = aristas que entran a v
     vector<ll> indeg(n, 0);
     for (ll i = 0; i < m; ++i) {
         ll u, v;
@@ -39,6 +40,7 @@ int main() {
     }
 
     // Kahn: se procesan primero los nodos sin aristas entrantes
+    // nodos sin dependencias pendientes
     queue<ll> q;
     for (ll i = 0; i < n; ++i)
         if (indeg[i] == 0) q.push(i);
@@ -48,6 +50,7 @@ int main() {
         ll v = q.front(); q.pop();
         order.push_back(v);
         for (ll u : G[v]) {
+            // al sacar v se "borran" sus aristas; u queda libre al llegar a 0
             if (--indeg[u] == 0) q.push(u);
         }
     }

@@ -27,13 +27,16 @@ int main() {
     fastio;
     int n, m;
     cin >> n >> m;
+    // aristas {a, b, c}
     vector<array<ll, 3>> edges(m);
     for (auto &e : edges) cin >> e[0] >> e[1] >> e[2];
 
     // dist = 0 para todos: equivale a un nodo fuente virtual conectado a todos
+    // dist = 0 para todos: equivale a un nodo fuente virtual conectado a todos
     vector<ll> dist(n + 1, 0);
     vector<int> parent(n + 1, 0);
     int last = -1;
+    // n rondas de relajación; si en la n-ésima aún mejora, hay ciclo negativo
     for (int i = 0; i < n; i++) {
         last = -1;
         for (auto &[a, b, c] : edges) {
@@ -51,7 +54,9 @@ int main() {
         return 0;
     }
     // retroceder n veces para asegurar estar dentro del ciclo
+    // retroceder n veces para asegurar estar dentro del ciclo
     for (int i = 0; i < n; i++) last = parent[last];
+    // se recorre el ciclo siguiendo parent[] hasta volver a last
     vector<int> cycle;
     for (int v = last;; v = parent[v]) {
         cycle.push_back(v);

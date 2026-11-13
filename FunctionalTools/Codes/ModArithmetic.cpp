@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(10^6 + t), memoria O(10^6)
  */
 
+// fact[i] = i! y inv_fact[i] = inverso de i!, ambos módulo MOD
 const int MAXN = 1000001;
 vector<ll> fact(MAXN), inv_fact(MAXN);
 
@@ -43,10 +44,13 @@ ll mod_inv(ll a) {
     return binpow(a, MOD - 2);
 }
 
+// se precalculan factoriales e inversos en O(MAXN)
 void precompute() {
     fact[0] = 1;
     for (int i = 1; i < MAXN; i++) fact[i] = fact[i - 1] * i % MOD;
+    // inverso del último factorial con Fermat
     inv_fact[MAXN - 1] = mod_inv(fact[MAXN - 1]);
+    // los demás inversos salen de inv_fact[i-1] = inv_fact[i] * i
     for (int i = MAXN - 1; i > 0; i--) inv_fact[i - 1] = inv_fact[i] * i % MOD;
 }
 
@@ -59,6 +63,7 @@ ll nCr(int n, int k) {
 int main() {
     fastio;
     precompute();
+    // t consultas: cada una pide C(a, b)
     int t; cin >> t;
     while (t--) {
         int a, b; cin >> a >> b;

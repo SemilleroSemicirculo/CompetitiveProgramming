@@ -31,10 +31,14 @@ int main() {
     for (auto &x : a) cin >> x;
 
     // la pila guarda índices con valores estrictamente crecientes
+    // se mantienen los candidatos a "menor más cercano"
     stack<int> st;
     for (int i = 0; i < n; i++) {
+        // los mayores o iguales a a[i] ya no sirven para elementos futuros
         while (!st.empty() && a[st.top()] >= a[i]) st.pop();
+        // el tope es el menor más cercano a la izquierda (o 0 si no hay)
         cout << (st.empty() ? 0 : st.top() + 1) << ' ';
+        // a[i] es candidato para los siguientes
         st.push(i);
     }
     cout << "\n";

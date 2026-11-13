@@ -23,11 +23,13 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(n log^2 n), memoria O(n)
  */
 
+// sa = sufijos ordenados; rnk[i] = posición del sufijo i en ese orden
 vector<int> suffixArray(const string &s) {
     int n = s.size();
     vector<int> sa(n), rnk(n), tmp(n);
     iota(all(sa), 0);
     for (int i = 0; i < n; i++) rnk[i] = s[i];
+    // duplicación de prefijos: se ordena por los primeros k y luego 2k caracteres
     for (int k = 1;; k <<= 1) {
         auto cmp = [&](int a, int b) {
             if (rnk[a] != rnk[b]) return rnk[a] < rnk[b];
@@ -45,6 +47,7 @@ vector<int> suffixArray(const string &s) {
 }
 
 // lcp[i] = prefijo común entre sa[i] y sa[i + 1]
+// lcp[i] = prefijo común entre sa[i] y sa[i + 1] (Kasai)
 vector<int> kasai(const string &s, const vector<int> &sa) {
     int n = s.size();
     vector<int> rnk(n), lcp(max(0, n - 1));
@@ -70,6 +73,7 @@ int main() {
     auto lcp = kasai(s, sa);
 
     // subcadenas distintas = todas las subcadenas - prefijos repetidos
+    // cada sufijo aporta (largo) subcadenas; se restan las que ya aparecieron (lcp)
     ll total = n * (n + 1) / 2;
     for (int x : lcp) total -= x;
     cout << total << "\n";

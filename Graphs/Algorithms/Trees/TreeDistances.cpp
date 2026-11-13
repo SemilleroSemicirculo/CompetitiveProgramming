@@ -26,6 +26,7 @@ const ll INF = numeric_limits<ll>::max();
 vector<vector<int>> G;
 
 // BFS: distancias desde s
+// BFS: distancias desde s
 vector<int> bfs(int s) {
     vector<int> dist(G.size(), -1);
     queue<int> q;
@@ -56,12 +57,14 @@ int main() {
     }
 
     // el más lejano de cualquier nodo es un extremo A del diámetro; el más lejano de A es B
+    // el nodo más lejano de cualquier nodo es un extremo A del diámetro
     auto d0 = bfs(1);
     int A = max_element(d0.begin() + 1, d0.end()) - d0.begin();
     auto dA = bfs(A);
     int B = max_element(dA.begin() + 1, dA.end()) - dA.begin();
     auto dB = bfs(B);
 
+    // la distancia máxima desde v es max(dist a A, dist a B)
     // la distancia máxima desde v es max(dist a A, dist a B)
     for (int v = 1; v <= n; v++) cout << max(dA[v], dB[v]) << ' ';
     cout << "\n";

@@ -28,14 +28,18 @@ int main() {
     int n;
     double p;
     cin >> n >> p;
+    // q = probabilidad de que gane B
     double q = 1 - p;
 
     // P[i][j] = probabilidad de que A gane si le faltan i victorias y a B le faltan j
     vector<vector<double>> P(n + 1, vector<double>(n + 1, 0.0));
+    // casos base: si A ya ganó la serie la probabilidad es 1
     for (int i = 1; i <= n; i++) P[0][i] = 1.0;  // A ya ganó
+    // si B ya ganó, es 0
     for (int j = 1; j <= n; j++) P[j][0] = 0.0;  // B ya ganó
     for (int i = 1; i <= n; i++)
         for (int j = 1; j <= n; j++)
+            // se juega un partido: gana A (falta una victoria menos) o gana B
             P[i][j] = p * P[i - 1][j] + q * P[i][j - 1];
 
     precision(10);

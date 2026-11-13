@@ -28,6 +28,7 @@ int main() {
     int n;
     ll x;
     cin >> n >> x;
+    // se guarda el índice original junto al valor
     vector<pair<ll, int>> a(n);
     for (int i = 0; i < n; i++) {
         cin >> a[i].first;
@@ -35,6 +36,7 @@ int main() {
     }
     sort(all(a));
 
+    // dos punteros en los extremos del arreglo ordenado
     int l = 0, r = n - 1;
     while (l < r) {
         ll s = a[l].first + a[r].first;
@@ -42,6 +44,7 @@ int main() {
             cout << a[l].second << ' ' << a[r].second << "\n";
             return 0;
         }
+        // suma pequeña: se sube el menor; suma grande: se baja el mayor
         if (s < x) l++;
         else r--;
     }

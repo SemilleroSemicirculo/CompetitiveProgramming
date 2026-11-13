@@ -31,9 +31,12 @@ int main() {
     for (int i = 0; i < n; i++) {
         cin >> a[i];
     }
+    // best = mejor suma encontrada, curr = mejor suma de un subarreglo que termina en i
     ll best = a[0], curr = a[0];
     for (int i = 1; i < n; i++) {
+        // o se empieza un subarreglo nuevo en a[i] o se extiende el anterior
         curr = max(a[i], curr + a[i]);
+        // se guarda el mejor resultado global
         best = max(best, curr);
     }
     cout << best << "\n";

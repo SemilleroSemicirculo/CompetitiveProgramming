@@ -23,6 +23,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(|s| + |t|), memoria O(|s| + |t|)
  */
 
+// LP[i] = longitud del mayor prefijo que también es sufijo de s[0..i]
 vector<int> KMP(const string &s) {
     vector<int> LP(s.size(), 0);
     for (int i = 1; i < (int)s.size(); i++) {
@@ -35,6 +36,7 @@ vector<int> KMP(const string &s) {
 }
 
 // posiciones (base 0) de t dentro de s
+// se concatena t + "#" + s: un valor |t| en LP marca una aparición
 vector<int> PatternSearch(const string &s, const string &t) {
     vector<int> pos;
     string combined = t + '#' + s;

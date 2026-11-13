@@ -25,13 +25,16 @@ const ll INF = numeric_limits<ll>::max();
 
 int n, m;
 vector<vector<int>> G;
+// match[v] = nodo de la izquierda emparejado con v (0 si ninguno)
 vector<int> match;  // match[chica] = chico emparejado (0 si ninguno)
 vector<bool> used;
 
+// busca un camino aumentante desde u
 bool kuhn(int u) {
     for (int v : G[u]) {
         if (used[v]) continue;
         used[v] = true;
+        // v está libre, o se puede reubicar a quien lo ocupa
         if (match[v] == 0 || kuhn(match[v])) {
             match[v] = u;
             return true;
@@ -53,7 +56,9 @@ int main() {
     }
 
     int total = 0;
+    // se intenta emparejar a cada nodo de la izquierda
     for (int u = 1; u <= n; u++) {
+        // used evita visitar un nodo dos veces en la misma búsqueda
         used.assign(m + 1, false);
         if (kuhn(u)) total++;
     }
