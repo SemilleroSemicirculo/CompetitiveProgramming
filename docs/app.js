@@ -250,7 +250,7 @@ function pagina(a){
   h += '<details class="code"><summary>Ver el código en C++</summary><div class="row"><button class="btn" id="copiar">Copiar código</button><a class="btn" style="text-decoration:none" href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/'+encodeURI(a.archivo)+'" target="_blank" rel="noopener">Ver en GitHub</a></div><pre><code>'+resaltar(a.codigo)+'</code></pre></details>';
   h += '<div class="pn">'+(prev ? '<a href="#/'+prev.id+'"><small>← Anterior</small>'+esc(prev.nombre)+'</a>' : '<span></span>')+(next ? '<a class="nx" href="#/'+next.id+'"><small>Siguiente →</small>'+esc(next.nombre)+'</a>' : '<span></span>')+'</div>';
   main.innerHTML = h;
-  document.getElementById('copiar').onclick = e => { navigator.clipboard.writeText(a.codigo); e.target.textContent = '¡Copiado!'; setTimeout(() => e.target.textContent = 'Copiar código', 1500); };
+  document.getElementById('copiar').onclick = e => { try { navigator.clipboard.writeText(a.codigo).catch(() => {}); } catch (_) {} e.target.textContent = '¡Copiado!'; setTimeout(() => e.target.textContent = 'Copiar código', 1500); };
   if (dem) dem(document.getElementById('demo'));
 }
 
