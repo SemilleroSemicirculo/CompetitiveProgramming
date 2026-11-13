@@ -25,7 +25,6 @@ while pq:
     mst_weight += w
 
     for v, weight in G[u]:
-        print(v, weight, key[v])  # Debug output
         if not visited[v] and weight < key[v]:
             key[v] = weight
             parent[v] = u

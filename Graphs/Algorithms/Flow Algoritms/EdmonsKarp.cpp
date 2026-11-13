@@ -64,7 +64,7 @@ int main(){
     // 1 -> 3 (cap 2)
     // 2 -> 3 (cap 4)
     //
-    // Expected max flow from 0 to 3 = 4 (2 via 0-1-3 and 2 via 0-2-3)
+    // Expected max flow from 0 to 3 = 5
 
     int n = 4;
     vector<vector<ll>> ady(n);
@@ -74,7 +74,7 @@ int main(){
     auto add_edge = [&](int u, int v, ll cap){
         ady[u].push_back(v);
         ady[v].push_back(u); // add reverse edge for residual graph
-        capacity[u][v] = cap;
+        capacity[u][v] += cap;
         edges.emplace_back(u, v, cap);
     };
 

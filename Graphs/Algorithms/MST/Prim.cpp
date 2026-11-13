@@ -26,7 +26,7 @@ struct Edge {
 int main() {
     fastio;
     ll n = 5;
-    vector<vector<Edge>> G;
+    vector<vector<Edge>> G(n);
     
     // Example usage with sample graph
     ll start = 0;

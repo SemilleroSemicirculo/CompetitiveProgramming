@@ -56,7 +56,7 @@ struct Dinic {
     ll dfs(ll v, ll t, ll pushed){
         if(v == t || pushed == 0) return pushed;
 
-        for(ll i = it[v]; i < adj[v].size(); ++i){
+        for(ll &i = it[v]; i < (ll)adj[v].size(); ++i){
             Edge &edge = adj[v][i];
 
             if(level[edge.to] != level[v] + 1 || edge.capacity == 0) continue;

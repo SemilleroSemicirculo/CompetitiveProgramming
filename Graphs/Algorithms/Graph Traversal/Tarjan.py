@@ -3,6 +3,8 @@ n, m = map(int, input().split())
 ady = [[] for _ in range(n)]
 for _ in range(m):
     u, v = map(int, input().split())
+    u -= 1
+    v -= 1
     ady[u].append(v)
 
 discovered = [-1] * n
@@ -14,6 +16,7 @@ SCC_index = [-1] * n
 tempo = 0
 
 def dfs(v):
+    global tempo
     discovered[v] = low[v] = tempo
     tempo += 1
     st.append(v)
@@ -53,8 +56,11 @@ else:
                 print(j + 1, i + 1)
                 agg = True
                 break
-            
+        if agg:
+            break
+
     if not agg:
         for i in range(n):
             if SCC_index[i] != 0:
                 print(i + 1, SCC[0][0] + 1)
+                break

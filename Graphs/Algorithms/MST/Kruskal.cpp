@@ -73,7 +73,7 @@ int main() {
     
     sort(edges.begin(), edges.end());
     
-    int weight = 0;
+    ll weight = 0;
     vector<Edge> MST;
     
     for (const Edge& edge : edges) {
