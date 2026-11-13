@@ -126,7 +126,7 @@ function inicio(){
     document.getElementById('cx').innerHTML = CX.map(([t,f]) => barra(t, f(n))).join(''); }
   ns2.oninput = upd2; upd2();
 
-  document.getElementById('temas').innerHTML = ORDEN.map(c => { const it = A.filter(a => a.carpeta === c); return '<a class="opt" style="text-decoration:none" href="#/elegir" data-c="'+c+'"><span class="ic">'+ICON[c]+'</span><b>'+it[0].area+'</b><small>'+DESC[c]+' · '+it.length+' algoritmos</small></a>'; }).join('');
+  document.getElementById('temas').innerHTML = ORDEN.map(c => { const it = A.filter(a => a.carpeta === c); return '<a class="opt" style="text-decoration:none" href="#/elegir" data-c="'+c+'"><span class="ic">'+ICON[c]+'</span><b>'+c+'</b><small>'+DESC[c]+' · '+it.length+' algoritmos</small></a>'; }).join('');
   main.querySelectorAll('#temas [data-c]').forEach(b => b.onclick = () => { elegido = [b.dataset.c]; });
 }
 
@@ -178,7 +178,7 @@ function ruta(){
 function pagina(a){
   const c = K[a.id] || {}, dem = DEMOS[a.id];
   const mismo = A.filter(x => x.carpeta === a.carpeta), i = mismo.indexOf(a), prev = mismo[i-1], next = mismo[i+1];
-  let h = '<div class="crumb">'+esc(a.area)+(a.sub !== '-' ? ' › '+esc(a.sub) : '')+'</div><h1>'+esc(a.nombre)+'</h1><p>'+lvl(c.nivel||1)+' <span class="note">'+esc(a.algoritmo)+'</span></p>';
+  let h = '<div class="crumb">'+esc(a.carpeta)+(a.sub !== '-' ? ' › '+esc(a.sub.replace(/\//g,' › ')) : '')+'</div><h1>'+esc(a.nombre)+'</h1><p>'+lvl(c.nivel||1)+' <span class="note">'+esc(a.algoritmo)+'</span></p>';
   if (c.idea) h += '<div class="idea">'+esc(c.idea)+'</div>';
   if (c.texto) h += '<h2>¿Cómo funciona?</h2><p>'+esc(c.texto)+'</p>';
   if (dem) h += '<h2>Míralo en acción</h2><div id="demo"></div>';
