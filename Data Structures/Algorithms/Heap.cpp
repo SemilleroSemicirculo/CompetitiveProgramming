@@ -27,7 +27,6 @@ int main() {
     fastio;
     int n;
     cin >> n;
-    // se ordenan los clientes por hora de llegada
     vector<array<int, 3>> c(n);  // {llegada, salida, índice}
     for (int i = 0; i < n; i++) {
         cin >> c[i][0] >> c[i][1];

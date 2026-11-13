@@ -27,7 +27,6 @@ int main() {
     fastio;
     int n, x;
     cin >> n >> x;
-    // price[i] = costo del libro i, pages[i] = páginas que da
     vector<int> price(n), pages(n);
     for (auto &p : price) cin >> p;
     for (auto &p : pages) cin >> p;

@@ -38,7 +38,6 @@ int main(){
 
     for(int i = 0; i < m; i++){
         ll u, v; cin >> u >> v;
-        // nodos a base 0
         u--; v--;
         ady[u].push_back({v, i});
         ady[v].push_back({u, i});

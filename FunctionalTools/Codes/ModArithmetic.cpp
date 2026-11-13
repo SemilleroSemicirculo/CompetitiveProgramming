@@ -63,7 +63,6 @@ ll nCr(int n, int k) {
 int main() {
     fastio;
     precompute();
-    // t consultas: cada una pide C(a, b)
     int t; cin >> t;
     while (t--) {
         int a, b; cin >> a >> b;

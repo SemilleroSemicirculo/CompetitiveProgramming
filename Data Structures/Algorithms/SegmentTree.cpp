@@ -125,7 +125,6 @@ int main() {
 
     SegmentTree Tree(a);
     while (q--) {
-        // tipo de consulta y rango a base 1 (se pasa a base 0)
         int type, l, r;
         cin >> type >> l >> r;
         l--, r--;

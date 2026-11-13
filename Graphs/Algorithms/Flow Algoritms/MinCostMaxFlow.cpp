@@ -119,7 +119,6 @@ int main() {
     fastio;
     int n, m;
     cin >> n >> m;
-    // nodos numerados de 1 a n
     MinCostFlow mcf(n + 1);
     for (int i = 0; i < m; i++) {
         int u, v;

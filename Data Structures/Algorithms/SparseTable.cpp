@@ -58,7 +58,6 @@ int main() {
     SparseTable table(a);
     while (q--) {
         int l, r; cin >> l >> r;
-        // consultas dadas a base 1
         l--; r--;
         cout << table.query(l, r) << "\n";
     }

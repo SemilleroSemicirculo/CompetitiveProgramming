@@ -27,7 +27,6 @@ int main() {
     fastio;
     int n, m;
     cin >> n >> m;
-    // secuencias de enteros a (n) y b (m)
     vector<int> a(n), b(m);
     for (auto &x : a) cin >> x;
     for (auto &x : b) cin >> x;

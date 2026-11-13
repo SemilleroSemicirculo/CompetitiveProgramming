@@ -62,7 +62,6 @@ vector<ll> merge(vector<ll> &a, vector<ll> &b, int k){
 }
  
 int main(){
-	// varios casos: se mezcla fila por fila quedándose siempre con las k menores
 	fastio;
 	int k; 
 	while(cin >> k){

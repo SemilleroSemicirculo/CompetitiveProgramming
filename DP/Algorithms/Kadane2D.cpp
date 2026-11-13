@@ -27,7 +27,6 @@ int main() {
     fastio;
     int R, C;
     cin >> R >> C;
-    // mat[i][j] = valor de la celda (i, j)
     vector<vector<ll>> mat(R, vector<ll>(C));
     for (int i = 0; i < R; i++)
         for (int j = 0; j < C; j++)

@@ -28,7 +28,6 @@ int main() {
     ll n, k, x, a, b, c;
     cin >> n >> k >> x >> a >> b >> c;
     vector<ll> v(n);
-    // generador pseudoaleatorio dado por el enunciado
     v[0] = x;
     for (int i = 1; i < n; i++) v[i] = (a * v[i - 1] + b) % c;
 

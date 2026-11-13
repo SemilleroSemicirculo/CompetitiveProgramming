@@ -62,7 +62,6 @@ int main() {
     while (q--) {
         int type;
         cin >> type;
-        // tipo 1 = asignar, tipo 2 = consultar (a base 1)
         if (type == 1) {
             int k;
             ll u;

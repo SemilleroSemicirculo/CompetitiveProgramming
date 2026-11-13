@@ -97,7 +97,6 @@ Point3d operator*(ld a, Point3d b) {
 	return b * a;
 }
 
-// lee los vectores A y B y muestra cada operación
 int main() {
     fastio;
     precision(10);

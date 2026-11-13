@@ -80,7 +80,6 @@ void dfs_canonical(int t, int u, int p) {
 void solve_case() {
     cin >> n;
     reset();
-    // lectura de los dos árboles
     for (int t = 0; t < 2; t++) {
         for (int i = 0, u, v; i < n-1; i++) {
             cin >> u >> v;
@@ -104,7 +103,6 @@ void solve_case() {
     cout << "NO\n";
 }
 
-// se resuelve cada caso de prueba por separado
 int main() {
     fastio;
     int T;

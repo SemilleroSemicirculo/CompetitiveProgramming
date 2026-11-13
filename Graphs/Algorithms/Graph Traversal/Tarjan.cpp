@@ -90,7 +90,6 @@ int main(){
     fastio;
     
     ll n, m; cin >> n >> m;
-    // se leen n nodos y m aristas dirigidas
     Tarjan tarjan(n);
  
     for(int i = 0; i < m; i++){

@@ -26,7 +26,6 @@ const ll INF = numeric_limits<ll>::max();
 int main() {
     fastio;
     int n, target;
-    // n = cantidad de tipos de moneda, target = suma objetivo
     cin >> n >> target;
     vector<int> coins(n);
     for (int i = 0; i < n; i++) cin >> coins[i];

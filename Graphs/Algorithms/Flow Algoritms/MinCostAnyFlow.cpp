@@ -120,7 +120,6 @@ int main() {
     int n, m;
     ll K;
     cin >> n >> m >> K;
-    // nodos numerados de 1 a n
     MinCostFlow mcf(n + 1);
     for (int i = 0; i < m; i++) {
         int u, v;
