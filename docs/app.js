@@ -48,7 +48,8 @@ function menu(filtro){
 function marcar(){
   const id = location.hash.slice(2);
   nav.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.id === id));
-  document.querySelectorAll('header nav.top a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#/'+(byId[id]?'':id)));
+  const top = byId[id] ? null : '#/'+id;
+  document.querySelectorAll('header nav.top a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === top));
 }
 
 // ---------- Portada ----------
