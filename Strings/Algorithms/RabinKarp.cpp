@@ -30,8 +30,7 @@ ll code(char &a){
 }
 
 ll mod(ll x, ll n){
-  if(x > 0) return x % n;
-  else return n - (-x % n);
+  return (x % n + n) % n;
 }
 
 struct Hash{
