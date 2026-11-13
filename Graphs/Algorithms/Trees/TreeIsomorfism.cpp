@@ -8,14 +8,20 @@ const ll INF = numeric_limits<ll>::max();
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
-// #define MOD 3245284303;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
 #define precision(n) cout << fixed << setprecision(n)
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+
+/*
+ * Algoritmo : Isomorfismo de árboles sin raíz (centroides + IDs canónicos)
+ * Problema  : CSES 1701 - Tree Isomorphism II (https://cses.fi/problemset/task/1701)
+ * Entrada   : t casos; cada uno: n, aristas del primer árbol y aristas del segundo
+ * Salida    : YES o NO por caso
+ * Complejidad: tiempo O(n log n) por caso, memoria O(n)
+ */
 
 const int MAXN = 100000 + 1;
 
@@ -74,7 +80,6 @@ void dfs_canonical(int t, int u, int p) {
 void solve_case() {
     cin >> n;
     reset();
-    // lectura de los dos árboles
     for (int t = 0; t < 2; t++) {
         for (int i = 0, u, v; i < n-1; i++) {
             cin >> u >> v;

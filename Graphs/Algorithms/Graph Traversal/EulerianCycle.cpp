@@ -8,8 +8,6 @@ const ll INF = numeric_limits<ll>::max();
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
-// #define MOD 3245284303;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
@@ -17,6 +15,15 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Ciclo euleriano (Hierholzer, grafo no dirigido)
+ * Problema  : CSES 1691 - Mail Delivery (https://cses.fi/problemset/task/1691)
+ * Entrada   : n m, luego m aristas "a b"
+ * Salida    : un ciclo euleriano desde el nodo 1, o IMPOSSIBLE
+ * Complejidad: tiempo O(n + m), memoria O(n + m)
+ */
+
+// cada arista guarda su destino y un id para marcarla como usada
 struct Edge{
     ll to, id;
 };
@@ -25,6 +32,7 @@ int main(){
     fastio;
 
     ll n, m; cin >> n >> m;
+    // lista de adyacencia; used[id] indica si la arista ya se recorrió
     vector<vector<Edge>> ady(n, vector<Edge>());
     vector<bool> used(m, false);
 
@@ -35,8 +43,10 @@ int main(){
         ady[v].push_back({u, i});
     }
 
+    // cycle = circuito resultante (se arma al desapilar)
     vector<ll> cycle;
     vector<bool> vis(n, false);
+    // primero se verifica que todos los nodos con aristas sean alcanzables desde 0
     stack<ll> ss; ss.push(0);
 
     while (!ss.empty())
@@ -48,6 +58,7 @@ int main(){
         vis[v] = true;
     }
 
+    // condición de Euler: todos los grados pares y un solo componente conexo
     bool agg = true;
     for(int i = 0; i < n; i++){
         if(ady[i].size() == 0) vis[i] = true;
@@ -56,14 +67,17 @@ int main(){
         if(vis[i] == false) agg = false;
     }
     
+    // si no se cumple la condición no existe el ciclo
     if(!agg){
-        cout << "IMPOSSIBLE" << endl;
+        cout << "IMPOSSIBLE" << "\n";
         return 0;
     }
 
     ss.push(0);
+    // Hierholzer iterativo: se avanza por aristas libres y se desapila al quedar sin salida
     while (!ss.empty()){
         ll v = ss.top();
+        // se descartan aristas ya usadas desde el otro extremo
         while (!ady[v].empty() && used[ady[v].back().id]) ady[v].pop_back();
         
         if(!ady[v].empty()){
@@ -72,12 +86,12 @@ int main(){
             ss.push(edge.to);
         }
         else{
+            // nodo sin salidas: entra al circuito (queda en orden inverso, válido por ser un ciclo)
             cycle.push_back(v);
             ss.pop();
         }
     }
     
     for(auto &x: cycle) cout << x+1 << " ";
-    cout << endl;
+    cout << "\n";
 }
-
