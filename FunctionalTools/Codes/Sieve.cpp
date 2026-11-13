@@ -15,10 +15,20 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Criba de Eratóstenes y criba segmentada
+ * Problema  : Sin problema equivalente en CSES; formato propio
+ * Entrada   : N, luego L R
+ * Salida    : primos ≤ N y luego los primos en [L, R]
+ * Complejidad: tiempo O(N log log N) y O((R-L) log log R), memoria O(N + R - L)
+ */
+
 // Criba de Eratóstenes: marca en `is_prime` los primos ≤ N.
+// is_prime[x] queda en true si x es primo
 vector<bool> sieve(int N) {
     vector<bool> is_prime(N+1, true);
     is_prime[0] = is_prime[1] = false;
+    // solo hace falta tachar múltiplos de primos hasta sqrt(N)
     for (int p = 2; p*p <= N; ++p) {
         if (is_prime[p]) {
             for (int x = p*p; x <= N; x += p)
@@ -29,6 +39,7 @@ vector<bool> sieve(int N) {
 }
 
 // Criba segmentada: devuelve todos los primos en [L..R], dados los primos ≤ sqrt(R).
+// criba por segmentos: se tachan los múltiplos de los primos pequeños dentro de [L, R]
 vector<ll> segmented_sieve(ll L, ll R) {
     ll lim = floor(sqrt(R));
     auto base = sieve(lim);
@@ -42,6 +53,7 @@ vector<ll> segmented_sieve(ll L, ll R) {
         for (ll x = L; x <= min(R, 1LL); ++x) is_prime[x - L] = false;
     }
     for (ll p : primes) {
+        // primer múltiplo de p dentro del rango (sin tachar a p mismo)
         ll start = max(p*p, ((L + p - 1)/p)*p);
         for (ll x = start; x <= R; x += p)
             is_prime[x - L] = false;

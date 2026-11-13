@@ -15,6 +15,15 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+/*
+ * Algoritmo : Exponenciación binaria, inverso modular y nCr
+ * Problema  : CSES 1079 - Binomial Coefficients (https://cses.fi/problemset/task/1079)
+ * Entrada   : t, luego t pares "a b"
+ * Salida    : C(a, b) módulo 10^9 + 7
+ * Complejidad: tiempo O(10^6 + t), memoria O(10^6)
+ */
+
+// fact[i] = i! y inv_fact[i] = inverso de i!, ambos módulo MOD
 const int MAXN = 1000001;
 vector<ll> fact(MAXN), inv_fact(MAXN);
 
@@ -35,10 +44,13 @@ ll mod_inv(ll a) {
     return binpow(a, MOD - 2);
 }
 
+// se precalculan factoriales e inversos en O(MAXN)
 void precompute() {
     fact[0] = 1;
     for (int i = 1; i < MAXN; i++) fact[i] = fact[i - 1] * i % MOD;
+    // inverso del último factorial con Fermat
     inv_fact[MAXN - 1] = mod_inv(fact[MAXN - 1]);
+    // los demás inversos salen de inv_fact[i-1] = inv_fact[i] * i
     for (int i = MAXN - 1; i > 0; i--) inv_fact[i - 1] = inv_fact[i] * i % MOD;
 }
 
