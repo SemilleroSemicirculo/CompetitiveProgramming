@@ -8,8 +8,6 @@ const ll INF = numeric_limits<ll>::max();
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
-// #define MOD pow(10, 9)+7;
-// #define MOD 3245284303;
 #define pi acos(-1)
 #define gcd __gcd
 #define lcm(a, b) ((a) * (b) / gcd(a, b))
@@ -17,52 +15,35 @@ const ll INF = numeric_limits<ll>::max();
 #define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
-int main(){
+/*
+ * Algoritmo : Deque monótona (mínimo de ventana deslizante)
+ * Problema  : CSES 3221 - Sliding Window Minimum (https://cses.fi/problemset/task/3221)
+ * Entrada   : n k, luego x a b c con x_i = (a·x_{i-1} + b) mod c
+ * Salida    : XOR de los mínimos de todas las ventanas de tamaño k
+ * Complejidad: tiempo O(n), memoria O(n)
+ */
+
+int main() {
     fastio;
-    
-    // Crear un deque
-    deque<string> d = {"a", "b", "c"};
-    cout << "Deque inicial: ";
-    for (const auto& elem : d) {
-        cout << elem << " ";
+    ll n, k, x, a, b, c;
+    cin >> n >> k >> x >> a >> b >> c;
+    vector<ll> v(n);
+    v[0] = x;
+    for (int i = 1; i < n; i++) v[i] = (a * v[i - 1] + b) % c;
+
+    // la deque guarda índices con valores crecientes; el frente es el mínimo de la ventana
+    // la deque guarda índices con valores crecientes; el frente es el mínimo de la ventana
+    deque<int> d;
+    ll res = 0;
+    for (int i = 0; i < n; i++) {
+        // se descartan los mayores o iguales a v[i]: nunca serán mínimo
+        while (!d.empty() && v[d.back()] >= v[i]) d.pop_back();
+        d.push_back(i);
+        // el frente salió de la ventana
+        if (d.front() <= i - k) d.pop_front();
+        // la ventana ya tiene k elementos
+        if (i >= k - 1) res ^= v[d.front()];
     }
-    cout << endl;
-    
-    // Agregar un elemento a la derecha
-    d.push_back("d");
-    cout << "Despues de push_back: ";
-    for (const auto& elem : d) {
-        cout << elem << " ";
-    }
-    cout << endl;
-    
-    // Agregar un elemento a la izquierda
-    d.push_front("z");
-    cout << "Despues de push_front: ";
-    for (const auto& elem : d) {
-        cout << elem << " ";
-    }
-    cout << endl;
-    
-    // Remover el primer elemento (pop_front)
-    string left_elem = d.front();
-    d.pop_front();
-    cout << "Elemento removido (pop_front): " << left_elem << endl;
-    cout << "Deque tras pop_front: ";
-    for (const auto& elem : d) {
-        cout << elem << " ";
-    }
-    cout << endl;
-    
-    // Remover el ultimo elemento (pop_back)
-    string right_elem = d.back();
-    d.pop_back();
-    cout << "Elemento removido (pop_back): " << right_elem << endl;
-    cout << "Deque tras pop_back: ";
-    for (const auto& elem : d) {
-        cout << elem << " ";
-    }
-    cout << endl;
-    
+    cout << res << "\n";
     return 0;
 }
