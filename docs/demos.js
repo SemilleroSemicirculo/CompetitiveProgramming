@@ -117,21 +117,64 @@ D['DP-Algorithms-EditDistance']=function(box){
 };
 
 D['Geometry-ConvexHull']=function(box){
-  const W=560,H=320;
-  const w=el('<div class="demo"><h3>Envolvente convexa</h3><div class="row"><button class="btn" id="r">Puntos al azar</button><button class="btn" id="c">Limpiar</button></div><svg id="v" width="100%" viewBox="0 0 '+W+' '+H+'" style="background:var(--bg);border:1px solid var(--line);border-radius:10px;cursor:crosshair;max-width:'+W+'px"></svg><div class="msg" id="m">Haz clic para agregar puntos.</div></div>');
-  box.appendChild(w);const $=x=>w.querySelector(x);let pts=[];
-  const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
-  function hull(P){P=[...P].sort((a,b)=>a[0]-b[0]||a[1]-b[1]);if(P.length<3)return P;const lo=[],up=[];
-    for(const p of P){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p);}
-    for(const p of [...P].reverse()){while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p);}
-    return lo.slice(0,-1).concat(up.slice(0,-1));}
-  function draw(){const h=hull(pts);let s='';
-    if(h.length>1)s+='<polygon points="'+h.map(p=>p.join(',')).join(' ')+'" fill="#1f6feb22" stroke="#1f6feb" stroke-width="2"/>';
-    for(const p of pts)s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="'+(h.includes(p)?'#cf222e':'#888')+'"/>';
-    $('#v').innerHTML=s;$('#m').textContent=pts.length?pts.length+' puntos, '+h.length+' en la envolvente (rojos).':'Haz clic para agregar puntos.';}
-  $('#v').onclick=e=>{const b=$('#v').getBoundingClientRect();pts.push([Math.round((e.clientX-b.left)*W/b.width),Math.round((e.clientY-b.top)*H/b.height)]);draw();};
-  $('#r').onclick=()=>{pts=Array.from({length:18},()=>[30+Math.floor(Math.random()*(W-60)),30+Math.floor(Math.random()*(H-60))]);draw();};
-  $('#c').onclick=()=>{pts=[];draw();}; $('#r').click();
+  const W=560,H=340;
+  const w=el('<div class="demo"><h3>Envolvente convexa paso a paso (Graham scan)</h3><div class="row"><button class="btn" id="p">Paso ▶</button><button class="btn" id="a">Reproducir</button><button class="btn" id="r">Reiniciar</button><button class="btn" id="n">Puntos nuevos</button><button class="btn" id="c">Limpiar</button></div><svg id="v" width="100%" viewBox="0 0 '+W+' '+H+'" style="background:var(--bg);border:1px solid var(--line);border-radius:10px;cursor:crosshair;max-width:'+W+'px"></svg><div class="msg" id="m"></div><p class="note">Haz clic para agregar puntos. Verde = pila actual (la envolvente en construcción), amarillo = punto que se revisa, rojo = punto que se saca porque gira hacia adentro.</p></div>');
+  box.appendChild(w);const $=x=>w.querySelector(x);
+  let pts=[],order=[],st=[],i=0,phase='start',p0=null,popped=null,timer=null,done=false;
+  // signo del producto cruz (b - a) x (c - a) en coordenadas de pantalla (y hacia abajo)
+  const cr=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+  function prepare(){
+    st=[];i=0;popped=null;done=false;phase='start';stop();
+    if(pts.length<3){order=pts.slice();draw();$('#m').textContent='Agrega al menos 3 puntos.';return;}
+    // punto más bajo (mayor y en pantalla); a igual altura, el de más a la izquierda
+    p0=pts.reduce((b,p)=>(p[1]>b[1]||(p[1]===b[1]&&p[0]<b[0]))?p:b);
+    const d2=p=>(p[0]-p0[0])**2+(p[1]-p0[1])**2;
+    order=pts.filter(p=>p!==p0).sort((a,b)=>{const ang=x=>Math.atan2(p0[1]-x[1],x[0]-p0[0]);return ang(a)-ang(b)||d2(a)-d2(b);});
+    order.unshift(p0);
+    $('#m').textContent='1. Se toma el punto más bajo como inicio. Pulsa «Paso».';draw();
+  }
+  function step(){
+    if(done||pts.length<3)return false;
+    popped=null;
+    if(phase==='start'){phase='sort';$('#m').textContent='2. Se ordenan los demás puntos por el ángulo que forman con el inicio (los números muestran el orden).';draw();return true;}
+    if(i>=order.length){done=true;$('#m').textContent='Listo: la envolvente tiene '+st.length+' puntos. Ningún punto queda por fuera.';draw();return false;}
+    const p=order[i];
+    if(st.length>=2&&cr(st[st.length-2],st[st.length-1],p)>=0){
+      // giro en sentido horario en pantalla = hacia adentro: el punto del medio sobra
+      popped=st.pop();
+      $('#m').textContent='Los últimos dos puntos de la pila y el punto amarillo giran hacia adentro: se saca el punto rojo.';
+    }else{
+      st.push(p);i++;
+      $('#m').textContent=st.length<3?'Se agrega el punto a la pila.':'Gira hacia afuera (antihorario): el punto entra a la pila.';
+    }
+    draw();return true;
+  }
+  function draw(){
+    let s='';
+    const cur=(!done&&i<order.length&&phase!=='start')?order[i]:null;
+    if(phase!=='start'&&p0)for(const p of order)s+='<line x1="'+p0[0]+'" y1="'+p0[1]+'" x2="'+p[0]+'" y2="'+p[1]+'" stroke="#8884" stroke-dasharray="3 4"/>';
+    if(st.length>1){const path=st.concat(done?[st[0]]:[]);s+='<polyline points="'+path.map(p=>p.join(',')).join(' ')+'" fill="'+(done?'#2da44e22':'none')+'" stroke="#2da44e" stroke-width="3"/>';}
+    if(cur&&st.length)s+='<line x1="'+st[st.length-1][0]+'" y1="'+st[st.length-1][1]+'" x2="'+cur[0]+'" y2="'+cur[1]+'" stroke="#d4a72c" stroke-width="2"/>';
+    order.forEach((p,k)=>{
+      let col='#888',r=5;
+      if(st.includes(p))col='#2da44e';
+      if(p===popped)col='#cf222e',r=7;
+      if(p===cur)col='#d4a72c',r=7;
+      if(p===p0)r=7;
+      s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+r+'" fill="'+col+'"/>';
+      if(phase!=='start')s+='<text x="'+(p[0]+8)+'" y="'+(p[1]-6)+'" font-size="11" fill="currentColor">'+k+'</text>';
+    });
+    if(!order.length)for(const p of pts)s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="5" fill="#888"/>';
+    $('#v').innerHTML=s;
+  }
+  function stop(){if(timer){clearInterval(timer);timer=null;$('#a').textContent='Reproducir';}}
+  $('#p').onclick=()=>{stop();step();};
+  $('#a').onclick=()=>{if(timer){stop();return;}if(done)prepare();$('#a').textContent='Pausa';timer=setInterval(()=>{if(!step())stop();},700);};
+  $('#r').onclick=prepare;
+  $('#v').onclick=e=>{const b=$('#v').getBoundingClientRect();pts.push([Math.round((e.clientX-b.left)*W/b.width),Math.round((e.clientY-b.top)*H/b.height)]);prepare();};
+  $('#n').onclick=()=>{pts=Array.from({length:14},()=>[40+Math.floor(Math.random()*(W-80)),40+Math.floor(Math.random()*(H-80))]);prepare();};
+  $('#c').onclick=()=>{pts=[];prepare();};
+  $('#n').click();
 };
 
 D['Graphs-Algorithms-Graph-Traversal-Djikstra']=function(box){

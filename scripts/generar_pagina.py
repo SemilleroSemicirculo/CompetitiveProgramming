@@ -8,6 +8,8 @@ Salida / Complejidad) y el código, y los guarda para la guía interactiva.
 import json, os, re
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Versiones en Python correctas pero que no pasan el límite de tiempo de CSES
+PY_LENTOS = {"LIS-I", "MoAlgorithm", "SegmentTree", "SegmentIntersection", "EdmonsKarp", "FloydWarshall", "CentroidDecomposition"}
 CARPETAS = ["DP", "Data Structures", "Graphs", "Strings", "Geometry", "FunctionalTools"]
 NOMBRES = {"DP": "Programación dinámica", "Data Structures": "Estructuras de datos",
            "Graphs": "Grafos", "Strings": "Cadenas", "Geometry": "Geometría",
@@ -45,8 +47,10 @@ def main():
                     "algoritmo": c.get("Algoritmo", a[:-4]),
                     "problema": c.get("Problema", ""),
                     "cses": url.group(0) if url else "",
+                    "py_lento": a[:-4] in PY_LENTOS,
                     "entrada": c.get("Entrada", ""), "salida": c.get("Salida", ""),
                     "complejidad": c.get("Complejidad", ""), "codigo": codigo,
+                    "python": open(ruta[:-4] + ".py", encoding="utf-8").read() if os.path.exists(ruta[:-4] + ".py") else "",
                 })
     with open(os.path.join(RAIZ, "docs", "data.js"), "w", encoding="utf-8") as f:
         f.write("window.ALGORITMOS = " + json.dumps(items, ensure_ascii=False) + ";\n")

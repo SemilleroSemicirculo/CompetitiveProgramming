@@ -12,6 +12,22 @@ const later = (f, ms) => timers.push(setInterval(f, ms));
 // ---------- Resaltado de C++ ----------
 const KW = new Set('if else for while do return break continue struct class const static void int long double bool char auto using namespace typedef template typename public private new delete switch case true false operator define include'.split(' '));
 const TY = new Set('vector map set queue stack deque priority_queue pair tuple array string ll ld cin cout sort unique min max abs swap'.split(' '));
+const KWP = new Set('def class return if elif else for while in not and or is import from as with try except finally raise pass break continue lambda yield global nonlocal None True False'.split(' '));
+const TYP = new Set('int float str list dict set tuple range len print input map min max sum sorted enumerate zip abs sys deque heapq bisect math'.split(' '));
+function resaltarPy(src){
+  const re = /("{3}[\s\S]*?"{3}|#[^\n]*)|("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|\b(\d+\.?\d*)\b|\b([A-Za-z_]\w*)\b/g;
+  let out = '', last = 0, m;
+  while ((m = re.exec(src))) {
+    out += esc(src.slice(last, m.index)); last = re.lastIndex;
+    if (m[1]) out += '<span class="c">'+esc(m[1])+'</span>';
+    else if (m[2]) out += '<span class="s">'+esc(m[2])+'</span>';
+    else if (m[3]) out += '<span class="n">'+m[3]+'</span>';
+    else if (KWP.has(m[4])) out += '<span class="k">'+m[4]+'</span>';
+    else if (TYP.has(m[4])) out += '<span class="t">'+m[4]+'</span>';
+    else out += m[4];
+  }
+  return out + esc(src.slice(last));
+}
 function resaltar(src){
   const re = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(#\w+)|\b(\d+\.?\d*)\b|\b([A-Za-z_]\w*)\b/g;
   let out = '', last = 0, m;
@@ -188,10 +204,21 @@ function pagina(a){
   h += '<div class="meta"><div><b>Complejidad</b>'+esc(a.complejidad)+'</div>';
   h += '<div><b>Pruébalo</b>'+(a.cses ? '<a href="'+a.cses+'" target="_blank" rel="noopener">'+esc(a.problema.replace(/\s*\(https?:[^)]*\)/,''))+'</a>' : esc(a.problema))+'</div>';
   h += '<div><b>Entrada</b>'+esc(a.entrada)+'</div><div><b>Salida</b>'+esc(a.salida)+'</div></div>';
-  h += '<details class="code"><summary>Ver el código en C++</summary><div class="row"><button class="btn" id="copiar">Copiar código</button><a class="btn" style="text-decoration:none" href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/'+encodeURI(a.archivo)+'" target="_blank" rel="noopener">Ver en GitHub</a></div><pre><code>'+resaltar(a.codigo)+'</code></pre></details>';
+  const gh = 'https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/';
+  h += '<details class="code" open><summary>Ver el código</summary><div class="row"><button class="btn lang on" data-l="cpp">C++</button>'+(a.python?'<button class="btn lang" data-l="py">Python</button>':'')+'<span style="flex:1"></span><button class="btn" id="copiar">Copiar código</button><a class="btn" id="gh" style="text-decoration:none" href="'+gh+encodeURI(a.archivo)+'" target="_blank" rel="noopener">Ver en GitHub</a></div><p class="note" id="aviso" style="display:none">⚠️ Esta versión en Python da respuestas correctas, pero es demasiado lenta para el límite de tiempo de CSES. En competencia usa la versión en C++.</p><pre><code id="src">'+resaltar(a.codigo)+'</code></pre></details>';
   h += '<div class="pn">'+(prev ? '<a href="#/'+prev.id+'"><small>← Anterior</small>'+esc(prev.nombre)+'</a>' : '<span></span>')+(next ? '<a class="nx" href="#/'+next.id+'"><small>Siguiente →</small>'+esc(next.nombre)+'</a>' : '<span></span>')+'</div>';
   main.innerHTML = h;
-  document.getElementById('copiar').onclick = e => { try { navigator.clipboard.writeText(a.codigo).catch(() => {}); } catch (_) {} e.target.textContent = '¡Copiado!'; setTimeout(() => e.target.textContent = 'Copiar código', 1500); };
+  let lang = 'cpp';
+  try { if (localStorage.getItem('lang') === 'py' && a.python) lang = 'py'; } catch (_) {}
+  const pintar = () => {
+    document.getElementById('src').innerHTML = lang === 'py' ? resaltarPy(a.python) : resaltar(a.codigo);
+    document.getElementById('aviso').style.display = (lang === 'py' && a.py_lento) ? 'block' : 'none';
+    document.getElementById('gh').href = gh + encodeURI(lang === 'py' ? a.archivo.replace(/\.cpp$/, '.py') : a.archivo);
+    main.querySelectorAll('.lang').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
+  };
+  main.querySelectorAll('.lang').forEach(b => b.onclick = () => { lang = b.dataset.l; try { localStorage.setItem('lang', lang); } catch (_) {} pintar(); });
+  pintar();
+  document.getElementById('copiar').onclick = e => { try { navigator.clipboard.writeText(lang === 'py' ? a.python : a.codigo).catch(() => {}); } catch (_) {} e.target.textContent = '¡Copiado!'; setTimeout(() => e.target.textContent = 'Copiar código', 1500); };
   if (dem) dem(document.getElementById('demo'));
 }
 
@@ -206,5 +233,10 @@ function router(){
 document.getElementById('buscar').oninput = e => { menu(e.target.value); if (e.target.value) { document.body.classList.add('alg'); nav.classList.add('open'); } };
 document.getElementById('menu').onclick = () => { nav.classList.toggle('open'); document.body.classList.add('alg'); };
 window.addEventListener('hashchange', router);
+// botón de modo claro / oscuro (se recuerda en el navegador)
+const tema = document.getElementById('tema');
+const ponerTema = t => { document.documentElement.dataset.theme = t; tema.textContent = t === 'dark' ? '☀️' : '🌙'; };
+ponerTema(document.documentElement.dataset.theme || 'light');
+tema.onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; ponerTema(t); try { localStorage.setItem('tema', t); } catch (_) {} };
 menu(); router();
 })();
