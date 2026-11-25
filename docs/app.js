@@ -100,6 +100,8 @@ function marcar(){
 function inicio(){
   main.innerHTML = `
   <div class="hero">
+    <img class="hero-logo" src="img/logo.png" alt="Logo del Semillero Semicírculo">
+    <p class="kicker">Semillero Semicírculo</p>
     <h1>Resolver problemas difíciles<br>con código rápido.</h1>
     <p class="lead">La programación competitiva consiste en leer un problema, encontrar una idea eficiente y programarla antes de que se acabe el tiempo. Esta guía te explica los algoritmos que más aparecen, desde los más básicos hasta los avanzados.</p>
     <div class="cta"><a class="p" href="#/elegir" onclick="window.__reset&&window.__reset()">Elegir un algoritmo →</a><a class="s" href="#/ruta">Ver ruta de estudio</a></div>

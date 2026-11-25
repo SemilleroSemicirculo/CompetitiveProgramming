@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/img/logo-gris.png" alt="Logo del Semillero Semicírculo" width="180"></p>
+
 # 🔵 Semicírculo – Algoritmos y Programación Competitiva
 
 Este repositorio pertenece al **Semillero de Investigación Semicírculo**, un grupo dedicado al estudio y práctica de **algoritmos**, **estructuras de datos**, y **resolución de problemas clásicos** en el contexto de la **programación competitiva**.
