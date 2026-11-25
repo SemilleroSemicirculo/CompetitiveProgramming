@@ -1,28 +1,49 @@
-s = input()
-t = input()
+import sys
 
-n = len(s)
-m = len(t)
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-LCS = [[0 for i in range(m+1)] for j in range(n+1)]
+"""
+ * Algoritmo : Subsecuencia común más larga (LCS) con reconstrucción
+ * Problema  : CSES 3403 - Longest Common Subsequence (https://cses.fi/problemset/task/3403)
+ * Entrada   : n m, luego los n enteros de a y los m enteros de b
+ * Salida    : longitud de la LCS y una LCS
+ * Complejidad: tiempo O(n·m), memoria O(n·m)
+"""
+def main():
+    n, m = map(int, input().split())
+    a = list(map(int, input().split()))
+    b = list(map(int, input().split()))
 
-for i in range(1,n+1):
-	for j in range(1,m+1):
-		if s[i-1] == t[j-1]:
-			LCS[i][j] = LCS[i-1][j-1] + 1
-		else:
-			LCS[i][j] = max(LCS[i-1][j], LCS[i][j-1])
+    # LCS[i][j] = longitud de la LCS de a[0..i) y b[0..j)
+    LCS = [[0] * (m + 1) for _ in range(n + 1)]
+    for i in range(1, n + 1):
+        prev, cur, ai = LCS[i - 1], LCS[i], a[i - 1]
+        for j in range(1, m + 1):
+            # si los últimos coinciden se extiende la LCS; si no, se descarta uno de los dos
+            if ai == b[j - 1]:
+                cur[j] = prev[j - 1] + 1
+            else:
+                cur[j] = prev[j] if prev[j] >= cur[j - 1] else cur[j - 1]
 
-def print_res(i, j):
-	if i == 0 or j == 0:
-		return ""
-	else:
-		if s[i-1] == t[j-1]:
-			return print_res(i-1, j-1)+s[i-1]
-		elif LCS[i-1][j] > LCS[i][j-1]:
-			return print_res(i-1, j)
-		else:
-			return print_res(i, j-1)
+    # se camina desde (n, m) hacia atrás para recuperar una LCS
+    res = []
+    i, j = n, m
+    while i > 0 and j > 0:
+        if a[i - 1] == b[j - 1]:
+            res.append(a[i - 1])
+            i -= 1
+            j -= 1
+        elif LCS[i - 1][j] >= LCS[i][j - 1]:
+            i -= 1
+        else:
+            j -= 1
+    # se construyó al revés
+    res.reverse()
 
-print(LCS[n][m])
-print(print_res(n, m))
+    print(LCS[n][m])
+    print(*res)
+
+
+main()

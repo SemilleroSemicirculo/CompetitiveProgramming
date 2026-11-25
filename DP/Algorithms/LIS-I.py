@@ -1,11 +1,30 @@
-n = int(input())
-a = list(map(int, input().split()))
+import sys
 
-DP = [1 for i in range(n)]
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-for i in range(1, n):
-    for j in range(i):
-        if(a[j] < a[i]):
-            DP[i] = max(DP[i], 1 + DP[j])
+"""
+ * Algoritmo : LIS con DP cuadrática
+ * Problema  : CSES 1145 - Increasing Subsequence (https://cses.fi/problemset/task/1145) (da TLE con n = 2·10^5; sirve para n <= 5000)
+ * Entrada   : n, luego n enteros
+ * Salida    : longitud de la subsecuencia creciente más larga
+ * Complejidad: tiempo O(n^2), memoria O(n)
+"""
+def main():
+    n = int(input())
+    a = list(map(int, input().split()))
 
-print(max(DP))
+    # DP[i] = longitud de la LIS que termina en a[i]
+    DP = [1] * n
+    for i in range(n):
+        # se prueba extender cada subsecuencia anterior más pequeña
+        for j in range(i):
+            if a[j] < a[i] and DP[j] + 1 > DP[i]:
+                # a[i] se agrega al final de la LIS que termina en a[j]
+                DP[i] = DP[j] + 1
+    # la respuesta es el mejor DP[i] (O(n^2), lento para n grande)
+    print(max(DP))
+
+
+main()
