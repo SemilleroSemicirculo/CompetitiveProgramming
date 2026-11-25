@@ -55,7 +55,7 @@ function menu(filtro){
     for (const a of items) {
       if (a.sub !== sub) { sub = a.sub; if (sub !== '-') h += '<h5>'+esc(sub.split('/').pop())+'</h5>'; }
       const n = (K[a.id]||{}).nivel || 1;
-      h += '<a href="#/'+a.id+'" data-id="'+a.id+'"><span class="dot lvl'+n+'"></span>'+(DEMOS[a.id]?'▶ ':'')+esc(a.nombre)+'</a>';
+      h += '<a href="#/'+a.id+'" data-id="'+a.id+'"><span class="dot lvl'+n+'"></span>'+esc(a.nombre)+'</a>';
     }
   }
   nav.innerHTML = h || '<p class="note">Sin resultados.</p>';
@@ -152,7 +152,7 @@ const ICON = {'DP':'🧩','Data Structures':'🗂️','Graphs':'🕸️','String
 const DESC = {'DP':'Programación dinámica: dividir un problema en subproblemas y reutilizar respuestas.','Data Structures':'Estructuras de datos: guardar información para consultarla y cambiarla rápido.','Graphs':'Grafos: ciudades, rutas, redes y árboles.','Strings':'Cadenas: buscar y comparar textos.','Geometry':'Geometría: puntos, polígonos y vectores.','FunctionalTools':'Herramientas: búsqueda binaria, primos y matemáticas.'};
 function tarjeta(id){
   const a = byId[id], c = K[id] || {};
-  return '<a class="opt" style="text-decoration:none" href="#/'+id+'">'+lvl(c.nivel||1)+(DEMOS[id]?' <small>▶ con demo</small>':'')+'<b style="margin-top:8px">'+esc(a.nombre)+'</b><small>'+esc(c.idea||a.algoritmo)+'</small></a>';
+  return '<a class="opt" style="text-decoration:none" href="#/'+id+'">'+lvl(c.nivel||1)+(DEMOS[id]?' <small>con demo</small>':'')+'<b style="margin-top:8px">'+esc(a.nombre)+'</b><small>'+esc(c.idea||a.algoritmo)+'</small></a>';
 }
 let elegido = [];  // [carpeta, subcarpeta]
 window.__reset = () => { elegido = []; };
@@ -185,7 +185,7 @@ function ruta(){
   for (const n of [1,2,3]) {
     h += '<div class="box"><h3>'+lvl(n)+'</h3>';
     for (const c of ORDEN) { const it = A.filter(a => a.carpeta === c && (K[a.id]||{}).nivel === n); if (!it.length) continue;
-      h += '<h5 style="margin:12px 0 2px;color:var(--mut)">'+c+'</h5>' + it.map(a => '<a href="#/'+a.id+'">'+(DEMOS[a.id]?'▶ ':'')+esc(a.nombre)+'</a>').join(''); }
+      h += '<h5 style="margin:12px 0 2px;color:var(--mut)">'+c+'</h5>' + it.map(a => '<a href="#/'+a.id+'">'+esc(a.nombre)+'</a>').join(''); }
     h += '</div>';
   }
   main.innerHTML = h + '</div>';
