@@ -1,32 +1,60 @@
 import sys
-input = sys.stdin.readline
 
-MOD = 10**9 + 7
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 1000000007
+
+"""
+ * Algoritmo : Exponenciación binaria, inverso modular y nCr
+ * Problema  : CSES 1079 - Binomial Coefficients (https://cses.fi/problemset/task/1079)
+ * Entrada   : t, luego t pares "a b"
+ * Salida    : C(a, b) módulo 10^9 + 7
+ * Complejidad: tiempo O(10^6 + t), memoria O(10^6)
+"""
+
+
+# fact[i] = i! y inv_fact[i] = inverso de i!, ambos módulo MOD
 MAXN = 1000001
 
-# a^b mod MOD en O(log b) (pow de Python ya lo hace)
+
 def binpow(a, b):
-    return pow(a, b, MOD)
+    res = 1
+    a %= MOD
+    while b > 0:
+        if b & 1:
+            res = res * a % MOD
+        a = a * a % MOD
+        b >>= 1
+    return res
 
-# inverso modular (MOD debe ser primo)
+
 def mod_inv(a):
-    return pow(a, MOD - 2, MOD)
+    return binpow(a, MOD - 2)
 
-fact = [1] * MAXN
-for i in range(1, MAXN):
-    fact[i] = fact[i - 1] * i % MOD
-inv_fact = [1] * MAXN
-inv_fact[MAXN - 1] = mod_inv(fact[MAXN - 1])
-for i in range(MAXN - 1, 0, -1):
-    inv_fact[i - 1] = inv_fact[i] * i % MOD
 
-# C(n, k) mod MOD
-def nCr(n, k):
-    if k < 0 or k > n:
-        return 0
-    return fact[n] * inv_fact[k] % MOD * inv_fact[n - k] % MOD
+def main():
+    # se precalculan factoriales e inversos en O(MAXN)
+    fact = [1] * MAXN
+    for i in range(1, MAXN):
+        fact[i] = fact[i - 1] * i % MOD
+    inv_fact = [1] * MAXN
+    # inverso del último factorial con Fermat
+    inv_fact[MAXN - 1] = mod_inv(fact[MAXN - 1])
+    # los demás inversos salen de inv_fact[i-1] = inv_fact[i] * i
+    for i in range(MAXN - 1, 0, -1):
+        inv_fact[i - 1] = inv_fact[i] * i % MOD
 
-t = int(input())
-for _ in range(t):
-    a, b = map(int, input().split())
-    print(nCr(a, b))
+    def nCr(n, k):
+        if k < 0 or k > n:
+            return 0
+        return fact[n] * inv_fact[k] % MOD * inv_fact[n - k] % MOD
+
+    t = int(input())
+    out = []
+    for _ in range(t):
+        a, b = map(int, input().split())
+        out.append(nCr(a, b))
+    print("\n".join(map(str, out)))
+
+
+main()
