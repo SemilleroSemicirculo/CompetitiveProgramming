@@ -85,7 +85,7 @@ function menuLibro(){
 function marcar(){
   const id = location.hash.slice(2);
   nav.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.id === id));
-  const top = byId[id] ? null : '#/'+id;
+  const top = byId[id] ? '#/elegir' : '#/'+id;
   document.querySelectorAll('header nav.top a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === top));
 }
 
@@ -360,5 +360,19 @@ document.querySelectorAll('#modo button').forEach(b => b.onclick = () => {
   if (byId[id]) router(); else location.hash = modo === 'libro' ? '#/libro' : '#/';
 });
 ponerModo(modo);
+// en el celular el selector de modo va al final de la fila de secciones; en pantallas grandes, a la derecha
+const mq = matchMedia('(max-width:820px)'), modoEl = document.getElementById('modo');
+const ubicarModo = () => { const dentro = mq.matches && modo !== 'libro';
+  const destino = dentro ? document.querySelector('header nav.top') : document.querySelector('header .tools');
+  if (modoEl.parentNode !== destino) dentro ? destino.appendChild(modoEl) : destino.insertBefore(modoEl, destino.firstChild); };
+mq.addEventListener ? mq.addEventListener('change', ubicarModo) : mq.addListener(ubicarModo);
+document.querySelectorAll('#modo button').forEach(b => b.addEventListener('click', ubicarModo));
+ubicarModo();
+// atajo: «/» enfoca el buscador; Esc lo limpia
+const buscar = document.getElementById('buscar');
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && getComputedStyle(buscar).display !== 'none' && buscar.offsetParent) { e.preventDefault(); buscar.focus(); }
+  else if (e.key === 'Escape' && document.activeElement === buscar) { buscar.value = ''; buscar.dispatchEvent(new Event('input')); buscar.blur(); }
+});
 menu(); router();
 })();

@@ -5,35 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Guía de Programación Competitiva · Semillero Semicírculo</title>
 <script>(function(){var t;try{t=localStorage.getItem("tema")}catch(e){}if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t})()</script>
-<link rel="stylesheet" href="style.css?v=1795720000">
+<link rel="stylesheet" href="style.css?v=1795730000">
 </head>
 <body>
 <header>
-  <button id="menu" aria-label="Lista de algoritmos">☰</button>
-  <a href="#/" class="logo">Programación Competitiva</a>
-  <div id="modo" role="group" aria-label="Modo de la guía"><button data-m="libre" title="Todos los algoritmos, en cualquier orden">Modo libre</button><button data-m="libro" title="Curso ordenado, de lo básico a lo avanzado">Modo libro</button></div>
-  <nav class="top">
+  <button id="menu" aria-label="Mostrar la lista de algoritmos" title="Lista de algoritmos">☰</button>
+  <a href="#/" class="logo" title="Ir al inicio"><span class="mark">PC</span><span class="full">Programación Competitiva</span></a>
+  <nav class="top" aria-label="Secciones">
     <a href="#/">Inicio</a>
-    <a href="#/elegir" onclick="window.__reset&&window.__reset()">Elegir algoritmo</a>
-    <a href="#/ruta">Ruta de estudio</a>
+    <a href="#/elegir" onclick="window.__reset&&window.__reset()">Algoritmos</a>
+    <a href="#/ruta">Ruta<span class="lg"> de estudio</span></a>
     <a href="#/teoria">Teoría</a>
     <a href="#/practicar">Practicar</a>
   </nav>
-  <input id="buscar" type="search" placeholder="Buscar algoritmo…" autocomplete="off">
-  <button id="tema" aria-label="Cambiar entre modo claro y oscuro" title="Modo claro / oscuro"></button>
-  <a class="repo" href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming">GitHub</a>
+  <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="buscar" type="search" placeholder="Buscar algoritmo…" autocomplete="off" aria-label="Buscar algoritmo"><kbd title="Atajo de teclado">/</kbd></label>
+  <div class="tools">
+    <div id="modo" role="group" aria-label="Modo de la guía"><button data-m="libre" title="Modo libre: todos los algoritmos, en cualquier orden">Libre</button><button data-m="libro" title="Modo libro: curso ordenado, de lo básico a lo avanzado">Libro</button></div>
+    <button id="tema" aria-label="Cambiar entre modo claro y oscuro" title="Modo claro / oscuro"></button>
+    <a class="repo" href="https://github.com/SemilleroSemicirculo/CompetitiveProgramming" target="_blank" rel="noopener" title="Ver el repositorio en GitHub">GitHub ↗</a>
+  </div>
 </header>
 <div class="layout">
   <nav id="nav"></nav>
   <main id="main"></main>
 </div>
-<script src="data.js?v=1795720000"></script>
-<script src="contenido.js?v=1795720000"></script>
-<script src="teoria.js?v=1795720000"></script>
-<script src="libro.js?v=1795720000"></script>
-<script src="demos.js?v=1795720000"></script>
-<script src="recomendados.js?v=1795720000"></script>
-<script src="visuales.js?v=1795720000"></script>
-<script src="app.js?v=1795720000"></script>
+<script src="data.js?v=1795730000"></script>
+<script src="contenido.js?v=1795730000"></script>
+<script src="teoria.js?v=1795730000"></script>
+<script src="libro.js?v=1795730000"></script>
+<script src="demos.js?v=1795730000"></script>
+<script src="recomendados.js?v=1795730000"></script>
+<script src="visuales.js?v=1795730000"></script>
+<script src="app.js?v=1795730000"></script>
 </body>
 </html>
