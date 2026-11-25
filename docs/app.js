@@ -169,8 +169,8 @@ function inicio(){
 }
 
 // ---------- Elegir algoritmo (carpetas del repositorio) ----------
-const ICON = {'Number Theory':'🔢','DP':'🧩','Data Structures':'🗂️','Graphs':'🕸️','Strings':'🔤','Geometry':'📐','FunctionalTools':'🧰'};
-const DESC = {'Number Theory':'Teoría de números: primos, divisibilidad, congruencias y funciones aritméticas.','DP':'Programación dinámica: dividir un problema en subproblemas y reutilizar respuestas.','Data Structures':'Estructuras de datos: guardar información para consultarla y cambiarla rápido.','Graphs':'Grafos: ciudades, rutas, redes y árboles.','Strings':'Cadenas: buscar y comparar textos.','Geometry':'Geometría: puntos, polígonos y vectores.','FunctionalTools':'Herramientas: búsqueda binaria, primos y matemáticas.'};
+const ICON = {'DP':'🧩','Data Structures':'🗂️','Graphs':'🕸️','Strings':'🔤','Geometry':'📐','FunctionalTools':'🧰'};
+const DESC = {'DP':'Programación dinámica: dividir un problema en subproblemas y reutilizar respuestas.','Data Structures':'Estructuras de datos: guardar información para consultarla y cambiarla rápido.','Graphs':'Grafos: ciudades, rutas, redes y árboles.','Strings':'Cadenas: buscar y comparar textos.','Geometry':'Geometría: puntos, polígonos y vectores.','FunctionalTools':'Herramientas: búsqueda binaria, primos y matemáticas.'};
 function tarjeta(id){
   const a = byId[id], c = K[id] || {};
   return '<a class="opt" style="text-decoration:none" href="#/'+id+'">'+lvl(c.nivel||1)+(DEMOS[id]?' <small>con demo</small>':'')+'<b style="margin-top:8px">'+esc(a.nombre)+'</b><small>'+esc(c.idea||a.algoritmo)+'</small></a>';
@@ -214,16 +214,18 @@ function ruta(){
 
 // ---------- Teoría por carpeta ----------
 let teoCarpeta = 'Graphs';
+const TEO_NOMBRE = {'FunctionalTools': 'Matemáticas y teoría de números'};
+const TEO_DESC = {'FunctionalTools': 'Teoría de números y la matemática que se usa en todo lo demás: primos, divisibilidad, congruencias, combinatoria y álgebra.'};
+const teoNombre = c => TEO_NOMBRE[c] || c;
 function teoria(){
   const T = window.TEORIA || {};
   let h = '<h1>Teoría</h1><p class="note">Los teoremas y resultados que más se usan en cada tema, desde lo básico hasta lo que aparece en la Maratón Nacional ACIS y en las finales mundiales del ICPC.</p>';
-  h += '<div class="row">' + ORDEN.concat(['Number Theory']).map(c => '<button class="btn lang'+(c===teoCarpeta?' on':'')+'" data-t="'+c+'">'+c+'</button>').join('') + '</div>';
+  h += '<div class="row">' + ORDEN.map(c => '<button class="btn lang'+(c===teoCarpeta?' on':'')+'" data-t="'+c+'">'+esc(teoNombre(c))+'</button>').join('') + '</div>';
   const items = (T[teoCarpeta] || []).slice().sort((a, b) => a.l - b.l);
-  h += '<p>'+esc(DESC[teoCarpeta]||'')+'</p>';
+  h += '<p>'+esc(TEO_DESC[teoCarpeta]||DESC[teoCarpeta]||'')+'</p>';
   h += items.map(t => '<div class="box" style="margin:12px 0"><h3>'+lvl(t.l)+' '+esc(t.n)+'</h3><p>'+esc(t.e)+'</p><p class="note"><b>Para qué sirve:</b> '+esc(t.u)+'</p></div>').join('');
-  const REL = {'Number Theory': ['FunctionalTools-Codes-Sieve', 'FunctionalTools-Codes-ModArithmetic', 'FunctionalTools-Codes-MatrixExponentiation', 'Geometry-PolygonLatticePoints']};
-  const algs = REL[teoCarpeta] ? REL[teoCarpeta].map(id => byId[id]) : A.filter(a => a.carpeta === teoCarpeta);
-  h += '<h3>'+(REL[teoCarpeta] ? 'Algoritmos relacionados' : 'Algoritmos de esta carpeta')+'</h3><p>' + algs.map(a => '<a href="#/'+a.id+'">'+esc(a.nombre)+'</a>').join(' · ') + '</p>';
+  const algs = A.filter(a => a.carpeta === teoCarpeta);
+  h += '<h3>Algoritmos de esta carpeta</h3><p>' + algs.map(a => '<a href="#/'+a.id+'">'+esc(a.nombre)+'</a>').join(' · ') + '</p>';
   main.innerHTML = h;
   main.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { teoCarpeta = b.dataset.t; teoria(); });
 }
@@ -279,7 +281,7 @@ function pagina(a){
   if (dem) h += '<h2>Míralo en acción</h2><div id="demo"></div>';
   if (c.pasos) h += '<h2>Paso a paso</h2><ol class="steps">'+c.pasos.map(p => '<li>'+esc(p)+'</li>').join('')+'</ol>';
   if (c.cuando) h += '<div class="when"><b>¿Cuándo usarlo?</b> '+esc(c.cuando)+'</div>';
-  if (!L) h += '<p><a href="#/teoria" onclick="window.__teo(\''+a.carpeta+'\')">Ver los teoremas de '+esc(a.carpeta)+' →</a></p>';
+  if (!L) h += '<p><a href="#/teoria" onclick="window.__teo(\''+a.carpeta+'\')">Ver los teoremas de '+esc(teoNombre(a.carpeta))+' →</a></p>';
   h += '<div class="meta"><div><b>Complejidad</b>'+esc(a.complejidad)+'</div>';
   h += '<div><b>Pruébalo</b>'+(a.cses ? '<a href="'+a.cses+'" target="_blank" rel="noopener">'+esc(a.problema.replace(/\s*\(https?:[^)]*\)/,''))+'</a>' : esc(a.problema))+'</div>';
   h += '<div><b>Entrada</b>'+esc(a.entrada)+'</div><div><b>Salida</b>'+esc(a.salida)+'</div></div>';

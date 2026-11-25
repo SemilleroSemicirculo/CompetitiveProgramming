@@ -72,7 +72,7 @@ window.LIBRO = [
     'Una recurrencia como Fibonacci, `F(n) = F(n-1) + F(n-2)`, se puede escribir como una matriz 2×2 que multiplica al vector (F(n-1), F(n-2)). Elevar esa matriz a la n con exponenciación binaria da F(n) en O(log n), incluso para n = 10¹⁸.'
   ],
   algs: ['FunctionalTools-Codes-Sieve', 'FunctionalTools-Codes-ModArithmetic', 'FunctionalTools-Codes-MatrixExponentiation'],
-  teo: [['FunctionalTools', 'Criba de Eratóstenes'], ['FunctionalTools', 'Exponenciación binaria'], ['FunctionalTools', 'Pequeño teorema de Fermat'], ['FunctionalTools', 'Algoritmo de Euclides e identidad de Bézout'], ['Number Theory', 'Teorema fundamental de la aritmética'], ['Number Theory', 'Inverso modular'], ['Number Theory', 'Fórmula de Legendre']],
+  teo: [['FunctionalTools', 'Criba de Eratóstenes'], ['FunctionalTools', 'Exponenciación binaria'], ['FunctionalTools', 'Pequeño teorema de Fermat'], ['FunctionalTools', 'Algoritmo de Euclides e identidad de Bézout'], ['FunctionalTools', 'Teorema fundamental de la aritmética'], ['FunctionalTools', 'Inverso modular'], ['FunctionalTools', 'Fórmula de Legendre']],
   preguntas: [
     { q: '¿Por qué en la criba basta empezar a tachar desde p²?', a: 'Los múltiplos menores de p² tienen un factor primo menor que p, así que ya fueron tachados.' },
     { q: '¿Cuántas multiplicaciones hace binpow con b = 10¹⁸?', a: 'Alrededor de 2·60 = 120, porque 10¹⁸ tiene unos 60 bits.' },
