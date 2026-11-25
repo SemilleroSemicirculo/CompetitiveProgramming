@@ -1,57 +1,58 @@
-def orientation(a, b, c):
-    v = a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (a[1] - b[1])
-    if v < 0:
-        return -1   # horario
-    if v > 0:
-        return 1    # antihorario
-    return 0        # colineales
+import sys
 
-def cw(a, b, c, include_collinear):
-    o = orientation(a, b, c)
-    return o < 0 or (include_collinear and o == 0)
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-def collinear(a, b, c):
-    return orientation(a, b, c) == 0
-
-def convex_hull(points, include_collinear=False):
-    # Encontrar el punto más abajo a la izquierda
-    p0 = min(points, key=lambda p: (p[1], p[0]))
-
-    # Ordenar por ángulo polar respecto a p0
-    def cmp(a, b):
-        o = orientation(p0, a, b)
-        if o == 0:
-            # si son colineales, el más cercano primero
-            da = (p0[0] - a[0]) ** 2 + (p0[1] - a[1]) ** 2
-            db = (p0[0] - b[0]) ** 2 + (p0[1] - b[1]) ** 2
-            return da - db
-        return -1 if o < 0 else 1
-
-    # Python no tiene cmp directo en sort, así que usamos cmp_to_key
-    from functools import cmp_to_key
-    points.sort(key=cmp_to_key(cmp))
-
-    if include_collinear:
-        i = len(points) - 1
-        while i >= 0 and collinear(p0, points[i], points[-1]):
-            i -= 1
-        points[i + 1 :] = reversed(points[i + 1 :])
-
-    st = []
-    for p in points:
-        while len(st) > 1 and not cw(st[-2], st[-1], p, include_collinear):
-            st.pop()
-        st.append(p)
-
-    if not include_collinear and len(st) == 2 and st[0] == st[1]:
-        st.pop()
-
-    return st
+"""
+ * Algoritmo : Envolvente convexa (Graham scan, incluye puntos colineales del borde)
+ * Problema  : CSES 2195 - Convex Hull (https://cses.fi/problemset/task/2195)
+ * Entrada   : n, luego n puntos enteros "x y"
+ * Salida    : cantidad de puntos de la envolvente (incluye los del borde) y sus coordenadas
+ * Complejidad: tiempo O(n log n), memoria O(n)
+"""
 
 
-# Ejemplo de uso
-points = [(0, 0), (2, 0), (1, 1), (2, 2), (0, 2)]
-hull = convex_hull(points, include_collinear=False)
+# producto cruz (a - o) x (b - o): > 0 antihorario, < 0 horario, 0 colineal
+def cross(o, a, b):
+    return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
 
-for x, y in hull:
-    print(x, y)
+
+# cadena monótona (Andrew): se ordenan los puntos y se arman la parte de abajo y la de arriba
+# (versión más rápida en Python que el Graham scan; con include_collinear se dejan los puntos del borde)
+def convex_hull(pts, include_collinear=False):
+    pts = sorted(set(pts))
+    if len(pts) <= 2:
+        return pts
+
+    def half(points):
+        st = []
+        for p in points:
+            # se saca el último mientras el giro no sea antihorario (o colineal si se excluyen)
+            while len(st) > 1:
+                c = cross(st[-2], st[-1], p)
+                if c > 0 or (include_collinear and c == 0):
+                    break
+                st.pop()
+            st.append(p)
+        return st
+
+    lower = half(pts)
+    upper = half(reversed(pts))
+    hull = lower[:-1] + upper[:-1]
+    # si todos son colineales, cada punto quedó dos veces
+    if include_collinear and len(hull) > len(pts):
+        return pts
+    return hull
+
+
+def main():
+    data = sys.stdin.buffer.read().split()
+    n = int(data[0])
+    points = list(zip(map(int, data[1:2 * n + 1:2]), map(int, data[2:2 * n + 2:2])))
+    hull = convex_hull(points, True)
+    out = [str(len(hull))] + ["%d %d" % p for p in hull]
+    print("\n".join(out))
+
+
+main()
