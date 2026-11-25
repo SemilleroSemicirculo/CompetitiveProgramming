@@ -210,3 +210,64 @@ D['Graphs-Algorithms-MST-Kruskal']=function(box){
   reset();
 };
 })();
+
+// ---- Botón «Reproducir» para todas las demos paso a paso ----
+// Envuelve cada demo: si tiene botón de paso (#p) y no trae su propio «Reproducir»,
+// se agrega uno que pulsa «Paso» solo hasta que la demo deja de cambiar.
+(function(){
+const D=window.DEMOS;
+const VEL={'Graphs-Algorithms-Graph-Traversal-BFS':120,'DP-Algorithms-EditDistance':350,'Graphs-Algorithms-Graph-Traversal-DSU':900};
+function addPlay(w,id,stepFn,resetFn,doneFn){
+  const row=w.querySelector('.row'); if(!row) return;
+  const play=document.createElement('button'); play.className='btn'; play.textContent='Reproducir ⏵';
+  const ref=w.querySelector('#p'); ref&&ref.nextSibling?row.insertBefore(play,ref.nextSibling):row.appendChild(play);
+  let timer=null,ended=false;
+  const sig=()=>[...w.querySelectorAll('.cells,.grid,svg,.msg,#t')].map(e=>e.innerHTML).join('|');
+  const stop=()=>{if(timer){clearInterval(timer);timer=null;play.textContent='Reproducir ⏵';}};
+  play.onclick=()=>{
+    if(timer){stop();return;}
+    if(ended&&resetFn)resetFn();
+    ended=false; play.textContent='Pausa ⏸';
+    timer=setInterval(()=>{
+      if(!document.body.contains(w)){stop();return;}
+      const a=sig(); stepFn();
+      if(doneFn?doneFn():sig()===a){ended=true;stop();}
+    },VEL[id]||750);
+  };
+  // cualquier otro botón o clic en el dibujo detiene la reproducción
+  w.addEventListener('click',e=>{if(e.isTrusted&&e.target!==play&&e.target.closest('button,.grid,svg,input')&&timer){stop();ended=false;}},true);
+  w.addEventListener('input',e=>{if(e.isTrusted){stop();ended=false;}});
+}
+Object.keys(D).forEach(id=>{
+  const orig=D[id];
+  D[id]=function(box){
+    orig(box);
+    const w=box.lastElementChild; if(!w||!w.classList.contains('demo'))return;
+    if([...w.querySelectorAll('button')].some(b=>/Reproducir/.test(b.textContent)))return;
+    const $=s=>w.querySelector(s);
+    if($('#p')){
+      addPlay(w,id,()=>$('#p').click(),()=>($('#r')||$('#n')).click(),id==='Graphs-Algorithms-Graph-Traversal-BFS'?()=>$('#m').textContent!=='':null);
+    } else if($('#u')){ // Union-Find: uniones al azar hasta que todo sea un solo conjunto
+      const par=()=>[...w.querySelectorAll('#c .cell')].map(c=>+c.textContent.split('→')[1]);
+      const root=(P,x)=>{while(P[x]!==x)x=P[x];return x;};
+      const sets=()=>{const P=par();return new Set(P.map((_,i)=>root(P,i))).size;};
+      addPlay(w,id,()=>{const P=par(),n=P.length;let a,b,t=0;do{a=Math.floor(Math.random()*n);b=Math.floor(Math.random()*n);}while(root(P,a)===root(P,b)&&t++<100);$('#a').value=a;$('#b').value=b;$('#u').click();},
+        ()=>$('#r').click(),()=>sets()<=1);
+    } else if($('#g')&&$('#t')){ // Distancia de edición: llenar la tabla celda por celda
+      let cells=[],k=0;
+      const prep=()=>{$('#g').click();cells=[...w.querySelectorAll('#t td[data-i]')].filter(c=>+c.dataset.i>0&&+c.dataset.j>0);
+        cells.forEach(c=>{c.style.visibility='hidden';c.classList.remove('a');});k=0;$('#m').textContent='Se llena la tabla fila por fila.';};
+      const val=(i,j)=>+w.querySelector('#t td[data-i="'+i+'"][data-j="'+j+'"]').textContent;
+      addPlay(w,id,()=>{
+        if(k===0&&!cells.length)prep();
+        if(k>=cells.length){return;}
+        if(k>0)cells[k-1].classList.remove('a');
+        const c=cells[k++],i=+c.dataset.i,j=+c.dataset.j; c.style.visibility='';c.classList.add('a');
+        const a=w.querySelector('#t tr:nth-child('+(i+2)+') td').textContent,b=w.querySelector('#t tr td:nth-child('+(j+2)+')').textContent;
+        $('#m').textContent='dp['+i+']['+j+'] ('+a+' vs '+b+') = min(borrar '+(val(i-1,j)+1)+', insertar '+(val(i,j-1)+1)+', '+(a===b?'igual ':'reemplazar ')+(val(i-1,j-1)+(a===b?0:1))+') = '+val(i,j)+(k===cells.length?' → Distancia = '+val(i,j):'');
+      },()=>{cells=[];k=0;prep();},()=>k>=cells.length);
+      w.querySelector('#g').addEventListener('click',()=>{cells=[];k=0;});
+    }
+  };
+});
+})();

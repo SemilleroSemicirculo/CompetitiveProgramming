@@ -188,35 +188,125 @@ V('DP-Classic-Problems-Campeonato', 'Probabilidad de ganar la serie', 'P[i][j] =
 }, s => table(s.P, s.P.map((r, i) => r.map((v, j) => i === s.cur[0] && j === s.cur[1] ? 'a' : (i === s.cur[0] - 1 && j === s.cur[1]) || (i === s.cur[0] && j === s.cur[1] - 1) ? 'b' : v !== null ? 'g' : '')), [...Array(s.P.length).keys()].map(i => 'A:' + i), [...Array(s.P.length).keys()].map(j => 'B:' + j)));
 
 // =================== Data Structures ===================
-V('Data-Structures-Algorithms-Deque', 'Mínimo de ventana deslizante', 'Azul = ventana actual; la deque guarda candidatos crecientes y su frente (verde) es el mínimo.', push => {
-  const a = Array.from({ length: 10 }, () => R(1, 15)), k = 3, d = [], mins = [];
-  push('Ventana de tamaño ' + k + '.', { a, i: -1, d: [], k, mins });
-  for (let i = 0; i < a.length; i++) {
-    const out = []; while (d.length && a[d[d.length - 1]] >= a[i]) out.push(a[d.pop()]);
-    d.push(i); if (d[0] <= i - k) d.shift(); if (i >= k - 1) mins.push(a[d[0]]);
-    push('Entra ' + a[i] + (out.length ? '; salen por atrás ' + out.join(', ') + ' (nunca serán mínimo)' : '') + (i >= k - 1 ? '. Mínimo de la ventana: ' + a[d[0]] : ''), { a, i, d: d.slice(), k, mins: mins.slice() });
+// Dibujos de las estructuras en sí: pila vertical, cola y deque horizontales, heap como árbol + arreglo.
+const FILL = { a: '#ffd33d', b: '#79b8ff', g: '#7ee2a8', r: '#ff8182' };
+const caja = (x, y, w, h, t, c, op) => '<g opacity="' + (op || 1) + '"><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="7" fill="' + (FILL[c] || 'var(--card)') + '" stroke="' + (c ? '#555' : 'var(--mut)') + '" stroke-width="1.5"/><text x="' + (x + w / 2) + '" y="' + (y + h / 2 + 5) + '" text-anchor="middle" font-size="15" font-weight="700" fill="' + (c ? '#111' : 'currentColor') + '">' + t + '</text></g>';
+const txt = (x, y, t, o = {}) => '<text x="' + x + '" y="' + y + '" font-size="' + (o.s || 12) + '" text-anchor="' + (o.a || 'middle') + '" fill="' + (o.c || 'currentColor') + '"' + (o.b ? ' font-weight="700"' : '') + '>' + t + '</text>';
+const flecha = (x1, y1, x2, y2, c = '#888') => '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + c + '" stroke-width="2" marker-end="url(#ds-ar)"/>';
+const defsAr = '<defs><marker id="ds-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#888"/></marker></defs>';
+// lista de operaciones a la derecha, con la actual resaltada
+const opsList = (ops, cur, x, y, max = 9) => { const from = Math.max(0, Math.min(cur - 4, ops.length - max)); let s = txt(x, y, 'Operaciones', { a: 'start', b: 1, s: 13 });
+  ops.slice(from, from + max).forEach((o, j) => { const k = from + j; s += txt(x, y + 22 + j * 20, (k === cur ? '▶ ' : k < cur ? '✓ ' : '   ') + o, { a: 'start', s: 13, b: k === cur, c: k > cur ? 'var(--mut)' : 'currentColor' }); }); return s; };
+const opsDe = (n, mk) => { const ops = []; let size = 0; for (let i = 0; i < n; i++) { const o = mk(size, i); ops.push(o); size += o.d; } return ops; };
+
+V('Data-Structures-Algorithms-Stack', 'La pila (stack): último en entrar, primero en salir', 'Amarillo = elemento que acaba de entrar · azul = el tope que se consulta · rojo = el que sale. Todas las operaciones son O(1) porque solo se toca el tope.', push => {
+  const ops = opsDe(10, (sz, i) => sz >= 2 && (i > 2 && R(0, 2) === 0) ? (R(0, 3) ? { o: 'pop()', d: -1 } : { o: 'top()', d: 0 }) : sz >= 6 ? { o: 'pop()', d: -1 } : { o: 'push(' + R(1, 99) + ')', d: 1 });
+  const st = [], L = ops.map(o => o.o);
+  push('Una pila es como una torre de platos: solo puedes poner o quitar el de arriba (el tope).', { st: [], L, k: -1 });
+  ops.forEach((o, k) => {
+    if (o.d === 1) { const v = +o.o.slice(5, -1); st.push(v); push('push(' + v + '): ' + v + ' se pone encima de todo. Ahora es el tope.', { st: st.slice(), L, k, hi: 'a' }); }
+    else if (o.d === -1) { const v = st.pop(); push('pop(): sale ' + v + ', el último que había entrado.' + (st.length ? ' El nuevo tope es ' + st[st.length - 1] + '.' : ' La pila quedó vacía.'), { st: st.slice(), L, k, out: v }); }
+    else push('top(): mira el tope (' + st[st.length - 1] + ') sin sacarlo.', { st: st.slice(), L, k, hi: 'b' });
+  });
+  push('Orden de salida = orden inverso de entrada (LIFO). Se usa para deshacer, paréntesis balanceados, DFS y la «pila monótona» del código de abajo.', { st: st.slice(), L, k: L.length });
+}, s => { const W = 540, H = 330, x = 110, w = 110, h = 34, base = 300; let g = defsAr;
+  g += '<path d="M' + (x - 8) + ' 60 V' + (base + 6) + ' H' + (x + w + 8) + ' V60" fill="none" stroke="var(--mut)" stroke-width="3"/>';
+  s.st.forEach((v, i) => { const top = i === s.st.length - 1; g += caja(x, base - (i + 1) * (h + 4), w, h, v, top && s.hi ? s.hi : ''); });
+  if (s.st.length) { const y = base - s.st.length * (h + 4) + h / 2; g += flecha(x + w + 70, y, x + w + 14, y) + txt(x + w + 74, y + 4, 'tope', { a: 'start', b: 1 }); }
+  else g += txt(x + w / 2, base - 20, 'vacía', { c: 'var(--mut)' });
+  if (s.out !== undefined) g += caja(x, 14, w, h, s.out, 'r', 0.9) + flecha(x + w / 2, 60, x + w / 2, 50, '#cf222e');
+  g += txt(x + w / 2, base + 24, 'pila', { c: 'var(--mut)' });
+  return svgBox(g + opsList(s.L, s.k, 330, 40), W, H); });
+
+V('Data-Structures-Classic-Problems-Team-Queue', 'La cola (queue): primero en llegar, primero en salir', 'Primera parte: una cola normal. Segunda parte: la «cola de colas» del problema Team Queue, donde cada equipo (color) tiene su propia cola dentro de la cola general.', push => {
+  const q = [], L = [];
+  const ops = opsDe(8, (sz, i) => sz >= 2 && R(0, 2) === 0 ? { o: 'dequeue()', d: -1 } : sz >= 6 ? { o: 'dequeue()', d: -1 } : { o: 'enqueue(' + R(1, 99) + ')', d: 1 });
+  ops.forEach(o => L.push(o.o));
+  push('Una cola es la fila del banco: se entra por el final y se sale por el frente. Nadie se cuela.', { mode: 1, q: [], L, k: -1 });
+  ops.forEach((o, k) => {
+    if (o.d === 1) { const v = +o.o.slice(8, -1); q.push(v); push('enqueue(' + v + '): ' + v + ' entra por el final de la fila. O(1).', { mode: 1, q: q.slice(), L, k, hi: q.length - 1 }); }
+    else { const v = q.shift(); push('dequeue(): sale ' + v + ', el que llevaba más tiempo esperando. O(1).', { mode: 1, q: q.slice(), L, k, out: v }); }
+  });
+  push('Orden de salida = orden de llegada (FIFO). Es la base de BFS y de cualquier simulación de turnos.', { mode: 1, q: q.slice(), L, k: L.length });
+  // segunda parte: cola de colas
+  const T = ['g', 'b', 'o'], G = []; let id = 1;
+  push('Team Queue: ahora cada persona pertenece a un equipo (color). La cola general guarda equipos, y cada equipo tiene su propia cola.', { mode: 2, G: [] });
+  for (let s = 0; s < 11; s++) {
+    if (G.length && (R(0, 2) === 0 || id > 9)) { const t = G[0], x = t.m.shift(); if (!t.m.length) G.shift();
+      push('DEQUEUE: sale ' + x + ', el primero del equipo que está al frente' + (t.m.length ? '.' : '; su equipo quedó vacío y sale de la cola general.'), { mode: 2, G: clone(G), out: { n: x, t: t.t } }); continue; }
+    const t = pick(T), x = id++, e = G.find(y => y.t === t);
+    if (e) { e.m.push(x); push('ENQUEUE ' + x + ': su equipo ya está en la fila, así que entra al final de la cola de su equipo.', { mode: 2, G: clone(G), hi: x }); }
+    else { G.push({ t, m: [x] }); push('ENQUEUE ' + x + ': su equipo no estaba; el equipo entra al final de la cola general.', { mode: 2, G: clone(G), hi: x }); }
   }
-}, s => rows([{ t: 'arreglo', v: s.a, c: s.a.map((_, j) => j === s.i ? 'a' : (j > s.i - s.k && j <= s.i) ? 'b' : '') }, { t: 'deque', v: s.d.length ? s.d.map(j => s.a[j]) : [null], c: s.d.map((_, j) => j === 0 ? 'g' : '') }, { t: 'mínimos', v: s.mins.length ? s.mins : [null] }]));
+}, s => { let g = defsAr;
+  if (s.mode === 1) { const W = 540, H = 240, x0 = 90, y = 70, w = 48, h = 40;
+    g += '<path d="M' + (x0 - 6) + ' ' + (y - 8) + ' H' + (x0 + 7 * (w + 4) + 6) + ' M' + (x0 - 6) + ' ' + (y + h + 8) + ' H' + (x0 + 7 * (w + 4) + 6) + '" stroke="var(--mut)" stroke-width="3"/>';
+    s.q.forEach((v, i) => g += caja(x0 + i * (w + 4), y, w, h, v, i === s.hi ? 'a' : i === 0 ? 'b' : ''));
+    if (!s.q.length) g += txt(x0 + 180, y + 25, 'vacía', { c: 'var(--mut)' });
+    if (s.q.length === 1) g += txt(x0 + w / 2, y + h + 28, 'frente y final', { b: 1, a: 'start' }); else if (s.q.length) { g += txt(x0 + w / 2, y + h + 28, 'frente', { b: 1 }); g += txt(x0 + (s.q.length - 1) * (w + 4) + w / 2, y + h + 28, 'final', { b: 1 }); }
+    g += flecha(x0 + 7 * (w + 4) + 50, y + h / 2, x0 + 7 * (w + 4) + 12, y + h / 2) + txt(x0 + 7 * (w + 4) + 30, y - 16, 'entra', { c: 'var(--mut)' });
+    g += flecha(x0 - 10, y + h / 2, x0 - 60, y + h / 2) + txt(x0 - 40, y - 16, 'sale', { c: 'var(--mut)' });
+    if (s.out !== undefined) g += caja(14, y + h + 14, 48, 34, s.out, 'r');
+    g += '<g transform="translate(0,190)">' + opsInline(s.L, s.k, 5) + '</g>';
+    return svgBox(g, W, H); }
+  const W = 540, H = 200, y = 60; let x = 70;
+  g += txt(16, 30, 'frente', { a: 'start', b: 1 });
+  s.G.forEach(t => { const w = t.m.length * 38 + 14; g += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="56" rx="10" fill="' + COL[t.t] + '22" stroke="' + COL[t.t] + '" stroke-width="2.5"/>';
+    t.m.forEach((m, j) => g += '<rect x="' + (x + 7 + j * 38) + '" y="' + (y + 11) + '" width="34" height="34" rx="6" fill="' + COL[t.t] + '" stroke="' + (m === s.hi ? '#d4a72c' : 'none') + '" stroke-width="4"/>' + txt(x + 24 + j * 38, y + 33, m, { c: '#fff', b: 1, s: 14 }));
+    x += w + 10; });
+  if (!s.G.length) g += txt(270, y + 32, 'cola general vacía', { c: 'var(--mut)' });
+  if (s.out) g += '<rect x="14" y="' + (y + 11) + '" width="34" height="34" rx="6" fill="' + COL[s.out.t] + '" opacity=".55"/>' + txt(31, y + 33, s.out.n, { c: '#fff', b: 1, s: 14 }) + txt(31, y + 64, 'sale', { c: '#cf222e' });
+  g += txt(16, 158, 'Cada caja grande es la cola de un equipo (sus miembros en orden de llegada).', { a: 'start', s: 12, c: 'var(--mut)' }) + txt(16, 176, 'Las cajas forman la cola general: sale primero el equipo de la izquierda.', { a: 'start', s: 12, c: 'var(--mut)' });
+  return svgBox(g, W, H); });
 
-V('Data-Structures-Algorithms-Stack', 'Menor valor más cercano a la izquierda', 'La pila guarda los candidatos; los mayores o iguales al nuevo se sacan.', push => {
-  const a = Array.from({ length: 9 }, () => R(1, 12)), st = [], ans = Array(a.length).fill(null);
-  push('Para cada posición buscamos el menor más cercano a su izquierda.', { a, st: [], ans, i: -1 });
-  a.forEach((v, i) => { const out = []; while (st.length && a[st[st.length - 1]] >= v) out.push(a[st.pop()]);
-    ans[i] = st.length ? st[st.length - 1] + 1 : 0;
-    push(v + ': ' + (out.length ? 'se sacan ' + out.join(', ') + '; ' : '') + (st.length ? 'el tope ' + a[st[st.length - 1]] + ' (posición ' + ans[i] + ') es la respuesta' : 'la pila quedó vacía, respuesta 0'), { a, st: st.map(j => a[j]), ans, i });
-    st.push(i); });
-}, s => rows([{ t: 'a', v: s.a, c: s.a.map((_, j) => j === s.i ? 'a' : '') }, { t: 'pila', v: s.st.length ? s.st : [null], c: s.st.map((_, j) => j === s.st.length - 1 ? 'b' : '') }, { t: 'respuesta', v: s.ans, c: s.ans.map(v => v === null ? '' : 'g') }]));
+V('Data-Structures-Algorithms-Deque', 'La deque: una cola con dos puertas', 'Se puede meter y sacar por los dos extremos en O(1). Amarillo = acaba de entrar · rojo = el que sale · azul = frente y final.', push => {
+  const d = [], names = ['push_front', 'push_back', 'pop_front', 'pop_back'];
+  const ops = opsDe(11, (sz, i) => { const p = sz < 2 ? R(0, 1) : sz >= 6 ? R(2, 3) : R(0, 4) < 3 ? R(0, 1) : R(2, 3); return p < 2 ? { o: names[p] + '(' + R(1, 99) + ')', d: 1, p } : { o: names[p] + '()', d: -1, p }; });
+  const L = ops.map(o => o.o);
+  push('Una deque (double-ended queue) es una fila en la que se puede entrar y salir por adelante y por atrás. Sirve de pila y de cola a la vez.', { d: [], L, k: -1 });
+  ops.forEach((o, k) => {
+    if (o.p === 0) { const v = +o.o.match(/\d+/)[0]; d.unshift(v); push(o.o + ': ' + v + ' entra por el frente.', { d: d.slice(), L, k, hi: 0 }); }
+    else if (o.p === 1) { const v = +o.o.match(/\d+/)[0]; d.push(v); push(o.o + ': ' + v + ' entra por el final.', { d: d.slice(), L, k, hi: d.length - 1 }); }
+    else if (o.p === 2) { const v = d.shift(); push('pop_front(): sale ' + v + ' por el frente.', { d: d.slice(), L, k, out: v, side: 0 }); }
+    else { const v = d.pop(); push('pop_back(): sale ' + v + ' por el final.', { d: d.slice(), L, k, out: v, side: 1 }); }
+  });
+  push('Con solo push_back + pop_back es una pila; con push_back + pop_front es una cola. El código de abajo la usa para el mínimo de una ventana que se desliza.', { d: d.slice(), L, k: L.length });
+}, s => { const W = 540, H = 250, x0 = 110, y = 60, w = 44, h = 40, n = 7; let g = defsAr;
+  const R2 = x0 + n * (w + 4);
+  g += '<path d="M' + (x0 - 6) + ' ' + (y - 8) + ' H' + (R2 + 2) + ' M' + (x0 - 6) + ' ' + (y + h + 8) + ' H' + (R2 + 2) + '" stroke="var(--mut)" stroke-width="3"/>';
+  s.d.forEach((v, i) => g += caja(x0 + i * (w + 4), y, w, h, v, i === s.hi ? 'a' : (i === 0 || i === s.d.length - 1) ? 'b' : ''));
+  if (!s.d.length) g += txt(x0 + 165, y + 25, 'vacía', { c: 'var(--mut)' });
+  g += txt(x0 - 50, y - 16, 'frente', { b: 1 }) + flecha(x0 - 70, y + 12, x0 - 12, y + 12) + flecha(x0 - 12, y + 30, x0 - 70, y + 30);
+  g += txt(R2 + 50, y - 16, 'final', { b: 1 }) + flecha(R2 + 70, y + 12, R2 + 10, y + 12) + flecha(R2 + 10, y + 30, R2 + 70, y + 30);
+  if (s.out !== undefined) g += caja(s.side ? R2 + 30 : x0 - 85, y + h + 20, 44, 34, s.out, 'r');
+  g += '<g transform="translate(0,195)">' + opsInline(s.L, s.k, 5) + '</g>';
+  return svgBox(g, W, H); });
+function opsInline(L, k, per = 6) { const a = L.map((o, j) => j === k ? '▶' + o : j < k ? '✓' + o : o); return txt(14, 0, 'Operaciones:', { a: 'start', s: 12, b: 1 }) + txt(14, 20, a.slice(0, per).join('   '), { a: 'start', s: 12 }) + txt(14, 38, a.slice(per).join('   '), { a: 'start', s: 12 }); }
 
-V('Data-Structures-Algorithms-Heap', 'Asignar habitaciones con un heap', 'El heap da siempre la habitación que se libera primero.', push => {
-  const n = 7, cl = Array.from({ length: n }, (_, i) => { const a = R(1, 15); return { a, b: a + R(1, 6), i }; }).sort((x, y) => x.a - y.a);
-  const heap = [], room = Array(n).fill(null); let rooms = 0;
-  const st = c => ({ cl: cl.map(x => [x.a, x.b]), room, heap: heap.slice().sort((x, y) => x[0] - y[0]), cur: c });
-  push('Clientes ordenados por llegada (llegada–salida).', st(-1));
-  cl.forEach((c, k) => { heap.sort((x, y) => x[0] - y[0]); let r, msg;
-    if (heap.length && heap[0][0] < c.a) { r = heap.shift()[1]; msg = 'la habitación ' + r + ' ya se liberó: se reutiliza'; } else { r = ++rooms; msg = 'ninguna está libre: se abre la habitación ' + r; }
-    room[k] = r; heap.push([c.b, r]); push('Llega el cliente ' + c.a + '–' + c.b + ': ' + msg + '.', st(k)); });
-  push('Se necesitan ' + rooms + ' habitaciones.', st(-1));
-}, s => rows([{ t: 'cliente', v: s.cl.map(x => x[0] + '–' + x[1]), c: s.cl.map((_, k) => k === s.cur ? 'a' : '') }, { t: 'habitación', v: s.room, c: s.room.map(v => v === null ? '' : 'g') }, { t: 'heap (sale, hab.)', v: s.heap.length ? s.heap.map(h => h[0] + ',' + h[1]) : [null], c: s.heap.map((_, j) => j === 0 ? 'b' : '') }]));
+V('Data-Structures-Algorithms-Heap', 'El heap (montículo): el mínimo siempre arriba', 'Es un árbol binario guardado en un arreglo: los hijos de i están en 2i+1 y 2i+2. Regla: cada padre ≤ sus hijos. Amarillo = nodo que se mueve · azul = con quién se compara · rojo = el que sale.', push => {
+  const h = [];
+  const S = (m, o = {}) => push(m, Object.assign({ h: h.slice() }, o));
+  S('Un heap no ordena todo: solo garantiza que cada padre sea menor o igual que sus hijos. Por eso la raíz siempre es el mínimo.');
+  const ins = v => { h.push(v); let i = h.length - 1; S('push(' + v + '): se pone en el primer hueco libre (posición ' + i + ').', { a: i });
+    while (i > 0) { const p = (i - 1) >> 1; if (h[p] <= h[i]) { S(h[p] + ' ≤ ' + h[i] + ': el padre ya es menor, se detiene. O(log n) pasos como máximo.', { a: i, b: p }); return; }
+      S(h[i] + ' < ' + h[p] + ': es menor que su padre, se intercambian (sube).', { a: i, b: p }); [h[p], h[i]] = [h[i], h[p]]; i = p; }
+    S(v + ' llegó a la raíz: es el nuevo mínimo.', { a: 0 }); };
+  const pop = () => { const m = h[0]; S('pop(): sale la raíz ' + m + ', que es el mínimo.', { r: 0 }); const last = h.pop(); if (!h.length) { S('El heap quedó vacío.'); return; }
+    h[0] = last; let i = 0; S('El último elemento (' + last + ') pasa a la raíz para no dejar hueco.', { a: 0, out: m });
+    for (;;) { const l = 2 * i + 1, r = l + 1; let c = i; if (l < h.length && h[l] < h[c]) c = l; if (r < h.length && h[r] < h[c]) c = r;
+      if (c === i) { S('Ningún hijo es menor: se detiene. La raíz vuelve a ser el mínimo (' + h[0] + ').', { a: i, out: m }); return; }
+      S(h[i] + ' es mayor que su hijo menor ' + h[c] + ': se intercambian (baja).', { a: i, b: c, out: m }); [h[i], h[c]] = [h[c], h[i]]; i = c; } };
+  const vals = shuffle([...Array(40).keys()].map(x => x + 1)).slice(0, 9);
+  vals.slice(0, 7).forEach(ins); pop(); pop(); vals.slice(7).forEach(ins); pop();
+  S('Insertar y sacar el mínimo cuestan O(log n). El código de abajo lo usa para saber qué habitación se desocupa primero.');
+}, s => { const W = 540, H = 190, n = s.h.length; let g = '';
+  const pos = i => { const d = Math.floor(Math.log2(i + 1)), k = i - (2 ** d - 1), cnt = 2 ** d; return { x: W * (k + 0.5) / cnt, y: 30 + d * 56 }; };
+  for (let i = 1; i < n; i++) { const a = pos(i), b = pos((i - 1) >> 1); g += '<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y + '" stroke="#999" stroke-width="1.5"/>'; }
+  for (let i = 0; i < n; i++) { const p = pos(i), c = i === s.r ? 'r' : i === s.a ? 'a' : i === s.b ? 'b' : i === 0 ? 'g' : '';
+    g += '<circle cx="' + p.x + '" cy="' + p.y + '" r="18" fill="' + (FILL[c] || 'var(--card)') + '" stroke="#666" stroke-width="1.5"/>' + txt(p.x, p.y + 5, s.h[i], { b: 1, s: 14, c: c ? '#111' : 'currentColor' }) + txt(p.x + 22, p.y + 18, i, { s: 10, c: 'var(--mut)' }); }
+  if (!n) g += txt(W / 2, 80, 'heap vacío', { c: 'var(--mut)' });
+  if (s.out !== undefined) g += '<circle cx="505" cy="30" r="18" fill="' + FILL.r + '" opacity=".8"/>' + txt(505, 35, s.out, { b: 1, s: 14, c: '#111' }) + txt(505, 64, 'salió', { c: '#cf222e' });
+  return svgBox(g, W, H) + cellsRow('arreglo', n ? s.h : [null], s.h.map((_, i) => i === s.r ? 'r' : i === s.a ? 'a' : i === s.b ? 'b' : '')); });
 
 V('Data-Structures-Algorithms-FenwickTree', 'Fenwick Tree: suma de prefijos', 'Cada casilla del BIT guarda un bloque que termina en ella; una suma junta pocos bloques.', push => {
   const n = 8, a = [0, ...Array.from({ length: n }, () => R(1, 9))], bit = Array(n + 1).fill(0);
@@ -307,13 +397,6 @@ V('Data-Structures-Classic-Problems-K-Smallest-Sums', 'Las k menores sumas', 'Cu
     push('Se elige ' + v + ' y se agregan sus vecinas al heap (azul). Elegidas: ' + res.join(', '), { S, cls, res: res.slice() }); }
 }, s => table(s.S, s.cls));
 
-V('Data-Structures-Classic-Problems-Team-Queue', 'Cola de equipos', 'Cada color es un equipo: quien llega se mete detrás de su equipo si ya está en la fila.', push => {
-  const teams = ['g', 'b', 'o'], q = []; let id = 1;
-  push('Fila vacía.', { q: [] });
-  for (let s = 0; s < 10; s++) { if (q.length && R(0, 2) === 0) { const x = q.shift(); push('DEQUEUE: sale ' + x.n + '.', { q }); continue; }
-    const t = pick(teams), x = { n: id++, t }; let pos = -1; for (let i = q.length - 1; i >= 0; i--) if (q[i].t === t) { pos = i; break; }
-    if (pos >= 0) { q.splice(pos + 1, 0, x); push('ENQUEUE ' + x.n + ': su equipo ya está, se pone detrás de él.', { q }); } else { q.push(x); push('ENQUEUE ' + x.n + ': su equipo no estaba, entra al final.', { q }); } }
-}, s => '<div class="cells">' + (s.q.length ? s.q.map(x => '<div class="cell" style="background:' + COL[x.t] + ';color:#fff">' + x.n + '</div>').join('') : '<div class="cell">·</div>') + '</div>');
 
 // =================== FunctionalTools ===================
 V('FunctionalTools-Codes-BinarySearchAnswer', 'Búsqueda binaria sobre la respuesta', 'Rojo = con ese tiempo no alcanza; verde = alcanza. Se busca la frontera.', push => {

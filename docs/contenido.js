@@ -50,18 +50,18 @@ C("DP-Classic-Problems-Campeonato", 1, "La probabilidad de ganar se calcula a pa
   ["P[0][j] = 1 (A ya ganó) y P[i][0] = 0.", "P[i][j] = p·P[i−1][j] + q·P[i][j−1].", "La respuesta es P[n][n]."]);
 
 // ---------- Estructuras de datos ----------
-C("Data-Structures-Algorithms-Deque", 2, "Una fila que guarda solo los candidatos a mínimo de la ventana, en orden creciente.",
-  "Si llega un número más pequeño, todos los mayores que están antes nunca volverán a ser el mínimo, así que se descartan. El frente de la deque siempre es el mínimo de la ventana, y cada elemento entra y sale una sola vez: tiempo lineal.",
-  "Para mínimos o máximos de ventanas deslizantes.",
-  ["Quitar por atrás los valores ≥ al nuevo.", "Agregar el índice nuevo atrás.", "Quitar del frente los que ya salieron de la ventana.", "El frente es el mínimo."]);
-C("Data-Structures-Algorithms-Stack", 1, "Una pila que guarda los posibles «menores a la izquierda»; los que ya no sirven se sacan.",
-  "Al ver a[i], cualquier número anterior que sea mayor o igual ya no puede ser la respuesta para nadie que venga después, porque a[i] está más cerca y es menor. Se sacan de la pila, y lo que queda arriba es la respuesta.",
-  "Para encontrar el elemento menor o mayor más cercano a cada lado.",
-  ["Sacar de la pila los ≥ a[i].", "El tope (si hay) es la respuesta de i.", "Meter i en la pila."]);
-C("Data-Structures-Algorithms-Heap", 1, "Una cola de prioridad que siempre te da la habitación que se libera más pronto.",
-  "Se atiende a los clientes por hora de llegada. El heap (montículo) guarda las habitaciones ocupadas ordenadas por hora de salida. Si la que sale primero ya está libre cuando llega el cliente, se reutiliza; si no, se abre una nueva.",
-  "Cuando necesitas sacar repetidamente el menor (o mayor) elemento de un conjunto que cambia.",
-  ["Ordenar clientes por llegada.", "Mirar la habitación con salida más temprana.", "Reutilizarla si ya salió; si no, abrir otra."]);
+C("Data-Structures-Algorithms-Deque", 2, "Una deque (double-ended queue) es una fila con dos puertas: se puede meter y sacar por adelante y por atrás, todo en O(1).",
+  "Es la generalización de la pila y la cola. Con push_back y pop_back se comporta como una pila; con push_back y pop_front, como una cola. Además permite mirar el frente y el final sin sacarlos. En C++ es std::deque y en Python collections.deque (appendleft, append, popleft, pop). El uso clásico en competencia es la deque monótona: para el mínimo de una ventana que se desliza, se guardan solo los candidatos en orden creciente; los nuevos sacan por atrás a los mayores y los que salen de la ventana se quitan por el frente. Cada elemento entra y sale una sola vez, así que todo es lineal.",
+  "Cuando necesitas sacar elementos por los dos extremos: ventanas deslizantes, BFS 0-1 o simular una pila y una cola a la vez.",
+  ["push_front(x) / push_back(x): meter por adelante o por atrás. O(1).", "pop_front() / pop_back(): sacar por adelante o por atrás. O(1).", "front() / back(): mirar los extremos sin sacar.", "En la ventana deslizante: sacar por atrás los ≥ al nuevo, meterlo atrás, quitar del frente los que salieron; el frente es el mínimo."]);
+C("Data-Structures-Algorithms-Stack", 1, "Una pila (stack) es una colección donde solo se toca el elemento de arriba: el último que entra es el primero que sale (LIFO).",
+  "Piensa en una torre de platos: pones uno encima (push), quitas el de encima (pop) o miras cuál está arriba (top). No puedes sacar uno del medio. A cambio de esa restricción, las tres operaciones cuestan O(1). En C++ es std::stack (o un vector con push_back/pop_back); en Python, una lista con append y pop. Las pilas aparecen cuando hay que «deshacer» o volver al último pendiente: el botón atrás del navegador, revisar paréntesis balanceados, la recursión y el DFS. El código de esta lección usa una pila monótona: para cada número busca el menor más cercano a su izquierda, sacando de la pila los que ya nunca podrán ser respuesta.",
+  "Cuando lo que importa es lo más reciente: deshacer, emparejar paréntesis, recorrer en profundidad o encontrar el menor/mayor más cercano a un lado.",
+  ["push(x): x se pone encima del tope. O(1).", "pop(): se quita el tope. O(1).", "top(): se mira el tope sin quitarlo. O(1).", "En la pila monótona: antes de meter a[i], sacar los que sean ≥ a[i]; lo que quede arriba es la respuesta."]);
+C("Data-Structures-Algorithms-Heap", 1, "Un heap (montículo o cola de prioridad) te da siempre el elemento más pequeño (o el más grande) de un conjunto que va cambiando.",
+  "Es un árbol binario casi completo guardado en un arreglo: los hijos de la posición i están en 2i+1 y 2i+2. Solo cumple una regla: cada padre es menor o igual que sus hijos, así que la raíz es el mínimo. Para insertar, el elemento se pone al final y «sube» intercambiándose con su padre mientras sea menor. Para sacar el mínimo, el último pasa a la raíz y «baja» intercambiándose con su hijo menor. Como el árbol tiene altura log n, ambas operaciones cuestan O(log n) y ver el mínimo cuesta O(1). En C++ es std::priority_queue (por defecto da el máximo; usa greater<> para el mínimo) y en Python el módulo heapq. En esta lección se usa para saber qué habitación de hotel se desocupa primero.",
+  "Cuando necesitas sacar muchas veces el menor (o mayor) de un conjunto que cambia: Dijkstra, Prim, simulaciones por eventos, las k mejores combinaciones.",
+  ["push(x): poner x al final y subirlo mientras sea menor que su padre. O(log n).", "top(): la raíz es el mínimo. O(1).", "pop(): quitar la raíz, poner el último en su lugar y bajarlo hacia el hijo menor. O(log n).", "En el problema: ordenar clientes por llegada y reutilizar la habitación cuya salida (la raíz del heap) ya pasó."]);
 C("Data-Structures-Algorithms-FenwickTree", 2, "Un arreglo donde cada casilla guarda la suma de un bloque, para sumar prefijos y actualizar en log n.",
   "Sumar un rango recorriendo el arreglo tarda n pasos. El Fenwick Tree (o BIT) usa los bits del índice para dividir el arreglo en bloques de tamaño potencia de 2. Una suma de prefijo junta pocos bloques, y una actualización toca pocos bloques.",
   "Sumas de rangos con valores que cambian.",
@@ -94,10 +94,10 @@ C("Data-Structures-Classic-Problems-K-Smallest-Sums", 2, "Mezcla listas ordenada
   "Elegir un número de cada fila da muchísimas sumas. Pero al combinar dos listas ordenadas, las k menores sumas se encuentran explorando desde (0, 0) y avanzando a los vecinos con un heap, como si fuera un Dijkstra sobre una cuadrícula.",
   "Cuando necesitas las k mejores combinaciones de varias listas.",
   ["Ordenar cada fila.", "Mezclar de a dos filas con el heap.", "Guardar solo las k menores."]);
-C("Data-Structures-Classic-Problems-Team-Queue", 1, "Una cola de colas: cada equipo tiene su propia fila y los equipos hacen fila entre ellos.",
-  "Cuando alguien llega, se pone detrás de su equipo si ya hay alguien de su equipo esperando; si no, su equipo entra al final de la cola general. Con dos niveles de colas cada operación es O(1).",
-  "Para simular colas con prioridades por grupo.",
-  ["Mapear cada persona a su equipo.", "ENQUEUE: a la cola del equipo (y el equipo a la general si estaba vacío).", "DEQUEUE: sale el primero del equipo del frente."]);
+C("Data-Structures-Classic-Problems-Team-Queue", 1, "Una cola (queue) es la fila del banco: se entra por el final y se sale por el frente; el primero en llegar es el primero en salir (FIFO).",
+  "Una cola tiene dos operaciones principales: enqueue (entrar por el final) y dequeue (salir por el frente), además de mirar quién está al frente. Todas cuestan O(1). En C++ es std::queue y en Python collections.deque (append y popleft; evita list.pop(0), que es O(n)). Las colas sirven siempre que hay que atender en orden de llegada: turnos, buffers y, sobre todo, BFS. El problema Team Queue lleva la idea un paso más allá con una cola de colas: cada equipo tiene su propia cola, y la cola general guarda equipos. Quien llega se pone al final de su equipo si este ya está en la fila; si no, su equipo entra al final de la cola general.",
+  "Cuando hay que procesar cosas en el mismo orden en que llegaron: BFS, simulaciones de turnos o filas con grupos.",
+  ["enqueue(x): x entra por el final. O(1).", "dequeue(): sale el del frente. O(1).", "front(): mirar quién está al frente.", "En Team Queue: una cola por equipo + una cola general de equipos; al salir, sale el primero del equipo del frente y, si su equipo se vacía, el equipo deja la cola general."]);
 
 // ---------- Grafos ----------
 const G = "Graphs-Algorithms-";
