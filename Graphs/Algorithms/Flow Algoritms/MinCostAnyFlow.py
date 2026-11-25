@@ -1,115 +1,101 @@
-from heapq import heappush, heappop
-from math import inf
+import sys
+import heapq
 
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
+
+"""
+ * Algoritmo : Flujo de costo mínimo con exactamente K unidades (Successive Shortest Paths)
+ * Problema  : Sin problema equivalente en CSES; formato propio
+ * Entrada   : n m K, luego m aristas "u v cap cost" (nodos 1..n, fuente 1, sumidero n)
+ * Salida    : IMPOSSIBLE si no se pueden enviar K unidades; si no, el costo mínimo
+ * Complejidad: tiempo O(K · E log V), memoria O(V + E)
+"""
+
+
+# cada arista guarda destino, capacidad y costo en listas paralelas; e ^ 1 es la inversa
 class MinCostFlow:
-    # edges: [to, rev_index, cap, cost]
-    def __init__(self, n=0):
+    def __init__(self, n):
         self.n = n
-        self.adj = [[] for _ in range(n)]
+        self.G = [[] for _ in range(n)]
+        self.to, self.cap, self.cost = [], [], []
 
-    def add_edge(self, u, v, cap, cost):
-        iu = len(self.adj[u])
-        iv = len(self.adj[v])
-        self.adj[u].append([v, iv, cap, cost])
-        self.adj[v].append([u, iu, 0, -cost])
-        return iu  # index of forward edge in adj[u]
+    # agrega la arista y su inversa (capacidad 0 y costo negativo)
+    def add_edge(self, u, v, c, w):
+        self.G[u].append(len(self.to))
+        self.to.append(v); self.cap.append(c); self.cost.append(w)
+        self.G[v].append(len(self.to))
+        self.to.append(u); self.cap.append(0); self.cost.append(-w)
 
-    # try to send exactly K flow from s to t; returns (flow_sent, total_cost)
     def min_cost_flow_k(self, s, t, K):
-        n = self.n
-        flow = 0
-        cost = 0
-        potential = [inf] * n
-        dist = [inf] * n
-        pv = [-1] * n
-        pe = [-1] * n
-
-        # Bellman-Ford init from s to handle negative costs
-        potential[s] = 0
-        for _ in range(n - 1):
-            updated = False
+        n, G, to, cap, cost = self.n, self.G, self.to, self.cap, self.cost
+        # potenciales iniciales con Bellman-Ford (por si hay costos negativos)
+        pot = [INF] * n
+        pot[s] = 0
+        for _ in range(n):
+            changed = False
             for u in range(n):
-                if potential[u] == inf: continue
-                for e in self.adj[u]:
-                    if e[2] <= 0: continue
-                    v, _, _, w = e
-                    if potential[v] > potential[u] + w:
-                        potential[v] = potential[u] + w
-                        updated = True
-            if not updated:
+                if pot[u] == INF:
+                    continue
+                for e in G[u]:
+                    if cap[e] > 0 and pot[u] + cost[e] < pot[to[e]]:
+                        pot[to[e]] = pot[u] + cost[e]
+                        changed = True
+            if not changed:
                 break
+        pot = [p if p != INF else 0 for p in pot]
 
+        flow = total = 0
+        # cada vuelta envía flujo por el camino más barato del grafo residual (Dijkstra con potenciales)
         while flow < K:
-            for i in range(n):
-                dist[i] = inf
+            dist = [INF] * n
+            pe = [-1] * n
             dist[s] = 0
-            pv[:] = [-1] * n
-            pe[:] = [-1] * n
             pq = [(0, s)]
             while pq:
-                d, u = heappop(pq)
-                if d != dist[u]: continue
-                for i, e in enumerate(self.adj[u]):
-                    v, rev, cap, w = e
-                    if cap <= 0: continue
-                    nd = d + w + potential[u] - potential[v]
-                    if nd < dist[v]:
+                d, u = heapq.heappop(pq)
+                if d > dist[u]:
+                    continue
+                for e in G[u]:
+                    v = to[e]
+                    nd = d + cost[e] + pot[u] - pot[v]
+                    if cap[e] > 0 and nd < dist[v]:
                         dist[v] = nd
-                        pv[v] = u
-                        pe[v] = i
-                        heappush(pq, (nd, v))
-
-            if dist[t] == inf:
-                break  # cannot send more
-
+                        pe[v] = e
+                        heapq.heappush(pq, (nd, v))
+            if dist[t] == INF:
+                break
             for v in range(n):
-                if dist[v] < inf:
-                    potential[v] += dist[v]
-
+                if dist[v] < INF:
+                    pot[v] += dist[v]
+            # cuello de botella del camino encontrado
             add = K - flow
             v = t
             while v != s:
-                u = pv[v]
-                e = self.adj[u][pe[v]]
-                add = min(add, e[2])
-                v = u
-
+                e = pe[v]
+                add = min(add, cap[e])
+                v = to[e ^ 1]
             v = t
             while v != s:
-                u = pv[v]
-                e = self.adj[u][pe[v]]
-                e[2] -= add
-                self.adj[v][e[1]][2] += add
-                v = u
-
+                e = pe[v]
+                cap[e] -= add
+                cap[e ^ 1] += add
+                v = to[e ^ 1]
             flow += add
-            cost += add * potential[t]
+            # pot[t] - pot[s] es el costo real del camino más corto
+            total += add * (pot[t] - pot[s])
+        return flow, total
 
-        return flow, cost
+
+def main():
+    n, m, K = map(int, input().split())
+    mcf = MinCostFlow(n + 1)
+    for _ in range(m):
+        u, v, c, w = map(int, input().split())
+        mcf.add_edge(u, v, c, w)
+    flow, cost = mcf.min_cost_flow_k(1, n, K)
+    print("IMPOSSIBLE" if flow < K else cost)
 
 
-n = 4
-mcf = MinCostFlow(n)
-edges = []
-def add(u, v, cap, cost):
-    idx = mcf.add_edge(u, v, cap, cost)
-    edges.append((u, v, cap, cost, idx))
-
-add(0,1,3,1)
-add(0,2,2,2)
-add(1,2,1,0)
-add(1,3,2,3)
-add(2,3,4,1)
-
-K = 1
-sent, total_cost = mcf.min_cost_flow_k(0, 3, K)
-if sent < K:
-    print(f"Impossible to send {K} units of flow. Sent: {sent}")
-else:
-    print(f"Sent {sent} units with min cost = {total_cost}")
-
-print("Edge flows (u->v):")
-for u, v, cap, cost_e, idx in edges:
-    remaining = mcf.adj[u][idx][2]
-    sent_on_edge = cap - remaining
-    print(f"{u}->{v} sent={sent_on_edge} (cap={cap}, cost={cost_e})")
+main()

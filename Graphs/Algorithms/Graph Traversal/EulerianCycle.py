@@ -1,51 +1,59 @@
 import sys
+
 input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-n, m = map(int, input().split())
+"""
+ * Algoritmo : Ciclo euleriano (Hierholzer, grafo no dirigido)
+ * Problema  : CSES 1691 - Mail Delivery (https://cses.fi/problemset/task/1691)
+ * Entrada   : n m, luego m aristas "a b"
+ * Salida    : un ciclo euleriano desde el nodo 1, o IMPOSSIBLE
+ * Complejidad: tiempo O(n + m), memoria O(n + m)
+"""
 
-ady = [[] for _ in range(n)]
-used = [False] * m
 
-for i in range(m):
-    u, v = map(int, input().split())
-    u -= 1
-    v -= 1
-    ady[u].append((v, i))
-    ady[v].append((u, i))
+def main():
+    n, m = map(int, input().split())
+    # cada arista guarda su destino y un id para marcarla como usada
+    adj = [[] for _ in range(n + 1)]
+    deg = [0] * (n + 1)
+    for i in range(m):
+        a, b = map(int, input().split())
+        adj[a].append((b, i))
+        adj[b].append((a, i))
+        deg[a] += 1
+        deg[b] += 1
 
-vis = [False] * n
-stack = [0]
-while stack:
-    v = stack.pop()
-    for u, _ in ady[v]:
-        if not vis[u]:
-            stack.append(u)
-    vis[v] = True
+    # condición de Euler: todos los grados pares
+    if any(d % 2 for d in deg):
+        print("IMPOSSIBLE")
+        return
 
-ok = True
-for i in range(n):
-    if len(ady[i]) == 0:
-        vis[i] = True
-    elif len(ady[i]) & 1:
-        ok = False
-    if not vis[i]:
-        ok = False
-
-if not ok:
-    print("IMPOSSIBLE")
-else:
+    # Hierholzer iterativo: se avanza por aristas libres y se desapila al quedar sin salida
+    used = [False] * m
+    ptr = [0] * (n + 1)
+    st = [1]
     cycle = []
-    stack = [0]
-    while stack:
-        v = stack[-1]
-        while ady[v] and used[ady[v][-1][1]]:
-            ady[v].pop()
-        if ady[v]:
-            u, eid = ady[v].pop()
-            used[eid] = True
-            stack.append(u)
-        else:
+    while st:
+        v = st[-1]
+        # se descartan aristas ya usadas desde el otro extremo
+        while ptr[v] < len(adj[v]) and used[adj[v][ptr[v]][1]]:
+            ptr[v] += 1
+        if ptr[v] == len(adj[v]):
+            # nodo sin salidas: entra al circuito
             cycle.append(v)
-            stack.pop()
+            st.pop()
+        else:
+            u, i = adj[v][ptr[v]]
+            used[i] = True
+            st.append(u)
 
-    print(" ".join(str(x + 1) for x in cycle))
+    # si no se usaron las m aristas, el grafo no es conexo
+    if len(cycle) != m + 1:
+        print("IMPOSSIBLE")
+    else:
+        print(*cycle)
+
+
+main()

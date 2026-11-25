@@ -1,45 +1,42 @@
+import sys
 import heapq
 
-n, m = map(int, input().split())  # Vertices y aristas
-G = [[] for _ in range(n)]        # Lista de adyacencia
-
-# Tomar las aristas con pesos
-for _ in range(m):
-    u, v, w = map(int, input().split())
-    G[u-1].append((v-1, w))
-    G[v-1].append((u-1, w))
-
-# Djikstra desde root con complejidad O(n log(n))
-root = 0
+input = sys.stdin.readline
 INF = float('inf')
-dis = [INF] * n
-parents = [-1] * n
+MOD = 998244353
 
-dis[root] = 0
-pq = []
-heapq.heappush(pq, (0, root))
+"""
+ * Algoritmo : Dijkstra con cola de prioridad
+ * Problema  : CSES 1671 - Shortest Routes I (https://cses.fi/problemset/task/1671)
+ * Entrada   : n m, luego m aristas dirigidas "a b c" (peso c)
+ * Salida    : la distancia mínima de 1 a cada nodo
+ * Complejidad: tiempo O((n + m) log n), memoria O(n + m)
+"""
 
-while pq:
-    d_v, v = heapq.heappop(pq)
-    if d_v > dis[v]:
-        continue
-    for neighbor, weight in G[v]:
-        distance = d_v + weight
-        if distance < dis[neighbor]:
-            dis[neighbor] = distance
-            parents[neighbor] = v
-            heapq.heappush(pq, (distance, neighbor))
 
-# Reconstruir el camino de root a destiny
-destiny = n - 1
-if dis[destiny] == INF:
-    print(-1)
-else:
-    path = []
-    v = destiny
-    while parents[v] != -1:
-        path.append(v + 1)
-        v = parents[v]
-    path.append(root + 1)
-    path.reverse()
-    print(*path)
+def main():
+    n, m = map(int, input().split())
+    G = [[] for _ in range(n + 1)]
+    for _ in range(m):
+        a, b, c = map(int, input().split())
+        G[a].append((b, c))
+
+    # dist[v] = mejor distancia conocida desde 1
+    dist = [INF] * (n + 1)
+    dist[1] = 0
+    # min-heap de (distancia, nodo)
+    pq = [(0, 1)]
+    while pq:
+        d, u = heapq.heappop(pq)
+        # entrada vieja del heap: ya hay una distancia mejor
+        if d > dist[u]:
+            continue
+        for v, w in G[u]:
+            # relajación de la arista u -> v
+            if d + w < dist[v]:
+                dist[v] = d + w
+                heapq.heappush(pq, (dist[v], v))
+    print(*dist[1:])
+
+
+main()

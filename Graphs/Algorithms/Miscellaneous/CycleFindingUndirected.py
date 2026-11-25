@@ -1,46 +1,64 @@
-n, m = map(int, input().split())
-ady = [[] for _ in range(n)]
-for _ in range(m):
-    u, v = map(int, input().split())
-    u -= 1
-    v -= 1
-    ady[u].append(v)
-    ady[v].append(u)
+import sys
 
-vis = [False] * n
-on_stack = [False] * n
-parent = [-1] * n
-cycle = []
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-def dfs(v, p):
-    parent[v] = p
-    vis[v] = True
-    on_stack[v] = True
+"""
+ * Algoritmo : Ciclo en grafo no dirigido (DFS)
+ * Problema  : CSES 1669 - Round Trip (https://cses.fi/problemset/task/1669)
+ * Entrada   : n m, luego m aristas "a b"
+ * Salida    : longitud del ciclo y sus nodos, o IMPOSSIBLE
+ * Complejidad: tiempo O(n + m), memoria O(n + m)
+"""
 
-    for u in ady[v]:
-        if u == p:
+
+def main():
+    n, m = map(int, input().split())
+    G = [[] for _ in range(n + 1)]
+    for _ in range(m):
+        a, b = map(int, input().split())
+        G[a].append(b)
+        G[b].append(a)
+
+    # on_stack = nodos en el camino actual de la DFS, parent[] sirve para reconstruir el ciclo
+    visited = [False] * (n + 1)
+    on_stack = [False] * (n + 1)
+    parent = [0] * (n + 1)
+    for s in range(1, n + 1):
+        if visited[s]:
             continue
-        if not vis[u]:
-            if dfs(u, v):
-                return True
-        elif on_stack[u]:
-            cycle.clear()
-            cycle.append(u)
-            x = v
-            while x != u:
-                cycle.append(x)
-                x = parent[x]
-            cycle.append(u)
-            return True
-
-    on_stack[v] = False
-    return False
-
-for i in range(n):
-    if not vis[i]:
-        if dfs(i, -1):
-            print(len(cycle))
-            print(" ".join(str(x + 1) for x in cycle))
-            break
-else:
+        visited[s] = on_stack[s] = True
+        parent[s] = -1
+        st = [(s, 0)]
+        while st:
+            v, i = st[-1]
+            if i < len(G[v]):
+                st[-1] = (v, i + 1)
+                u = G[v][i]
+                # no se cuenta la arista por la que se llegó (padre)
+                if u == parent[v]:
+                    continue
+                if not visited[u]:
+                    visited[u] = on_stack[u] = True
+                    parent[u] = v
+                    st.append((u, 0))
+                elif on_stack[u]:
+                    # se llegó a un ancestro: hay un ciclo; se retrocede por los padres desde v hasta u
+                    cycle = [u]
+                    x = v
+                    while x != u:
+                        cycle.append(x)
+                        x = parent[x]
+                    cycle.append(u)
+                    print(len(cycle))
+                    print(*cycle)
+                    return
+            else:
+                # v ya no está en el camino actual
+                on_stack[v] = False
+                st.pop()
     print("IMPOSSIBLE")
+
+
+main()

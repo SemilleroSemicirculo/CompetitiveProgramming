@@ -1,34 +1,61 @@
-edges = [] # Grafo describiendo como lista de aristas
-n = 6 # Número de vertices
-edges.sort(key=lambda x: x[2])
+import sys
 
-parents = [i for i in range(n)]
-rank = [0 for i in range(n)]
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-def find(x):
-    if parents[x] != x:
-        parents[x] = find(parents[x])
-
-    return parents[x]
-
-def union(x, y):
-    px = find(x)
-    py = find(y)
-
-    if(px != py):
-        if(rank[px] < rank[py]):
-            px, py = py, px
-        parents[py] = px
-
-        if(rank[px] == rank[py]):
-            rank[px] += 1
+"""
+ * Algoritmo : Kruskal (árbol de expansión mínima con DSU)
+ * Problema  : CSES 1675 - Road Reparation (https://cses.fi/problemset/task/1675)
+ * Entrada   : n m, luego m aristas "a b c" (costo c)
+ * Salida    : el costo mínimo para conectar todo, o IMPOSSIBLE
+ * Complejidad: tiempo O(m log m), memoria O(n + m)
+"""
 
 
-weight = 0
-MST = []
+# DSU para detectar si una arista une componentes distintas
+class DSU:
+    def __init__(self, n):
+        self.parent = list(range(n + 1))
+        self.size = [1] * (n + 1)
 
-for edge in edges:
-    if(find(edge[0]) != find(edge[1])):
-        weight += edge[2]
-        MST.append(edge)
-        union(edge[0], edge[1])
+    def find(self, x):
+        root = x
+        while self.parent[root] != root:
+            root = self.parent[root]
+        while self.parent[x] != root:
+            self.parent[x], x = root, self.parent[x]
+        return root
+
+    def unite(self, a, b):
+        a, b = self.find(a), self.find(b)
+        if a == b:
+            return False
+        if self.size[a] < self.size[b]:
+            a, b = b, a
+        self.parent[b] = a
+        self.size[a] += self.size[b]
+        return True
+
+
+def main():
+    n, m = map(int, input().split())
+    edges = []
+    for _ in range(m):
+        a, b, c = map(int, input().split())
+        edges.append((c, a, b))
+    # se procesan las aristas de menor a mayor peso
+    edges.sort()
+
+    dsu = DSU(n)
+    total = used = 0
+    for w, a, b in edges:
+        # la arista se usa solo si no forma ciclo
+        if dsu.unite(a, b):
+            total += w
+            used += 1
+    # un árbol de expansión tiene n-1 aristas; si faltan, el grafo no es conexo
+    print(total if used == n - 1 else "IMPOSSIBLE")
+
+
+main()

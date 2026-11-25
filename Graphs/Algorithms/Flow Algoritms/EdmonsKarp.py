@@ -1,69 +1,61 @@
-from math import inf
+import sys
 from collections import deque
 
-def bfs(s, t, parent, ady, capacity):
-    for i in range(len(parent)):
-        parent[i] = -1
-    parent[s] = -2
-    q = deque()
-    q.append((s, inf))
-    while q:
-        v, flow = q.popleft()
-        for u in ady[v]:
-            if parent[u] == -1 and capacity[v][u] > 0:
-                parent[u] = v
-                new_flow = min(flow, capacity[v][u])
-                if u == t:
-                    return new_flow
-                q.append((u, new_flow))
-    return 0
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-def max_flow(s, t, ady, capacity):
+"""
+ * Algoritmo : Edmonds-Karp (flujo máximo con BFS)
+ * Problema  : CSES 1694 - Download Speed (https://cses.fi/problemset/task/1694)
+ * Entrada   : n m, luego m aristas dirigidas "a b c" (capacidad c)
+ * Salida    : el flujo máximo de 1 a n
+ * Complejidad: tiempo O(V · E^2), memoria O(V^2)
+"""
+
+
+def main():
+    n, m = map(int, input().split())
+    # capacity[u][v] = capacidad residual; adj solo para recorrer vecinos
+    capacity = [[0] * (n + 1) for _ in range(n + 1)]
+    adj = [[] for _ in range(n + 1)]
+    for _ in range(m):
+        a, b, c = map(int, input().split())
+        if capacity[a][b] == 0 and capacity[b][a] == 0:
+            adj[a].append(b)
+            adj[b].append(a)
+        # se suman capacidades si hay aristas repetidas
+        capacity[a][b] += c
+
+    s, t = 1, n
     flow = 0
-    parent = [-1] * len(ady)
+    # se aumenta el flujo mientras haya camino
     while True:
-        new_flow = bfs(s, t, parent, ady, capacity)
-        if new_flow == 0:
+        # BFS que busca un camino aumentante; guarda el cuello de botella
+        parent = [-1] * (n + 1)
+        parent[s] = -2
+        bottleneck = [0] * (n + 1)
+        bottleneck[s] = INF
+        q = deque([s])
+        while q and parent[t] == -1:
+            u = q.popleft()
+            for v in adj[u]:
+                if parent[v] == -1 and capacity[u][v] > 0:
+                    parent[v] = u
+                    bottleneck[v] = min(bottleneck[u], capacity[u][v])
+                    q.append(v)
+        if parent[t] == -1:
             break
-        flow += new_flow
-        cur = t
-        while cur != s:
-            prev = parent[cur]
-            capacity[prev][cur] -= new_flow
-            capacity[cur][prev] += new_flow
-            cur = prev
-    return flow
+        f = bottleneck[t]
+        flow += f
+        # se resta en la arista y se suma en la inversa
+        v = t
+        while v != s:
+            u = parent[v]
+            capacity[u][v] -= f
+            capacity[v][u] += f
+            v = u
+    print(flow)
 
 
-n = 4
-ady = [[] for _ in range(n)]
-capacity = [[0]*n for _ in range(n)]
-edges = []  # list of (u, v, cap) for original directed edges
-
-def add_edge(u, v, cap):
-    ady[u].append(v)
-    ady[v].append(u)  # reverse edge for residual graph
-    capacity[u][v] += cap
-    edges.append((u, v, cap))
-
-add_edge(0, 1, 3)
-add_edge(0, 2, 2)
-add_edge(1, 2, 1)
-add_edge(1, 3, 2)
-add_edge(2, 3, 4)
-
-# keep a copy of original capacities
-capacity_init = [row[:] for row in capacity]
-
-s, t = 0, 3
-flow = max_flow(s, t, ady, capacity)
-print(f"Max flow from {s} to {t} = {flow}")
-
-print("Edge flows (u -> v):")
-for (u, v, cap) in edges:
-    sent = capacity_init[u][v] - capacity[u][v]  # original - remaining
-    print(f"{u} -> {v} : sent = {sent} (residual cap = {capacity[u][v]})")
-
-print("Residual capacity matrix:")
-for i in range(n):
-    print(' '.join(str(capacity[i][j]) for j in range(n)))
+main()

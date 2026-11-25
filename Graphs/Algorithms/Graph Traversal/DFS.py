@@ -1,26 +1,49 @@
-n, m = map(int, input().split()) # Vertices y aristas
-G = [[] for i in range(n)] # Lista de adyacencia
+import sys
 
-# Tomar las aristas
-for i in range(m):
-    u, v = map(int, input().split())
-    G[v-1].append(u-1)
-    G[u-1].append(v-1)
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-# Vertice para empezar el DFS
-root = 0
+"""
+ * Algoritmo : DFS (componentes conexas)
+ * Problema  : CSES 1666 - Building Roads (https://cses.fi/problemset/task/1666)
+ * Entrada   : n m, luego m aristas "a b"
+ * Salida    : cantidad mínima de caminos a construir y las aristas que conectan las componentes
+ * Complejidad: tiempo O(n + m), memoria O(n + m)
+"""
 
-# DFS con Stack y Visitados
-stack = []
-stack.append(root)
 
-vis = [False for i in range(n)]
+def main():
+    n, m = map(int, input().split())
+    G = [[] for _ in range(n + 1)]
+    for _ in range(m):
+        a, b = map(int, input().split())
+        G[a].append(b)
+        G[b].append(a)
 
-while(stack):
-    v = stack.pop()
-    
-    for u in G[v]:
-        if not vis[u]:
-            stack.append(u)
+    # visited[u] indica si u ya fue explorado
+    visited = [False] * (n + 1)
+    # un representante por cada componente conexa
+    reps = []
+    for s in range(1, n + 1):
+        if visited[s]:
+            continue
+        reps.append(s)
+        # DFS iterativo con pila: explora toda la componente de s
+        visited[s] = True
+        st = [s]
+        while st:
+            u = st.pop()
+            for v in G[u]:
+                if not visited[v]:
+                    visited[v] = True
+                    st.append(v)
 
-    vis[v] = True
+    # se necesitan (componentes - 1) caminos para unirlas
+    out = [str(len(reps) - 1)]
+    for i in range(1, len(reps)):
+        out.append("%d %d" % (reps[i - 1], reps[i]))
+    print("\n".join(out))
+
+
+main()

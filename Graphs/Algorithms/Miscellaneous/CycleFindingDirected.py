@@ -1,46 +1,61 @@
-n, m = map(int, input().split())
+import sys
 
-ady = [[] for _ in range(n)]
-for _ in range(m):
-    u, v = map(int, input().split())
-    u -= 1
-    v -= 1
-    ady[u].append(v)
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-vis = [False] * n
-on_stack = [False] * n
-parent = [-1] * n
-cycle = []
+"""
+ * Algoritmo : Ciclo en grafo dirigido (DFS con pila de recursión)
+ * Problema  : CSES 1678 - Round Trip II (https://cses.fi/problemset/task/1678)
+ * Entrada   : n m, luego m aristas dirigidas "a b"
+ * Salida    : longitud del ciclo y sus nodos, o IMPOSSIBLE
+ * Complejidad: tiempo O(n + m), memoria O(n + m)
+"""
 
-def dfs(v):
-    global cycle
-    vis[v] = True
-    on_stack[v] = True
 
-    for u in ady[v]:
-        if not vis[u]:
-            parent[u] = v
-            if dfs(u):
-                return True
-        elif on_stack[u]:
-            path = [u]
-            x = v
-            while x != u:
-                path.append(x)
-                x = parent[x]
-            path.append(u)
-            path.reverse()
-            cycle = path
-            return True
+def main():
+    n, m = map(int, input().split())
+    G = [[] for _ in range(n + 1)]
+    for _ in range(m):
+        a, b = map(int, input().split())
+        G[a].append(b)
 
-    on_stack[v] = False
-    return False
-
-for i in range(n):
-    if not vis[i]:
-        if dfs(i):
-            print(len(cycle))
-            print(" ".join(str(x + 1) for x in cycle))
-            break
-else:
+    # on_stack = nodos en el camino actual de la DFS, parent[] sirve para reconstruir el ciclo
+    visited = [False] * (n + 1)
+    on_stack = [False] * (n + 1)
+    parent = [0] * (n + 1)
+    for s in range(1, n + 1):
+        if visited[s]:
+            continue
+        visited[s] = on_stack[s] = True
+        st = [(s, 0)]
+        while st:
+            v, i = st[-1]
+            if i < len(G[v]):
+                st[-1] = (v, i + 1)
+                u = G[v][i]
+                if not visited[u]:
+                    visited[u] = on_stack[u] = True
+                    parent[u] = v
+                    st.append((u, 0))
+                elif on_stack[u]:
+                    # arista hacia un nodo del camino actual: ciclo dirigido
+                    cycle = [u]
+                    x = v
+                    while x != u:
+                        cycle.append(x)
+                        x = parent[x]
+                    cycle.append(u)
+                    # se invierte para imprimirlo en el sentido de las aristas
+                    cycle.reverse()
+                    print(len(cycle))
+                    print(*cycle)
+                    return
+            else:
+                # v ya no está en el camino actual
+                on_stack[v] = False
+                st.pop()
     print("IMPOSSIBLE")
+
+
+main()

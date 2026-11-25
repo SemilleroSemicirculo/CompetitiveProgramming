@@ -1,36 +1,45 @@
-from heapq import *
-from math import inf
+import sys
+import heapq
 
-G = []
-n = len(G)
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-start = 0
-mst_weight = 0
+"""
+ * Algoritmo : Prim (árbol de expansión mínima con cola de prioridad)
+ * Problema  : CSES 1675 - Road Reparation (https://cses.fi/problemset/task/1675)
+ * Entrada   : n m, luego m aristas "a b c" (costo c)
+ * Salida    : el costo mínimo para conectar todo, o IMPOSSIBLE
+ * Complejidad: tiempo O(m log n), memoria O(n + m)
+"""
 
-visited = [False for i in range(n)]
-key = [inf for i in range(n)]
-parent = [i for i in range(n)]
-pq = []
 
-heappush(pq, (0, start))
-key[start] = 0
+def main():
+    n, m = map(int, input().split())
+    G = [[] for _ in range(n + 1)]
+    for _ in range(m):
+        a, b, c = map(int, input().split())
+        G[a].append((b, c))
+        G[b].append((a, c))
 
-while pq:
-    w, u = heappop(pq)
+    # min-heap de (peso de la arista, nodo) para crecer el árbol desde el nodo 1
+    in_tree = [False] * (n + 1)
+    pq = [(0, 1)]
+    total = used = 0
+    while pq:
+        w, u = heapq.heappop(pq)
+        # el nodo ya está en el árbol
+        if in_tree[u]:
+            continue
+        # se agrega el nodo con la arista más barata que lo conecta
+        in_tree[u] = True
+        total += w
+        used += 1
+        for v, c in G[u]:
+            if not in_tree[v]:
+                heapq.heappush(pq, (c, v))
+    # si no entraron todos, el grafo no es conexo
+    print(total if used == n else "IMPOSSIBLE")
 
-    if visited[u]:
-        continue
 
-    visited[u] = True
-    mst_weight += w
-
-    for v, weight in G[u]:
-        if not visited[v] and weight < key[v]:
-            key[v] = weight
-            parent[v] = u
-            heappush(pq, (key[v], v))
-
-MST = []
-for i in range(n):
-    if(parent[i] != i):
-        MST.append([i, parent[i], key[i]])
+main()

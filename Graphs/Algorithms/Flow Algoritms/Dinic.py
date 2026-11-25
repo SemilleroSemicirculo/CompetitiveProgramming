@@ -1,81 +1,101 @@
-from math import inf
+import sys
 from collections import deque
 
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
+
+"""
+ * Algoritmo : Dinic (flujo máximo)
+ * Problema  : CSES 1694 - Download Speed (https://cses.fi/problemset/task/1694)
+ * Entrada   : n m, luego m aristas dirigidas "a b c" (capacidad c)
+ * Salida    : el flujo máximo de 1 a n
+ * Complejidad: tiempo O(V^2 · E), memoria O(V + E)
+"""
+
+
+# Dinic: cada fase arma un grafo por niveles (BFS) y envía flujo bloqueante (DFS)
 class Dinic:
     def __init__(self, n):
         self.n = n
-        self.adj = [[] for _ in range(n)]  # each edge: [to, rev_index, cap]
-        self.level = [0]*n
-        self.it = [0]*n
+        self.G = [[] for _ in range(n + 1)]
+        # aristas en listas paralelas: to[e], cap[e]; e ^ 1 es la inversa
+        self.to, self.cap = [], []
 
-    def add_edge(self, u, v, cap):
-        rev_u = len(self.adj[v])
-        self.adj[u].append([v, rev_u, cap])
-        rev_v = len(self.adj[u]) - 1
-        self.adj[v].append([u, rev_v, 0])
-        return rev_v  # index of forward edge in adj[u]
+    # arista y su inversa (capacidad 0) en posiciones consecutivas
+    def add_edge(self, u, v, c):
+        self.G[u].append(len(self.to))
+        self.to.append(v)
+        self.cap.append(c)
+        self.G[v].append(len(self.to))
+        self.to.append(u)
+        self.cap.append(0)
 
+    # niveles desde s; devuelve si t es alcanzable
     def bfs(self, s, t):
-        self.level = [-1]*self.n
-        dq = deque([s]); self.level[s]=0
-        while dq:
-            v = dq.popleft()
-            for to, _, cap in self.adj[v]:
-                if cap>0 and self.level[to]<0:
-                    self.level[to]=self.level[v]+1
-                    dq.append(to)
-                    
-        return self.level[t]>=0
+        self.level = level = [-1] * (self.n + 1)
+        level[s] = 0
+        q = deque([s])
+        while q:
+            u = q.popleft()
+            for e in self.G[u]:
+                v = self.to[e]
+                if self.cap[e] > 0 and level[v] == -1:
+                    level[v] = level[u] + 1
+                    q.append(v)
+        return level[t] != -1
 
-    def dfs(self, v, t, pushed):
-        if v==t or pushed==0: return pushed
-        for i in range(self.it[v], len(self.adj[v])):
-            self.it[v]=i
-            to, rev, cap = self.adj[v][i]
-            if cap==0 or self.level[to]!=self.level[v]+1: continue
-            tr = self.dfs(to, t, min(pushed, cap))
-            if tr==0: continue
-            self.adj[v][i][2] -= tr
-            self.adj[to][rev][2] += tr
-            return tr
-        return 0
+    # empuja flujo solo por aristas que suben un nivel; it[v] recuerda por dónde seguir (iterativo)
+    def dfs(self, s, t):
+        G, to, cap, level, it = self.G, self.to, self.cap, self.level, self.it
+        path = []
+        v = s
+        while True:
+            if v == t:
+                f = min(cap[e] for e in path)
+                for e in path:
+                    cap[e] -= f
+                    cap[e ^ 1] += f
+                return f
+            advanced = False
+            while it[v] < len(G[v]):
+                e = G[v][it[v]]
+                u = to[e]
+                if cap[e] > 0 and level[u] == level[v] + 1:
+                    path.append(e)
+                    v = u
+                    advanced = True
+                    break
+                it[v] += 1
+            if not advanced:
+                if v == s:
+                    return 0
+                # callejón sin salida: se retrocede y se descarta esa arista
+                level[v] = -1
+                e = path.pop()
+                v = to[e ^ 1]
+                it[v] += 1
 
-    def max_flow(self, s, t):
+    # mientras exista camino, se repiten fases
+    def maxflow(self, s, t):
         flow = 0
-        while self.bfs(s,t):
-            self.it = [0]*self.n
+        while self.bfs(s, t):
+            self.it = [0] * (self.n + 1)
             while True:
-                pushed = self.dfs(s,t, inf)
-                if pushed==0: break
-                flow += pushed
+                f = self.dfs(s, t)
+                if f == 0:
+                    break
+                flow += f
         return flow
 
-n = 4
-d = Dinic(n)
-edges = []  # (u,v,cap, idx_in_adj_u)
-def add_edge(u,v,cap):
-    idx = d.add_edge(u,v,cap)
-    edges.append((u,v,cap,idx))
-add_edge(0,1,3)
-add_edge(0,2,2)
-add_edge(1,2,1)
-add_edge(1,3,2)
-add_edge(2,3,4)
 
-s, t = 0, 3
-flow = d.max_flow(s,t)
-print(f"Max flow from {s} to {t} = {flow}\n")
+def main():
+    n, m = map(int, input().split())
+    flow = Dinic(n)
+    for _ in range(m):
+        a, b, c = map(int, input().split())
+        flow.add_edge(a, b, c)
+    print(flow.maxflow(1, n))
 
-print("Edge flows (u -> v):")
-for u,v,cap,idx in edges:
-    remaining = d.adj[u][idx][2]
-    sent = cap - remaining
-    print(f"{u} -> {v} : sent = {sent} (residual cap = {remaining})")
 
-print("\nResidual capacity matrix:")
-res = [[0]*n for _ in range(n)]
-for u in range(n):
-    for to, _, cap in d.adj[u]:
-        res[u][to] += cap
-for row in res:
-    print(' '.join(str(x) for x in row))
+main()
