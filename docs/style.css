@@ -56,3 +56,6 @@ body:not(.alg) nav#nav{display:none}body:not(.alg) main{margin:0 auto}
 @media(max-width:820px){body:not(.alg) nav#nav{display:block}}
 .btn.lang.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 #tema{background:none;border:1px solid var(--line);border-radius:8px;padding:5px 9px;cursor:pointer;color:var(--fg);font-size:16px}
+.lvl4{background:#8250df}
+.vrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:3px 0}
+.vlab{min-width:90px;font-size:13px;color:var(--mut)}

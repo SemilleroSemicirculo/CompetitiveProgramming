@@ -3,7 +3,7 @@ const A = window.ALGORITMOS, K = window.CONTENIDO || {}, DEMOS = window.DEMOS ||
 const nav = document.getElementById('nav'), main = document.getElementById('main');
 const byId = Object.fromEntries(A.map(a => [a.id, a]));
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const NIV = {1:'Básico', 2:'Intermedio', 3:'Avanzado'};
+const NIV = {1:'Básico', 2:'Intermedio', 3:'Avanzado', 4:'Finales mundiales'};
 const lvl = n => '<span class="lvl lvl'+n+'">'+NIV[n]+'</span>';
 const fmt = x => x >= 1e15 ? '10^' + Math.round(Math.log10(x)) : x >= 1e6 ? (x/1e6).toFixed(x >= 1e8 ? 0 : 1).replace('.0','') + ' millones' : Math.round(x).toLocaleString('es');
 let timers = [];
@@ -191,6 +191,22 @@ function ruta(){
   main.innerHTML = h + '</div>';
 }
 
+// ---------- Teoría por carpeta ----------
+let teoCarpeta = 'Graphs';
+function teoria(){
+  const T = window.TEORIA || {};
+  let h = '<h1>Teoría</h1><p class="note">Los teoremas y resultados que más se usan en cada tema, desde lo básico hasta lo que aparece en la Maratón Nacional ACIS y en las finales mundiales del ICPC.</p>';
+  h += '<div class="row">' + ORDEN.map(c => '<button class="btn lang'+(c===teoCarpeta?' on':'')+'" data-t="'+c+'">'+c+'</button>').join('') + '</div>';
+  const items = (T[teoCarpeta] || []).slice().sort((a, b) => a.l - b.l);
+  h += '<p>'+esc(DESC[teoCarpeta]||'')+'</p>';
+  h += items.map(t => '<div class="box" style="margin:12px 0"><h3>'+lvl(t.l)+' '+esc(t.n)+'</h3><p>'+esc(t.e)+'</p><p class="note"><b>Para qué sirve:</b> '+esc(t.u)+'</p></div>').join('');
+  const algs = A.filter(a => a.carpeta === teoCarpeta);
+  h += '<h3>Algoritmos de esta carpeta</h3><p>' + algs.map(a => '<a href="#/'+a.id+'">'+esc(a.nombre)+'</a>').join(' · ') + '</p>';
+  main.innerHTML = h;
+  main.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { teoCarpeta = b.dataset.t; teoria(); });
+}
+window.__teo = c => { teoCarpeta = c; };
+
 // ---------- Página de cada algoritmo ----------
 function pagina(a){
   const c = K[a.id] || {}, dem = DEMOS[a.id];
@@ -201,6 +217,7 @@ function pagina(a){
   if (dem) h += '<h2>Míralo en acción</h2><div id="demo"></div>';
   if (c.pasos) h += '<h2>Paso a paso</h2><ol class="steps">'+c.pasos.map(p => '<li>'+esc(p)+'</li>').join('')+'</ol>';
   if (c.cuando) h += '<div class="when"><b>¿Cuándo usarlo?</b> '+esc(c.cuando)+'</div>';
+  h += '<p><a href="#/teoria" onclick="window.__teo(\''+a.carpeta+'\')">Ver los teoremas de '+esc(a.carpeta)+' →</a></p>';
   h += '<div class="meta"><div><b>Complejidad</b>'+esc(a.complejidad)+'</div>';
   h += '<div><b>Pruébalo</b>'+(a.cses ? '<a href="'+a.cses+'" target="_blank" rel="noopener">'+esc(a.problema.replace(/\s*\(https?:[^)]*\)/,''))+'</a>' : esc(a.problema))+'</div>';
   h += '<div><b>Entrada</b>'+esc(a.entrada)+'</div><div><b>Salida</b>'+esc(a.salida)+'</div></div>';
@@ -227,7 +244,7 @@ function router(){
   timers.forEach(clearInterval); timers = [];
   const id = location.hash.slice(2), a = byId[id];
   document.body.classList.toggle('alg', !!a);
-  if (a) pagina(a); else if (id === 'elegir') elegir(); else if (id === 'ruta') ruta(); else inicio();
+  if (a) pagina(a); else if (id === 'elegir') elegir(); else if (id === 'ruta') ruta(); else if (id === 'teoria') teoria(); else inicio();
   marcar(); window.scrollTo && window.scrollTo(0, 0); nav.classList.remove('open');
 }
 document.getElementById('buscar').oninput = e => { menu(e.target.value); if (e.target.value) { document.body.classList.add('alg'); nav.classList.add('open'); } };
