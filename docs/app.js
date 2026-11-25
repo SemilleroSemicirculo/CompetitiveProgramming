@@ -6,6 +6,16 @@ const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 const NIV = {1:'Básico', 2:'Intermedio', 3:'Avanzado', 4:'Finales mundiales'};
 const lvl = n => '<span class="lvl lvl'+n+'">'+NIV[n]+'</span>';
 const fmt = x => x >= 1e15 ? '10^' + Math.round(Math.log10(x)) : x >= 1e6 ? (x/1e6).toFixed(x >= 1e8 ? 0 : 1).replace('.0','') + ' millones' : Math.round(x).toLocaleString('es');
+// ---------- Modo libre / modo libro ----------
+let modo = 'libre';
+try { if (localStorage.getItem('modo') === 'libro') modo = 'libro'; } catch (_) {}
+const CAPS = [], LEC = [], capDe = {};
+(window.LIBRO || []).forEach(p => p.caps.forEach(c => { const num = CAPS.length + 1; CAPS.push(Object.assign({ num, parte: p.parte }, c)); c.algs.forEach((id, k) => { capDe[id] = { num, k }; LEC.push(id); }); }));
+let hechos = new Set();
+try { hechos = new Set(JSON.parse(localStorage.getItem('hechos') || '[]')); } catch (_) {}
+const guardarHechos = () => { try { localStorage.setItem('hechos', JSON.stringify([...hechos])); } catch (_) {} };
+// marcado sencillo del libro: `código` y **negrita**
+const md = t => esc(t).replace(/`([^`]+)`/g, '<code class="ic">$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
 let timers = [];
 const later = (f, ms) => timers.push(setInterval(f, ms));
 
@@ -47,6 +57,7 @@ function resaltar(src){
 // ---------- Menú lateral ----------
 const ORDEN = ['DP','Data Structures','FunctionalTools','Geometry','Graphs','Strings'];
 function menu(filtro){
+  if (modo === 'libro') return menuLibro();
   const f = (filtro || '').toLowerCase(); let h = '';
   for (const c of ORDEN) {
     const items = A.filter(a => a.carpeta === c && (!f || (a.nombre+' '+a.algoritmo+' '+((K[a.id]||{}).idea||'')).toLowerCase().includes(f)));
@@ -60,6 +71,16 @@ function menu(filtro){
   }
   nav.innerHTML = h || '<p class="note">Sin resultados.</p>';
   marcar();
+}
+function menuLibro(){
+  let h = '', parte = '';
+  for (const c of CAPS) {
+    if (c.parte !== parte) { parte = c.parte; h += '<h4>'+esc(parte)+'</h4>'; }
+    const ok = c.algs.length && c.algs.every(id => hechos.has(id));
+    h += '<a href="#/libro/'+c.num+'" data-id="libro/'+c.num+'"><b>'+c.num+'.</b> '+esc(c.t)+(ok ? ' ✓' : '')+'</a>';
+    for (const id of c.algs) h += '<a href="#/'+id+'" data-id="'+id+'" style="padding-left:24px;font-size:13px">'+(hechos.has(id) ? '✓ ' : '· ')+esc(byId[id].nombre)+'</a>';
+  }
+  nav.innerHTML = h; marcar();
 }
 function marcar(){
   const id = location.hash.slice(2);
@@ -207,26 +228,72 @@ function teoria(){
 }
 window.__teo = c => { teoCarpeta = c; };
 
+// ---------- Libro ----------
+function progreso(){ const n = LEC.filter(id => hechos.has(id)).length; return '<div class="prog"><div style="width:'+(100 * n / LEC.length).toFixed(1)+'%"></div></div><p class="note">'+n+' de '+LEC.length+' lecciones estudiadas.</p>'; }
+function libroIndice(){
+  let h = '<h1>El libro</h1><p class="lead" style="color:var(--mut);font-size:18px;max-width:720px">Un curso completo de algoritmos y optimización, en el orden en que se enseñaría en clase. Solo se supone que sabes lo básico de Python: variables, listas, ciclos y funciones. Cada capítulo empieza con una clase y sigue con lecciones, cada una con su visualización y su código verificado.</p>' + progreso();
+  const sig = LEC.find(id => !hechos.has(id));
+  h += '<div class="cta">'+(sig ? '<a class="p" href="#/'+(hechos.size ? sig : 'libro/1')+'">'+(hechos.size ? 'Continuar donde ibas →' : 'Empezar el capítulo 1 →')+'</a>' : '<a class="p" href="#/libro/1">Repasar desde el inicio</a>')+'</div>';
+  let parte = '';
+  for (const c of CAPS) {
+    if (c.parte !== parte) { if (parte) h += '</div>'; parte = c.parte; h += '<h2 style="margin-top:28px">'+esc(parte)+'</h2><div class="grid-home">'; }
+    const n = c.algs.filter(id => hechos.has(id)).length;
+    h += '<a class="card" href="#/libro/'+c.num+'"><small>Capítulo '+c.num+'</small><b style="display:block;margin:4px 0">'+esc(c.t)+'</b><small>'+(c.algs.length ? n+' / '+c.algs.length+' lecciones' : 'Solo clase')+'</small></a>';
+  }
+  main.innerHTML = h + '</div>';
+}
+function bloque(b){
+  if (typeof b === 'string') return '<p>'+md(b)+'</p>';
+  if (b.h) return '<h3>'+esc(b.h)+'</h3>';
+  if (b.py) return '<pre><code>'+resaltarPy(b.py)+'</code></pre>';
+  if (b.nota) return '<div class="when">'+md(b.nota)+'</div>';
+  return '';
+}
+function capitulo(num){
+  const c = CAPS[num - 1]; if (!c) return libroIndice();
+  const T = window.TEORIA || {};
+  let h = '<div class="crumb"><a href="#/libro">El libro</a> › '+esc(c.parte)+'</div><h1>Capítulo '+c.num+'. '+esc(c.t)+'</h1>';
+  h += '<div class="box"><h3>Al terminar este capítulo vas a saber</h3><ul>'+c.obj.map(o => '<li>'+md(o)+'</li>').join('')+'</ul></div>';
+  h += '<h2>La clase</h2><div class="clase">'+c.clase.map(bloque).join('')+'</div>';
+  if (c.algs.length) h += '<h2>Lecciones</h2><ol class="lecs">'+c.algs.map(id => { const a = byId[id], k = K[id] || {}; return '<li><a href="#/'+id+'">'+(hechos.has(id) ? '✓ ' : '')+'<b>'+esc(a.nombre)+'</b></a> <span class="note">'+esc(k.idea || a.algoritmo)+'</span></li>'; }).join('')+'</ol>';
+  const teo = c.teo.map(([f, n]) => (T[f] || []).find(t => t.n === n)).filter(Boolean);
+  if (teo.length) h += '<h2>Teoremas del capítulo</h2>'+teo.map(t => '<div class="box" style="margin:10px 0"><h3>'+lvl(t.l)+' '+esc(t.n)+'</h3><p>'+esc(t.e)+'</p><p class="note"><b>Para qué sirve:</b> '+esc(t.u)+'</p></div>').join('');
+  h += '<h2>Preguntas para pensar</h2><p class="note">Intenta responder antes de abrir la respuesta.</p>'+c.preguntas.map(q => '<details class="preg"><summary>'+md(q.q)+'</summary><p>'+md(q.a)+'</p></details>').join('');
+  h += '<div class="idea">'+md(c.cierre)+'</div>';
+  const prev = CAPS[num - 2], next = c.algs.length ? null : CAPS[num];
+  h += '<div class="pn">'+(prev ? '<a href="#/libro/'+prev.num+'"><small>← Capítulo anterior</small>'+esc(prev.t)+'</a>' : '<a href="#/libro"><small>←</small>Índice del libro</a>')
+     + (c.algs.length ? '<a class="nx" href="#/'+c.algs[0]+'"><small>Primera lección →</small>'+esc(byId[c.algs[0]].nombre)+'</a>' : next ? '<a class="nx" href="#/libro/'+next.num+'"><small>Siguiente capítulo →</small>'+esc(next.t)+'</a>' : '<span></span>')+'</div>';
+  main.innerHTML = h;
+}
+
 // ---------- Página de cada algoritmo ----------
 function pagina(a){
   const c = K[a.id] || {}, dem = DEMOS[a.id];
   const mismo = A.filter(x => x.carpeta === a.carpeta), i = mismo.indexOf(a), prev = mismo[i-1], next = mismo[i+1];
-  let h = '<div class="crumb">'+esc(a.carpeta)+(a.sub !== '-' ? ' › '+esc(a.sub.replace(/\//g,' › ')) : '')+'</div><h1>'+esc(a.nombre)+'</h1><p>'+lvl(c.nivel||1)+' <span class="note">'+esc(a.algoritmo)+'</span></p>';
+  const L = modo === 'libro' && capDe[a.id], cap = L && CAPS[L.num - 1];
+  let h = L ? '<div class="crumb"><a href="#/libro">El libro</a> › <a href="#/libro/'+cap.num+'">Capítulo '+cap.num+'. '+esc(cap.t)+'</a> › Lección '+(L.k + 1)+' de '+cap.algs.length+'</div><h1>'
+            : '<div class="crumb">'+esc(a.carpeta)+(a.sub !== '-' ? ' › '+esc(a.sub.replace(/\//g,' › ')) : '')+'</div><h1>'+esc(a.nombre)+'</h1><p>'+lvl(c.nivel||1)+' <span class="note">'+esc(a.algoritmo)+'</span></p>';
   if (c.idea) h += '<div class="idea">'+esc(c.idea)+'</div>';
   if (c.texto) h += '<h2>¿Cómo funciona?</h2><p>'+esc(c.texto)+'</p>';
   if (dem) h += '<h2>Míralo en acción</h2><div id="demo"></div>';
   if (c.pasos) h += '<h2>Paso a paso</h2><ol class="steps">'+c.pasos.map(p => '<li>'+esc(p)+'</li>').join('')+'</ol>';
   if (c.cuando) h += '<div class="when"><b>¿Cuándo usarlo?</b> '+esc(c.cuando)+'</div>';
-  h += '<p><a href="#/teoria" onclick="window.__teo(\''+a.carpeta+'\')">Ver los teoremas de '+esc(a.carpeta)+' →</a></p>';
+  if (!L) h += '<p><a href="#/teoria" onclick="window.__teo(\''+a.carpeta+'\')">Ver los teoremas de '+esc(a.carpeta)+' →</a></p>';
   h += '<div class="meta"><div><b>Complejidad</b>'+esc(a.complejidad)+'</div>';
   h += '<div><b>Pruébalo</b>'+(a.cses ? '<a href="'+a.cses+'" target="_blank" rel="noopener">'+esc(a.problema.replace(/\s*\(https?:[^)]*\)/,''))+'</a>' : esc(a.problema))+'</div>';
   h += '<div><b>Entrada</b>'+esc(a.entrada)+'</div><div><b>Salida</b>'+esc(a.salida)+'</div></div>';
   const gh = 'https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/';
   h += '<details class="code" open><summary>Ver el código</summary><div class="row"><button class="btn lang on" data-l="cpp">C++</button>'+(a.python?'<button class="btn lang" data-l="py">Python</button>':'')+'<span style="flex:1"></span><button class="btn" id="copiar">Copiar código</button><a class="btn" id="gh" style="text-decoration:none" href="'+gh+encodeURI(a.archivo)+'" target="_blank" rel="noopener">Ver en GitHub</a></div><p class="note" id="aviso" style="display:none">⚠️ Esta versión en Python da respuestas correctas, pero es demasiado lenta para el límite de tiempo de CSES. En competencia usa la versión en C++.</p><pre><code id="src">'+resaltar(a.codigo)+'</code></pre></details>';
-  h += '<div class="pn">'+(prev ? '<a href="#/'+prev.id+'"><small>← Anterior</small>'+esc(prev.nombre)+'</a>' : '<span></span>')+(next ? '<a class="nx" href="#/'+next.id+'"><small>Siguiente →</small>'+esc(next.nombre)+'</a>' : '<span></span>')+'</div>';
+  if (L) {
+    const pid = cap.algs[L.k - 1], nid = cap.algs[L.k + 1], ncap = CAPS[cap.num];
+    h += '<div class="row" style="margin-top:24px"><button class="btn" id="hecho"></button></div>';
+    h += '<div class="pn">'+(pid ? '<a href="#/'+pid+'"><small>← Lección anterior</small>'+esc(byId[pid].nombre)+'</a>' : '<a href="#/libro/'+cap.num+'"><small>← Volver a la clase</small>Capítulo '+cap.num+'</a>')
+       + (nid ? '<a class="nx" href="#/'+nid+'"><small>Siguiente lección →</small>'+esc(byId[nid].nombre)+'</a>' : ncap ? '<a class="nx" href="#/libro/'+ncap.num+'"><small>Siguiente capítulo →</small>'+ncap.num+'. '+esc(ncap.t)+'</a>' : '<a class="nx" href="#/libro"><small>Fin del libro →</small>Índice</a>')+'</div>';
+  } else h += '<div class="pn">'+(prev ? '<a href="#/'+prev.id+'"><small>← Anterior</small>'+esc(prev.nombre)+'</a>' : '<span></span>')+(next ? '<a class="nx" href="#/'+next.id+'"><small>Siguiente →</small>'+esc(next.nombre)+'</a>' : '<span></span>')+'</div>';
   main.innerHTML = h;
   let lang = 'cpp';
   try { if (localStorage.getItem('lang') === 'py' && a.python) lang = 'py'; } catch (_) {}
+  if (L && a.python) lang = 'py';
   const pintar = () => {
     document.getElementById('src').innerHTML = lang === 'py' ? resaltarPy(a.python) : resaltar(a.codigo);
     document.getElementById('aviso').style.display = (lang === 'py' && a.py_lento) ? 'block' : 'none';
@@ -237,6 +304,9 @@ function pagina(a){
   pintar();
   document.getElementById('copiar').onclick = e => { try { navigator.clipboard.writeText(lang === 'py' ? a.python : a.codigo).catch(() => {}); } catch (_) {} e.target.textContent = '¡Copiado!'; setTimeout(() => e.target.textContent = 'Copiar código', 1500); };
   if (dem) dem(document.getElementById('demo'));
+  const hb = document.getElementById('hecho');
+  if (hb) { const pon = () => hb.textContent = hechos.has(a.id) ? '✓ Lección estudiada (quitar marca)' : 'Marcar como estudiada'; pon();
+    hb.onclick = () => { hechos.has(a.id) ? hechos.delete(a.id) : hechos.add(a.id); guardarHechos(); pon(); menu(); }; }
 }
 
 // ---------- Rutas ----------
@@ -244,7 +314,10 @@ function router(){
   timers.forEach(clearInterval); timers = [];
   const id = location.hash.slice(2), a = byId[id];
   document.body.classList.toggle('alg', !!a);
-  if (a) pagina(a); else if (id === 'elegir') elegir(); else if (id === 'ruta') ruta(); else if (id === 'teoria') teoria(); else inicio();
+  document.body.classList.toggle('libro', modo === 'libro');
+  if (modo === 'libro' && !a && !id.startsWith('libro')) { location.replace('#/libro'); return; }
+  if (modo === 'libro') document.body.classList.add('alg');
+  if (a) pagina(a); else if (id === 'libro') libroIndice(); else if (id.startsWith('libro/')) capitulo(+id.slice(6)); else if (id === 'elegir') elegir(); else if (id === 'ruta') ruta(); else if (id === 'teoria') teoria(); else inicio();
   marcar(); window.scrollTo && window.scrollTo(0, 0); nav.classList.remove('open');
 }
 document.getElementById('buscar').oninput = e => { menu(e.target.value); if (e.target.value) { document.body.classList.add('alg'); nav.classList.add('open'); } };
@@ -255,5 +328,13 @@ const tema = document.getElementById('tema');
 const ponerTema = t => { document.documentElement.dataset.theme = t; tema.textContent = t === 'dark' ? '☀️' : '🌙'; };
 ponerTema(document.documentElement.dataset.theme || 'light');
 tema.onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; ponerTema(t); try { localStorage.setItem('tema', t); } catch (_) {} };
+// botón de modo libre / modo libro (se recuerda en el navegador)
+const ponerModo = m => { modo = m; try { localStorage.setItem('modo', m); } catch (_) {} document.querySelectorAll('#modo button').forEach(b => b.classList.toggle('on', b.dataset.m === m)); };
+document.querySelectorAll('#modo button').forEach(b => b.onclick = () => {
+  if (b.dataset.m === modo) return; ponerModo(b.dataset.m); menu();
+  const id = location.hash.slice(2);
+  if (byId[id]) router(); else location.hash = modo === 'libro' ? '#/libro' : '#/';
+});
+ponerModo(modo);
 menu(); router();
 })();

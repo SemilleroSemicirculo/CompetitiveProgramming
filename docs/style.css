@@ -59,3 +59,18 @@ body:not(.alg) nav#nav{display:none}body:not(.alg) main{margin:0 auto}
 .lvl4{background:#8250df}
 .vrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:3px 0}
 .vlab{min-width:90px;font-size:13px;color:var(--mut)}
+/* ---- modo libre / modo libro ---- */
+#modo{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex:none}
+#modo button{border:0;background:var(--card);color:var(--fg);padding:6px 11px;font:inherit;font-size:13px;cursor:pointer}
+#modo button.on{background:var(--acc);color:#fff}
+body.libro header nav.top,body.libro #buscar{display:none}
+body.libro header{justify-content:flex-start}
+.prog{height:10px;background:var(--code);border-radius:99px;overflow:hidden;margin:14px 0 4px;max-width:520px}.prog div{height:100%;background:var(--ok)}
+code.ic{font:13px ui-monospace,Menlo,monospace;background:var(--code);padding:1px 5px;border-radius:5px}
+.clase p{max-width:760px}.clase h3{margin-top:22px}.clase pre{margin:12px 0}
+ol.lecs li{margin:8px 0}
+details.preg{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0}details.preg summary{cursor:pointer;font-weight:600}details.preg p{margin:8px 0 0}
+@media(max-width:820px){#modo button{padding:5px 7px;font-size:12px}}
+header .logo,header nav.top a{white-space:nowrap}
+@media(max-width:1150px){header .logo{display:none}header input{max-width:200px}}
+@media(max-width:820px){header{flex-wrap:wrap;gap:8px}header nav.top{order:9;width:100%;overflow-x:auto}}

@@ -43,13 +43,13 @@ const table = (g, cls, rl, cl) => '<div style="overflow:auto"><table style="bord
 const COL = { g: '#2da44e', a: '#d4a72c', b: '#1f6feb', r: '#cf222e', p: '#8250df', o: '#fb8f44', k: '#57606a' };
 function graph(G) {
   const W = G.W || 540, H = G.H || 280, rad = 15;
-  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="max-width:' + W + 'px;display:block"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#888"/></marker></defs>';
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="max-width:' + W + 'px;display:block"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#888"/></marker></defs>';
   for (const e of G.edges) {
     const A = G.nodes[e.a], B = G.nodes[e.b];
     const dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy) || 1, off = e.bend || 0;
     const x1 = A.x + dx / L * rad, y1 = A.y + dy / L * rad, x2 = B.x - dx / L * rad, y2 = B.y - dy / L * rad;
     const col = COL[e.c] || '#999', mx = (x1 + x2) / 2 - dy / L * off, my = (y1 + y2) / 2 + dx / L * off;
-    s += '<path d="M' + x1 + ' ' + y1 + ' Q' + mx + ' ' + my + ' ' + x2 + ' ' + y2 + '" fill="none" stroke="' + col + '" stroke-width="' + (e.c ? 3.5 : 1.5) + '"' + (e.dash ? ' stroke-dasharray="4 4"' : '') + (e.d ? ' marker-end="url(#ar)"' : '') + ' opacity="' + (e.c === 'x' ? 0.25 : 1) + '"/>';
+    s += '<path d="M' + x1 + ' ' + y1 + ' Q' + mx + ' ' + my + ' ' + x2 + ' ' + y2 + '" fill="none" stroke="' + col + '" stroke-width="' + (e.c && e.c !== 'x' ? 3.5 : 1.5) + '"' + (e.dash ? ' stroke-dasharray="4 4"' : '') + (e.d ? ' marker-end="url(#ar)"' : '') + ' opacity="' + (e.c === 'x' ? 0.25 : 1) + '"/>';
     if (e.l !== undefined && e.l !== '') s += '<text x="' + (mx + 9 * dy / L) + '" y="' + (my - 9 * dx / L + 4) + '" font-size="12" text-anchor="middle" fill="currentColor">' + e.l + '</text>';
   }
   for (const v of G.nodes) {
