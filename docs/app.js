@@ -314,6 +314,7 @@ function router(){
   timers.forEach(clearInterval); timers = [];
   const id = location.hash.slice(2), a = byId[id];
   document.body.classList.toggle('alg', !!a);
+  if (id.startsWith('libro') && modo !== 'libro') { ponerModo('libro'); menu(); }
   document.body.classList.toggle('libro', modo === 'libro');
   if (modo === 'libro' && !a && !id.startsWith('libro')) { location.replace('#/libro'); return; }
   if (modo === 'libro') document.body.classList.add('alg');
