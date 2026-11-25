@@ -1,27 +1,39 @@
 import sys
+
 input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-class SparseTable:
-    def __init__(self, a):
-        n = len(a)
-        self.st = [a[:]]
-        j = 1
-        while (1 << j) <= n:
-            prev = self.st[-1]
-            half = 1 << (j - 1)
-            self.st.append([min(prev[i], prev[i + half]) for i in range(n - (1 << j) + 1)])
-            j += 1
+"""
+ * Algoritmo : Sparse Table (mínimo de rango en O(1))
+ * Problema  : CSES 1647 - Static Range Minimum Queries (https://cses.fi/problemset/task/1647)
+ * Entrada   : n q, n enteros, luego q consultas "a b"
+ * Salida    : el mínimo de cada rango
+ * Complejidad: tiempo O(n log n + q), memoria O(n log n)
+"""
 
-    # minimo en el rango [l..r] (0-indexado), O(1)
-    def query(self, l, r):
-        j = (r - l + 1).bit_length() - 1
-        return min(self.st[j][l], self.st[j][r - (1 << j) + 1])
 
-n, q = map(int, input().split())
-a = list(map(int, input().split()))
-table = SparseTable(a)
-out = []
-for _ in range(q):
-    l, r = map(int, input().split())
-    out.append(table.query(l - 1, r - 1))
-print("\n".join(map(str, out)))
+def main():
+    n, q = map(int, input().split())
+    a = list(map(int, input().split()))
+
+    # st[j][i] = mínimo del rango que empieza en i con longitud 2^j
+    st = [a]
+    j = 1
+    # cada nivel combina dos rangos del nivel anterior
+    while (1 << j) <= n:
+        prev, half = st[-1], 1 << (j - 1)
+        st.append([min(prev[i], prev[i + half]) for i in range(n - (1 << j) + 1)])
+        j += 1
+
+    out = []
+    for _ in range(q):
+        l, r = map(int, input().split())
+        l -= 1
+        # se cubre [l..r] con dos rangos de longitud 2^k que se pueden solapar (válido para el mínimo)
+        k = (r - l).bit_length() - 1
+        out.append(min(st[k][l], st[k][r - (1 << k)]))
+    print("\n".join(map(str, out)))
+
+
+main()

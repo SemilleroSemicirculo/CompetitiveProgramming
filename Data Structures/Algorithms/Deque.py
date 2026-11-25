@@ -1,23 +1,45 @@
-from collections import deque
+import sys
 
-# Crear un deque
-d = deque(["a", "b", "c"])
-print("Deque inicial:", list(d))
+input = sys.stdin.readline
+INF = float('inf')
+MOD = 998244353
 
-# Agregar un elemento a la derecha
-d.append("d")
-print("Despues de append:", list(d))
+"""
+ * Algoritmo : Deque monótona (mínimo de ventana deslizante)
+ * Problema  : CSES 3221 - Sliding Window Minimum (https://cses.fi/problemset/task/3221)
+ * Entrada   : n k, luego x a b c con x_i = (a·x_{i-1} + b) mod c
+ * Salida    : XOR de los mínimos de todas las ventanas de tamaño k
+ * Complejidad: tiempo O(n), memoria O(n)
+"""
 
-# Agregar un elemento a la izquierda
-d.appendleft("z")
-print("Despues de appendleft:", list(d))
 
-# Remover el primer elemento (popleft)
-left_elem = d.popleft()
-print("Elemento removido (popleft):", left_elem)
-print("Deque tras popleft:", list(d))
+def main():
+    n, k = map(int, input().split())
+    x, a, b, c = map(int, input().split())
 
-# Remover el ultimo elemento (pop)
-right_elem = d.pop()
-print("Elemento removido (pop):", right_elem)
-print("Deque tras pop:", list(d))
+    # la deque (lista + índice de frente) guarda índices con valores crecientes;
+    # el frente es el mínimo de la ventana
+    idx = [0] * n
+    val = [0] * n
+    head = tail = 0
+    res = 0
+    v = x
+    for i in range(n):
+        if i:
+            v = (a * v + b) % c
+        # se descartan los mayores o iguales a v: nunca serán mínimo
+        while tail > head and val[tail - 1] >= v:
+            tail -= 1
+        idx[tail] = i
+        val[tail] = v
+        tail += 1
+        # el frente salió de la ventana
+        if idx[head] <= i - k:
+            head += 1
+        # la ventana ya tiene k elementos
+        if i >= k - 1:
+            res ^= val[head]
+    print(res)
+
+
+main()

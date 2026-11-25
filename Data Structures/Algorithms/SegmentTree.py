@@ -1,272 +1,96 @@
-class Data:
-    """
-    Data structure to store information for each node in the segment tree.
-    In this case, we store the sum and size of the range.
-    """
-    def __init__(self, suma=0, size=0):
-        self.suma = suma
-        self.size = size
-    
-    @classmethod
-    def from_value(cls, value):
-        """Create a Data object from a single value (leaf node)"""
-        return cls(value, 1)
-    
-    @classmethod
-    def from_merge(cls, left, right):
-        """Create a Data object by merging two child nodes"""
-        MOD = 998244353
-        suma = (left.suma + right.suma) % MOD
-        size = left.size + right.size
-        return cls(suma, size)
-    
-    def merge(self, left, right):
-        """Merge two child nodes into this node"""
-        merged = Data.from_merge(left, right)
-        self.suma = merged.suma
-        self.size = merged.size
+import sys
+
+input = sys.stdin.readline
+sys.setrecursionlimit(1 << 25)
+INF = float('inf')
+MOD = 998244353
+
+"""
+ * Algoritmo : Segment Tree con propagación perezosa (suma de rango, asignación y suma de rango)
+ * Problema  : CSES 1735 - Range Updates and Sums (https://cses.fi/problemset/task/1735)
+ * Entrada   : n q, n enteros, luego q consultas: "1 a b x" (suma x), "2 a b x" (asigna x) o "3 a b" (consulta suma)
+ * Salida    : la suma de cada consulta de tipo 3
+ * Complejidad: tiempo O((n + q) log n), memoria O(n)
+"""
 
 
-class Lazy:
-    """
-    Lazy propagation structure for range updates.
-    Stores the value to be added to all elements in a range.
-    """
-    def __init__(self, suma=0):
-        self.suma = suma
-    
-    def update_data(self, data):
-        """Apply this lazy update to a data node"""
-        MOD = 998244353
-        data.suma = (data.suma + (self.suma * data.size)) % MOD
-    
-    def split(self, left, right):
-        """Split this lazy update for child nodes (in this case, both get the same update)"""
-        return self, self
-    
-    def update_lazy(self, new_lazy):
-        """Combine this lazy update with a new one"""
-        self.suma += new_lazy.suma
-
-
-class Node:
-    """
-    A single node in the segment tree containing data, lazy update, and lazy flag.
-    """
-    def __init__(self, value=None):
-        if value is not None:
-            self.data = Data.from_value(value)
-        else:
-            self.data = Data()
-        self.lazy = Lazy()
-        self.has_lazy = False
-
-
+# Segment Tree con propagación perezosa: suma[] guarda la suma de cada nodo
+# y cada nodo puede tener pendiente "asignar setv" (si has_set) y luego "sumar add"
 class SegmentTree:
-    """
-    Segment Tree with Lazy Propagation for range sum queries and range updates.
-    
-    This implementation supports:
-    - Range sum queries: Get sum of elements from index l to r
-    - Range updates: Add a value to all elements from index l to r
-    
-    Time Complexity:
-    - Build: O(n)
-    - Query: O(log n)
-    - Update: O(log n)
-    
-    Space Complexity: O(4n)
-    """
-    
-    def __init__(self):
-        self.st = []  # Segment tree array
-        self.n = 0    # Size of original array
-    
-    def build(self, A):
-        """
-        Build the segment tree from array A.
-        
-        Args:
-            A: List of integers to build the tree from
-        """
-        self.n = len(A)
-        self.st = [Node() for _ in range(4 * self.n)]
-        self._build(A, 1, 1, self.n)
-    
-    def _build(self, A, index, left, right):
-        """
-        Recursive helper function to build the segment tree.
-        
-        Args:
-            A: Original array
-            index: Current node index in segment tree
-            left, right: Range [left, right] that this node represents
-        """
-        if left == right:
-            # Leaf node - store single element (convert to 0-indexed)
-            self.st[index] = Node(A[left - 1])
-        else:
-            # Internal node - build children and merge
-            mid = (left + right) // 2
-            self._build(A, 2 * index, left, mid)
-            self._build(A, 2 * index + 1, mid + 1, right)
-            # Merge children data
-            self.st[index].data.merge(self.st[2 * index].data, self.st[2 * index + 1].data)
-    
-    def propagate(self, index, left, right):
-        """
-        Apply lazy propagation to push updates down the tree.
-        
-        Args:
-            index: Current node index
-            left, right: Range this node represents
-        """
-        if not self.st[index].has_lazy:
+    def __init__(self, a):
+        self.n = n = len(a)
+        self.suma = [0] * (4 * n)
+        self.size = [0] * (4 * n)
+        self.has_set = [False] * (4 * n)
+        self.setv = [0] * (4 * n)
+        self.add = [0] * (4 * n)
+        self.build(a, 1, 0, n - 1)
+
+    # construye el árbol recursivamente
+    def build(self, a, i, l, r):
+        self.size[i] = r - l + 1
+        if l == r:
+            self.suma[i] = a[l]
             return
-        
-        # Apply lazy update to current node's data
-        self.st[index].lazy.update_data(self.st[index].data)
-        
-        if left != right:  # Not a leaf node
-            # Propagate lazy update to children
-            lazy_l, lazy_r = self.st[index].lazy.split(left, right)
-            
-            # Update left child
-            self.st[2 * index].lazy.update_lazy(lazy_l)
-            self.st[2 * index].has_lazy = True
-            
-            # Update right child
-            self.st[2 * index + 1].lazy.update_lazy(lazy_r)
-            self.st[2 * index + 1].has_lazy = True
-        
-        # Clear current node's lazy update
-        self.st[index].lazy = Lazy()
-        self.st[index].has_lazy = False
-    
-    def update(self, lower, upper, value):
-        """
-        Add 'value' to all elements in range [lower, upper].
-        
-        Args:
-            lower, upper: Range to update (1-indexed, inclusive)
-            value: Value to add to all elements in range
-        """
-        self._update(1, 1, self.n, lower, upper, value)
-    
-    def _update(self, index, left, right, lower, upper, value):
-        """
-        Recursive helper for range updates.
-        
-        Args:
-            index: Current node index
-            left, right: Range this node represents
-            lower, upper: Range to update
-            value: Value to add
-        """
-        # Apply any pending lazy updates first
-        self.propagate(index, left, right)
-        
-        # No overlap with update range
-        if left > right or left > upper or right < lower:
+        m = (l + r) // 2
+        self.build(a, 2 * i, l, m)
+        self.build(a, 2 * i + 1, m + 1, r)
+        self.suma[i] = self.suma[2 * i] + self.suma[2 * i + 1]
+
+    # aplica una actualización a un nodo y la deja pendiente para sus hijos
+    def apply(self, i, is_set, value, add):
+        if is_set:
+            self.suma[i] = value * self.size[i]
+            self.has_set[i], self.setv[i], self.add[i] = True, value, 0
+        self.suma[i] += add * self.size[i]
+        self.add[i] += add
+
+    # empuja la actualización pendiente a los hijos
+    def propagate(self, i):
+        if self.has_set[i] or self.add[i]:
+            for c in (2 * i, 2 * i + 1):
+                self.apply(c, self.has_set[i], self.setv[i], self.add[i])
+            self.has_set[i], self.add[i] = False, 0
+
+    # actualiza el rango [lo, hi]
+    def update(self, i, l, r, lo, hi, is_set, value, add):
+        if r < lo or l > hi:
             return
-        
-        # Current node is completely within update range
-        if lower <= left and right <= upper:
-            # Apply lazy update to this node
-            lazy = Lazy(value)
-            self.st[index].lazy.update_lazy(lazy)
-            self.st[index].has_lazy = True
-            self.propagate(index, left, right)
+        if lo <= l and r <= hi:
+            self.apply(i, is_set, value, add)
             return
-        
-        # Partial overlap - recurse to children
-        mid = left + (right - left) // 2
-        self._update(2 * index, left, mid, lower, upper, value)
-        self._update(2 * index + 1, mid + 1, right, lower, upper, value)
-        
-        # Update current node by merging children
-        self.st[index].data.merge(self.st[2 * index].data, self.st[2 * index + 1].data)
-    
-    def query(self, lower, upper):
-        """
-        Get sum of elements in range [lower, upper].
-        
-        Args:
-            lower, upper: Range to query (1-indexed, inclusive)
-            
-        Returns:
-            Data object containing sum and size of the range
-        """
-        return self._query(1, 1, self.n, lower, upper)
-    
-    def _query(self, index, left, right, lower, upper):
-        """
-        Recursive helper for range queries.
-        
-        Args:
-            index: Current node index
-            left, right: Range this node represents
-            lower, upper: Range to query
-            
-        Returns:
-            Data object with query result
-        """
-        # Apply any pending lazy updates first
-        self.propagate(index, left, right)
-        
-        # No overlap with query range
-        if left > right or left > upper or right < lower:
-            return Data()  # Return empty data
-        
-        # Current node is completely within query range
-        if lower <= left and right <= upper:
-            return self.st[index].data
-        
-        # Partial overlap - recurse to children and merge results
-        mid = (left + right) // 2
-        left_result = self._query(2 * index, left, mid, lower, upper)
-        right_result = self._query(2 * index + 1, mid + 1, right, lower, upper)
-        
-        # Merge results from both children
-        result = Data()
-        result.merge(left_result, right_result)
-        return result
+        self.propagate(i)
+        m = (l + r) // 2
+        self.update(2 * i, l, m, lo, hi, is_set, value, add)
+        self.update(2 * i + 1, m + 1, r, lo, hi, is_set, value, add)
+        self.suma[i] = self.suma[2 * i] + self.suma[2 * i + 1]
+
+    # suma en el rango [lo, hi]
+    def query(self, i, l, r, lo, hi):
+        if r < lo or l > hi:
+            return 0
+        if lo <= l and r <= hi:
+            return self.suma[i]
+        self.propagate(i)
+        m = (l + r) // 2
+        return self.query(2 * i, l, m, lo, hi) + self.query(2 * i + 1, m + 1, r, lo, hi)
 
 
 def main():
-    """
-    Main function to handle input/output and demonstrate segment tree usage.
-    
-    Input format:
-    - First line: n (array size) and q (number of queries)
-    - Second line: n integers (the array elements)
-    - Next q lines: either
-        - "1 l r" for sum query in range [l, r]
-        - "2 l r value" for adding 'value' to range [l, r]
-    """
-    # Read input
     n, q = map(int, input().split())
     a = list(map(int, input().split()))
-    
-    # Build segment tree
-    tree = SegmentTree()
-    tree.build(a)
-    
-    # Process queries
+    tree = SegmentTree(a)
+    out = []
     for _ in range(q):
-        query_data = list(map(int, input().split()))
-        query_type = query_data[0]
-        l, r = query_data[1], query_data[2]
-        
-        if query_type == 1:
-            # Sum query
-            result = tree.query(l, r)
-            print(result.suma)
+        t = list(map(int, input().split()))
+        l, r = t[1] - 1, t[2] - 1
+        if t[0] == 1:
+            tree.update(1, 0, n - 1, l, r, False, 0, t[3])
+        elif t[0] == 2:
+            tree.update(1, 0, n - 1, l, r, True, t[3], 0)
         else:
-            # Range update
-            value = query_data[3]
-            tree.update(l, r, value)
+            out.append(tree.query(1, 0, n - 1, l, r))
+    print("\n".join(map(str, out)))
 
 
-if __name__ == "__main__":
-    main()
+main()
