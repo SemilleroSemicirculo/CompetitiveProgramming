@@ -28,6 +28,13 @@ Estudiantes, autodidactas y entusiastas de la programación competitiva que dese
 
 ---
 
+## 🏋️ Para practicar
+
+- Cada tema tiene, además de los algoritmos, una carpeta **Classic Problems** con problemas clásicos de CSES resueltos en C++ y Python.
+- En [Problemas Recomendados.md](Problemas%20Recomendados.md) hay 30 problemas sin resolver por tema (10 sencillos, 10 medios y 10 difíciles) de CSES y Codeforces.
+
+---
+
 ## 🤝 Contribuciones
 
 Si deseas contribuir con soluciones, mejoras o nuevas ideas, ¡eres bienvenido! Puedes hacer un fork del repositorio y enviarnos un pull request con tus aportes.

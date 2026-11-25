@@ -329,3 +329,125 @@ C(T+"GrayCode", 1, "Lista todos los números de n bits de modo que cada uno difi
   "La fórmula i XOR (i >> 1) da el i-ésimo código Gray. Se usa en electrónica y para recorrer subconjuntos cambiando un elemento a la vez.",
   "Recorridos donde cada paso cambia una sola cosa.",
   ["Para i de 0 a 2ⁿ − 1.", "g = i ^ (i >> 1).", "Imprimir g con n bits."]);
+
+// ---------- Problemas clásicos de CSES (uno por técnica) ----------
+C("DP-Classic-Problems-Dice-Combinations", 1, "Para contar las formas de llegar a n, suma las formas de llegar a n−1, n−2, …, n−6: el último dado decide de dónde vienes.",
+  "Es el ejemplo más limpio de DP de conteo. Toda secuencia de lanzamientos que suma s termina con una cara k entre 1 y 6, y antes de ese lanzamiento la suma era s − k. Por eso dp[s] = dp[s−1] + … + dp[s−6], con dp[0] = 1 (no lanzar nada). Como cada valor depende solo de los seis anteriores, en Python se puede llevar una ventana con esa suma.",
+  "Cuando hay que contar secuencias ordenadas (importa el orden) que suman un total.",
+  ["dp[0] = 1.", "dp[s] = Σ dp[s − k] para k = 1..6 con s − k ≥ 0.", "Tomar todo módulo 10^9+7; la respuesta es dp[n]."]);
+C("DP-Classic-Problems-Grid-Paths-I", 1, "Los caminos que llegan a una celda son los que llegan desde arriba más los que llegan desde la izquierda.",
+  "Como solo se puede ir a la derecha o abajo, cada camino que llega a (i, j) pasó justo antes por (i−1, j) o por (i, j−1). Las trampas tienen 0 caminos. Basta recorrer la cuadrícula fila por fila, y como cada fila solo usa la anterior, se puede guardar una sola fila.",
+  "Cuadrículas con movimientos que solo avanzan (derecha/abajo) y obstáculos.",
+  ["dp[0][0] = 1 si no es trampa.", "dp[i][j] = dp[i−1][j] + dp[i][j−1], o 0 si es trampa.", "La respuesta es dp[n−1][n−1]."]);
+C("DP-Classic-Problems-Money-Sums", 1, "Lleva el conjunto de sumas alcanzables como bits: agregar una moneda x es hacer can |= can << x.",
+  "Es la mochila de «¿se puede formar s?». Con una tabla de booleanos, cada moneda recorre todas las sumas; con un bitset, la misma operación se hace con un corrimiento y un OR, 64 sumas a la vez. En Python un entero grande sirve como bitset y la operación es igual de corta.",
+  "Para saber qué sumas (o pesos) se pueden formar con un subconjunto, cuando la suma total es moderada.",
+  ["can = {0}.", "Para cada moneda x: can = can ∪ (can + x), es decir can |= can << x.", "Listar los bits encendidos distintos de 0."]);
+C("DP-Classic-Problems-Removal-Game", 2, "DP de intervalos: en el tramo [l, r] guarda la ventaja (mi puntaje − el del rival) del que juega primero.",
+  "Si me toca jugar en [l, r], tomo x[l] y el rival queda jugando primero en [l+1, r], o tomo x[r] y queda en [l, r−1]. Lo que el rival gane de ventaja me lo resta, así que d[l][r] = max(x[l] − d[l+1][r], x[r] − d[l][r−1]). Con la ventaja final y la suma total se despeja mi puntaje: (total + d) / 2. Los tramos se calculan por largo creciente.",
+  "Juegos de dos jugadores que quitan de los extremos, y en general DP sobre subarreglos [l, r].",
+  ["d[i][i] = x[i].", "Por largo creciente: d[l][r] = max(x[l] − d[l+1][r], x[r] − d[l][r−1]).", "Respuesta = (suma total + d[0][n−1]) / 2."]);
+C("DP-Classic-Problems-Counting-Numbers", 3, "DP de dígitos: cuenta los números válidos en [0, x] y responde f(b) − f(a−1).",
+  "Contar en [a, b] directamente es imposible (hasta 10^18 números). Se cuenta en [0, x] dígito por dígito: los números con menos cifras que x se cuentan con una fórmula (9 opciones para el primero, 9 para cada siguiente porque debe ser distinto al anterior), y los que tienen tantas cifras como x se cuentan copiando un prefijo de x y poniendo en la siguiente posición un dígito menor. Si x mismo tiene dos dígitos vecinos iguales, se corta ahí.",
+  "Contar números hasta un límite enorme que cumplen una propiedad sobre sus dígitos.",
+  ["f(x) cuenta [0, x]; f(−1) = 0 y f(0) = 1.", "Sumar 9^largo para cada largo menor que el de x.", "Recorrer x: en la posición i probar cada dígito menor (distinto al anterior) y sumar 9^(restantes).", "Respuesta = f(b) − f(a − 1)."]);
+C("Data-Structures-Classic-Problems-Static-Range-Sum-Queries", 1, "Precalcula sumas de prefijos: la suma de [a, b] es p[b] − p[a−1].",
+  "Si el arreglo no cambia, guardar p[i] = x_1 + … + x_i permite responder cada consulta en O(1): todo lo que hay hasta b menos lo que hay antes de a. Es la base de casi todas las estructuras de rangos.",
+  "Muchas consultas de suma sobre un arreglo que no cambia.",
+  ["p[0] = 0 y p[i] = p[i−1] + x_i.", "Cada consulta [a, b] responde p[b] − p[a−1]."]);
+C("Data-Structures-Classic-Problems-Forest-Queries", 1, "Sumas de prefijos en 2D: cualquier rectángulo se obtiene con cuatro valores e inclusión-exclusión.",
+  "p[i][j] guarda cuántos árboles hay en el rectángulo de (1,1) a (i,j). Se construye con p[i−1][j] + p[i][j−1] − p[i−1][j−1] + celda (la esquina se resta porque se sumó dos veces). Un rectángulo cualquiera es el grande menos las franjas de arriba y de la izquierda, más la esquina que se restó de más.",
+  "Consultas de suma o conteo en rectángulos de una matriz fija.",
+  ["Construir p con inclusión-exclusión.", "Respuesta = p[y2][x2] − p[y1−1][x2] − p[y2][x1−1] + p[y1−1][x1−1]."]);
+C("Data-Structures-Classic-Problems-Range-Update-Queries", 2, "Sumar u a un rango es poner +u al inicio y −u después del final en el arreglo de diferencias; el valor de una posición es una suma de prefijo.",
+  "Es el truco inverso a las sumas de prefijos. Si d es el arreglo de diferencias, el valor de x_k es el original más d_1 + … + d_k. Sumar u a [a, b] solo cambia dos posiciones de d. Con un Fenwick Tree sobre d, ambas operaciones cuestan O(log n).",
+  "Actualizaciones de rango con consultas puntuales (o al revés).",
+  ["Fenwick sobre las diferencias, inicialmente en 0.", "1 a b u: add(a, u) y add(b+1, −u).", "2 k: x_k original + sum(k)."]);
+C("Data-Structures-Classic-Problems-Hotel-Queries", 2, "Un Segment Tree de máximos permite encontrar el primer hotel con espacio bajando siempre por la izquierda si alcanza.",
+  "Cada nodo guarda el máximo de cuartos libres de su tramo. Para un grupo que pide r cuartos: si la raíz tiene menos de r, ninguno sirve. Si no, se baja: si el hijo izquierdo tiene máximo ≥ r, el primer hotel que sirve está ahí; si no, está a la derecha. Al llegar a la hoja se restan los cuartos y se recalcula el camino. Es el «descenso» en Segment Tree.",
+  "Encontrar la primera posición que cumple una condición monótona sobre un tramo, con actualizaciones.",
+  ["Construir el árbol de máximos.", "Si t[raíz] < r responder 0.", "Bajar: izquierda si t[izq] ≥ r, si no derecha.", "Restar r en la hoja y recalcular hacia arriba."]);
+C("Data-Structures-Classic-Problems-Prefix-Sum-Queries", 3, "Un Segment Tree cuyos nodos guardan dos datos (suma y mejor prefijo) que se combinan de forma asociativa.",
+  "Es el ejemplo típico de que el Segment Tree no es solo para sumas o mínimos. Para unir un tramo izquierdo L con uno derecho R: la suma es L.suma + R.suma y el mejor prefijo es max(L.prefijo, L.suma + R.prefijo). Esa combinación es asociativa (pero no conmutativa), así que la consulta debe juntar los nodos en orden de izquierda a derecha.",
+  "Cuando la respuesta de un rango se puede armar con un pequeño resumen de cada mitad.",
+  ["Hoja: (x, max(0, x)).", "comb(L, R) = (L.s + R.s, max(L.p, L.s + R.p)).", "Actualizar una hoja y recalcular el camino.", "Consultar juntando nodos de izquierda a derecha."]);
+C("Graphs-Classic-Problems-Counting-Rooms", 1, "Cada vez que encuentras piso sin visitar hay un cuarto nuevo: píntalo entero con BFS o DFS.",
+  "La cuadrícula es un grafo: cada celda de piso es un nodo y se conecta con sus vecinas de arriba, abajo, izquierda y derecha. Contar cuartos es contar componentes conexas. Se recorre la cuadrícula y, al hallar piso no visitado, se lanza un recorrido que marca todo su cuarto (flood fill).",
+  "Contar o etiquetar regiones conectadas en cuadrículas o grafos.",
+  ["Recorrer todas las celdas.", "Si es piso sin visitar: rooms++ y recorrer (BFS/DFS) marcando todo lo alcanzable.", "Responder rooms."]);
+C("Graphs-Classic-Problems-Labyrinth", 1, "BFS desde A da el camino más corto; guardando por dónde llegaste a cada celda se reconstruye el camino.",
+  "En un grafo sin pesos, BFS visita las celdas por distancia creciente, así que la primera vez que llega a B es por un camino más corto. Para imprimirlo se guarda en cada celda la dirección con la que se llegó, y al final se camina desde B hacia atrás hasta A.",
+  "Camino más corto en grafos o cuadrículas sin pesos, cuando además hay que mostrar el camino.",
+  ["BFS desde A guardando from[celda] = dirección de llegada.", "Si B no se visitó: NO.", "Desde B, retroceder con las direcciones y voltear la lista."]);
+C("Graphs-Classic-Problems-Flight-Discount", 2, "Dijkstra desde 1 y Dijkstra desde n en el grafo invertido; el cupón va en algún vuelo a → b: d1[a] + c/2 + dn[b].",
+  "La ruta con cupón se parte en tres: un camino normal de 1 a a, el vuelo a → b a mitad de precio y un camino normal de b a n. Con las distancias desde 1 y las distancias hacia n (Dijkstra en el grafo con las aristas al revés) se prueba cada vuelo como el del descuento. Otra forma equivalente es Dijkstra sobre estados (ciudad, ya usé el cupón).",
+  "Caminos más cortos con una modificación que se usa una sola vez.",
+  ["d1 = Dijkstra desde 1.", "dn = Dijkstra desde n en el grafo invertido.", "Respuesta = min sobre cada vuelo (a, b, c) de d1[a] + ⌊c/2⌋ + dn[b]."]);
+C("Graphs-Classic-Problems-Longest-Flight-Route", 2, "En un grafo sin ciclos, procesa los nodos en orden topológico y haz DP del camino más largo.",
+  "El camino más largo es difícil en general, pero en un DAG es fácil: si procesas cada ciudad después de todas las que llegan a ella (orden topológico), ya conoces el mejor camino hasta ella y puedes extenderlo a sus vecinas. Guardando el anterior de cada ciudad se reconstruye la ruta.",
+  "Caminos más largos, conteo de caminos o cualquier DP sobre un grafo dirigido acíclico.",
+  ["Orden topológico con Kahn (grados de entrada).", "best[1] = 1, el resto −∞.", "En orden: best[v] = max(best[v], best[u] + 1) guardando par[v] = u.", "Si best[n] es −∞: IMPOSSIBLE; si no, reconstruir con par."]);
+C("Graphs-Classic-Problems-Subordinates", 1, "El número de subordinados es el tamaño del subárbol menos 1; se calcula de las hojas hacia la raíz.",
+  "La empresa es un árbol con raíz en el director. Si se procesa a cada empleado después de todos sus subordinados (por ejemplo, en orden BFS al revés), basta sumarle a su jefe sus propios subordinados más 1. Evitar la recursión hace que funcione sin problemas con árboles muy profundos.",
+  "Tamaños de subárbol, la base de muchas técnicas en árboles.",
+  ["Armar la lista de hijos de cada jefe.", "Orden BFS desde el director.", "Recorrer al revés: sub[jefe] += sub[v] + 1."]);
+C("Strings-Classic-Problems-Finding-Borders", 2, "Los bordes de una cadena son el mayor borde, el mayor borde de ese borde, y así: se leen de la función de prefijos.",
+  "La función de prefijos π[i] es el largo del mayor borde de s[0..i]. Un borde de un borde también es borde de la cadena, y todos se obtienen así. Por eso, empezando en π[n−1] y saltando b → π[b−1] se recorren todos los bordes, de mayor a menor.",
+  "Bordes, periodos y búsqueda de patrones (KMP).",
+  ["Calcular π.", "b = π[n−1]; mientras b > 0 guardar b y hacer b = π[b−1].", "Imprimir en orden creciente."]);
+C("Strings-Classic-Problems-Finding-Periods", 2, "p es periodo si la cadena corrida p posiciones coincide con su prefijo hasta el final: z[p] = n − p.",
+  "La función Z dice, para cada posición i, cuánto coincide la cadena que empieza en i con el prefijo. Si desde p coincide todo lo que queda (z[p] = n − p), repetir el prefijo de largo p genera la cadena. Otra forma de verlo: los periodos son n − b para cada borde b, más n.",
+  "Periodos, repeticiones y comparaciones de prefijos en tiempo lineal.",
+  ["Calcular la función Z.", "Cada p con z[p] = n − p es periodo.", "n siempre es periodo."]);
+C("Strings-Classic-Problems-Distinct-Subsequences", 2, "Cada caracter duplica las subsecuencias, pero hay que restar las que ya terminaban en ese mismo caracter.",
+  "Si con el prefijo hay T subsecuencias distintas (contando la vacía), al agregar c cada una puede o no llevar c al final: 2T. Pero las que terminan en c y ya existían se cuentan dos veces; son exactamente las que había justo antes de la última aparición de c. Por eso T' = 2T − last[c], y last[c] pasa a ser T.",
+  "Contar subsecuencias distintas o, en general, conteos donde hay que evitar duplicados.",
+  ["T = 1 (la vacía), last[c] = 0.", "Por cada c: T' = 2T − last[c]; last[c] = T; T = T'.", "Respuesta = T − 1."]);
+C("Strings-Classic-Problems-Repeating-Substring", 3, "La subcadena repetida más larga es el mayor LCP entre sufijos vecinos del suffix array.",
+  "Dos apariciones de una subcadena son dos sufijos que empiezan igual. Al ordenar todos los sufijos (suffix array), los que comparten el prefijo más largo quedan juntos, así que basta mirar el prefijo común (LCP) entre vecinos. La versión en Python usa otra idea: si un largo L se repite, cualquier largo menor también, así que se busca el mayor L con búsqueda binaria y se revisa cada L con hashing.",
+  "Repeticiones, subcadenas comunes y conteo de subcadenas distintas.",
+  ["Construir el suffix array y el LCP (Kasai).", "Tomar el mayor LCP y su posición.", "Si es 0 imprimir −1."]);
+C("Strings-Classic-Problems-Required-Substring", 3, "Cuenta las cadenas que NO contienen el patrón con una DP sobre el autómata de KMP y réstalas del total 26^n.",
+  "Al leer una cadena letra por letra, lo único que importa para saber si aparecerá el patrón es cuántos caracteres del patrón llevo emparejados (el estado de KMP). Con la función de prefijos se arma la transición go[k][c]. Se cuentan las cadenas que nunca llegan al estado m (patrón completo) y se restan de 26^n.",
+  "Contar cadenas que contienen o evitan patrones (autómatas + DP).",
+  ["Función de prefijos del patrón y transiciones go[k][c].", "dp[0] = 1; por cada letra: dp'[go[k][c]] += dp[k] si go[k][c] < m.", "Respuesta = 26^n − Σ dp."]);
+C("Geometry-Classic-Problems-Point-Location-Test", 1, "El signo del producto cruz de (p2 − p1) y (p3 − p1) dice si p3 está a la izquierda, a la derecha o sobre la recta.",
+  "El producto cruz de dos vectores es positivo si el segundo gira en sentido antihorario respecto al primero, negativo si gira en sentido horario y cero si son colineales. Es la operación más usada de la geometría computacional: orientación, intersección de segmentos, envolventes convexas, áreas.",
+  "Cada vez que hay que saber de qué lado de una recta está un punto.",
+  ["cr = (x2 − x1)(y3 − y1) − (y2 − y1)(x3 − x1).", "cr > 0: LEFT; cr < 0: RIGHT; cr = 0: TOUCH."]);
+C("Geometry-Classic-Problems-Maximum-Manhattan-Distances", 2, "Con u = x + y y v = x − y, la distancia Manhattan es max(|Δu|, |Δv|): solo importan los extremos de u y de v.",
+  "Rotar los ejes 45° convierte la distancia Manhattan en la distancia de Chebyshev. Así, la mayor distancia entre dos puntos del conjunto es el mayor rango entre (máximo de u − mínimo de u) y (máximo de v − mínimo de v), que se actualiza en O(1) por cada punto nuevo.",
+  "Problemas con distancia Manhattan: máximos, vecinos, rotaciones de ejes.",
+  ["Por cada punto: u = x + y, v = x − y.", "Actualizar mínimos y máximos de u y v.", "Imprimir max(maxU − minU, maxV − minV)."]);
+C("Geometry-Classic-Problems-Intersection-Points", 2, "Barre de izquierda a derecha: los horizontales activos están en un Fenwick por altura y cada vertical cuenta cuántos cruza.",
+  "Un segmento vertical en x cruza a los horizontales que están «activos» en ese x (empezaron antes y no han terminado) y cuya altura cae entre sus extremos. Al barrer por x: el inicio de un horizontal suma 1 en su altura, el final resta 1, y cada vertical consulta la suma en [y1, y2].",
+  "Contar cruces o eventos en el plano reduciéndolos a consultas de rango en una dimensión.",
+  ["Eventos: inicio horizontal, vertical, fin horizontal, ordenados por x.", "Inicio: add(y, 1); fin: add(y, −1).", "Vertical: total += sum(y1..y2)."]);
+C("Geometry-Classic-Problems-Area-of-Rectangles", 3, "Barrido en x con un Segment Tree que sabe cuánto largo en y está cubierto: el área es la suma de franjas.",
+  "Entre dos eventos consecutivos en x, el largo cubierto en el eje y no cambia, así que el área de esa franja es largo × ancho. El Segment Tree sobre las alturas comprimidas guarda en cada nodo cuántos rectángulos lo cubren entero y cuánto largo está cubierto en su tramo; no necesita propagación perezosa porque cada inicio tiene su final.",
+  "Área de unión de rectángulos y problemas de cobertura con barrido.",
+  ["Comprimir las y.", "Eventos (x, +1/−1, y1, y2) ordenados por x.", "Antes de cada evento: área += cubierto × (x − x_anterior).", "Actualizar el árbol en [y1, y2)."]);
+C("Geometry-Classic-Problems-Lines-and-Queries-I", 3, "Li Chao Tree: cada nodo guarda la recta que gana en el centro de su tramo; la perdedora baja solo a una mitad.",
+  "Dos rectas se cruzan a lo sumo una vez, así que en un tramo, la que pierde en el centro solo puede ganar en una de las dos mitades. Al insertar se compara en el centro, el nodo se queda con la mejor y la otra baja hacia la mitad donde todavía puede ganar. Para consultar x se mira cada recta del camino de la raíz a la hoja de x.",
+  "Máximo o mínimo de funciones lineales (optimización de DP con convex hull trick).",
+  ["Insertar: comparar en el centro, quedarse con la mejor y bajar la otra a la mitad correcta.", "Consultar x: máximo de las rectas del camino hasta la hoja x."]);
+C("FunctionalTools-Classic-Problems-Exponentiation", 1, "Exponenciación binaria: a^b se calcula con O(log b) multiplicaciones usando los bits de b.",
+  "a^b = (a^2)^(b/2) si b es par, y a · a^(b−1) si es impar. En la práctica se recorren los bits de b: en cada paso la base se eleva al cuadrado y, si el bit está encendido, se multiplica en la respuesta. Todo módulo 10^9+7. En Python, pow(a, b, m) ya lo hace.",
+  "Potencias grandes módulo m, inversos modulares y exponenciación de matrices.",
+  ["res = 1.", "Mientras b > 0: si b es impar res = res·a; a = a·a; b = b/2.", "Todo módulo 10^9+7."]);
+C("FunctionalTools-Classic-Problems-Counting-Divisors", 1, "Con la criba del menor factor primo, factorizas cada x rápido y usas d(x) = (e1+1)(e2+1)…",
+  "Si x = p1^e1 · p2^e2 · …, cada divisor elige un exponente de 0 a e_i para cada primo, así que hay (e1+1)(e2+1)… divisores. Con una criba que guarda el menor factor primo de cada número hasta 10^6, factorizar cualquier x cuesta O(log x).",
+  "Muchas factorizaciones de números pequeños (hasta ~10^7).",
+  ["Criba spf hasta 10^6.", "Factorizar x dividiendo por spf[x] repetidamente.", "Multiplicar (exponente + 1) de cada primo."]);
+C("FunctionalTools-Classic-Problems-Distributing-Apples", 2, "Estrellas y barras: repartir m objetos iguales entre n personas es C(m + n − 1, n − 1).",
+  "Pon las m manzanas en fila y n − 1 separadores: cada orden de estrellas y barras corresponde a un reparto (lo que queda entre separadores es para cada niño). Hay m + n − 1 posiciones y se eligen las de los separadores. El coeficiente binomial se calcula módulo primo con factoriales e inversos de Fermat.",
+  "Repartos de objetos idénticos, soluciones enteras no negativas de x1 + … + xn = m.",
+  ["Respuesta = C(m + n − 1, n − 1).", "Factoriales módulo 10^9+7.", "Inverso de k! con k!^(M−2) (Fermat)."]);
+C("FunctionalTools-Classic-Problems-Array-Division", 2, "Búsqueda binaria sobre la respuesta: si una suma máxima L sirve, cualquier L mayor también; verificar L es una pasada golosa.",
+  "En vez de buscar la partición, se pregunta «¿se puede con suma máxima L?». Para eso basta llenar cada parte golosamente hasta que no quepa el siguiente número y contar cuántas partes salen. Como la respuesta es monótona en L, se busca el menor L que sirve entre max(x) y la suma total.",
+  "Minimizar un máximo (o maximizar un mínimo) cuando verificar una respuesta candidata es fácil.",
+  ["lo = max(x), hi = suma total.", "cabe(L): partes golosas, ¿son ≤ k?", "Búsqueda binaria del menor L con cabe(L)."]);
+C("FunctionalTools-Classic-Problems-Prime-Multiples", 2, "Inclusión-exclusión: suma ⌊n / producto⌋ de cada subconjunto de primos con signo + si es impar y − si es par.",
+  "Contar los múltiplos de al menos uno es contar una unión de conjuntos. Los múltiplos de un producto de primos distintos son la intersección de sus conjuntos, y hay ⌊n / producto⌋. Con 2^k subconjuntos (k ≤ 20) alcanza; los productos que pasan de n aportan 0 y se descartan antes de desbordar.",
+  "Contar elementos que cumplen al menos una de varias condiciones.",
+  ["Para cada subconjunto no vacío S: prod = Π primos de S (descartar si > n).", "Sumar ⌊n / prod⌋ si |S| es impar, restarlo si es par."]);

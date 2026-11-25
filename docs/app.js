@@ -231,6 +231,26 @@ function teoria(){
 }
 window.__teo = c => { teoCarpeta = c; };
 
+// ---------- Practicar: problemas recomendados (sin resolver) ----------
+let pracCarpeta = 'DP';
+let resueltos = new Set();
+try { resueltos = new Set(JSON.parse(localStorage.getItem('practica') || '[]')); } catch (_) {}
+const guardarResueltos = () => { try { localStorage.setItem('practica', JSON.stringify([...resueltos])); } catch (_) {} };
+function practicar(){
+  const R = window.RECOMENDADOS || {}, T = R[pracCarpeta] || {};
+  const BANDAS = [['facil', 'Sencillos', 1], ['medio', 'Medios', 2], ['dificil', 'Difíciles', 3]];
+  const key = x => x.j + ':' + x.id;
+  let h = '<h1>Practicar</h1><p class="note">30 problemas recomendados por tema para resolver por tu cuenta: 10 sencillos, 10 medios y 10 difíciles, de CSES y Codeforces. Ninguno está resuelto en esta guía. Marca los que vayas resolviendo; la marca se guarda en este navegador. En Codeforces se muestra la dificultad oficial (rating).</p>';
+  h += '<div class="row">' + ORDEN.map(c => { const all = Object.values(R[c] || {}).flat(), n = all.filter(x => resueltos.has(key(x))).length;
+    return '<button class="btn lang'+(c===pracCarpeta?' on':'')+'" data-p="'+c+'">'+esc(teoNombre(c))+' <small>'+n+'/'+all.length+'</small></button>'; }).join('') + '</div>';
+  h += '<div class="lvlcol">' + BANDAS.map(([b, t, n]) => '<div class="box"><h3>'+lvl(n).replace(NIV[n], t)+'</h3>' + (T[b] || []).map(x =>
+      '<label class="prac"><input type="checkbox" data-k="'+esc(key(x))+'"'+(resueltos.has(key(x)) ? ' checked' : '')+'> <a href="'+esc(x.u)+'" target="_blank" rel="noopener">'+esc(x.n)+'</a> <small>'+(x.j === 'CSES' ? 'CSES '+esc(x.id) : 'CF '+esc(x.id)+' · '+x.r)+'</small></label>').join('') + '</div>').join('') + '</div>';
+  h += '<p class="note" style="margin-top:16px">Antes de los difíciles, repasa los problemas clásicos resueltos de esta carpeta en <a href="#/elegir" onclick="window.__reset&&window.__reset()">Elegir algoritmo</a>.</p>';
+  main.innerHTML = h;
+  main.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { pracCarpeta = b.dataset.p; practicar(); });
+  main.querySelectorAll('[data-k]').forEach(c => c.onchange = () => { c.checked ? resueltos.add(c.dataset.k) : resueltos.delete(c.dataset.k); guardarResueltos(); practicar(); });
+}
+
 // ---------- Libro ----------
 function progreso(){ const n = LEC.filter(id => hechos.has(id)).length; return '<div class="prog"><div style="width:'+(100 * n / LEC.length).toFixed(1)+'%"></div></div><p class="note">'+n+' de '+LEC.length+' lecciones estudiadas.</p>'; }
 function libroIndice(){
@@ -319,9 +339,9 @@ function router(){
   document.body.classList.toggle('alg', !!a);
   if (id.startsWith('libro') && modo !== 'libro') { ponerModo('libro'); menu(); }
   document.body.classList.toggle('libro', modo === 'libro');
-  if (modo === 'libro' && !a && !id.startsWith('libro')) { location.replace('#/libro'); return; }
+  if (modo === 'libro' && !a && !id.startsWith('libro') && id !== 'practicar') { location.replace('#/libro'); return; }
   if (modo === 'libro') document.body.classList.add('alg');
-  if (a) pagina(a); else if (id === 'libro') libroIndice(); else if (id.startsWith('libro/')) capitulo(+id.slice(6)); else if (id === 'elegir') elegir(); else if (id === 'ruta') ruta(); else if (id === 'teoria') teoria(); else inicio();
+  if (a) pagina(a); else if (id === 'libro') libroIndice(); else if (id.startsWith('libro/')) capitulo(+id.slice(6)); else if (id === 'elegir') elegir(); else if (id === 'ruta') ruta(); else if (id === 'teoria') teoria(); else if (id === 'practicar') practicar(); else inicio();
   marcar(); window.scrollTo && window.scrollTo(0, 0); nav.classList.remove('open');
 }
 document.getElementById('buscar').oninput = e => { menu(e.target.value); if (e.target.value) { document.body.classList.add('alg'); nav.classList.add('open'); } };
