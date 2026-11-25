@@ -225,6 +225,30 @@ window.LIBRO = [
     { q: '¿Cómo se representa 1/2 módulo 998244353?', a: 'Como 2^(M−2) mód M = 499122177, porque 2 · 499122177 ≡ 1.' }
   ],
   cierre: 'Con probabilidades, la DP es la misma de siempre: estado, transición y orden. Lo único que cambia es que cada transición se multiplica por su probabilidad.' }
+,
+
+{ t: 'Distribuciones: binomial, geométrica, condicional y continua',
+  obj: ['Reconocer las distribuciones que aparecen en competencia y sus esperanzas.', 'Usar probabilidad condicional y Bayes cuando el enunciado dice «sabiendo que…».', 'Resolver problemas continuos midiendo áreas o contando órdenes.'],
+  clase: [
+    'En competencia no se usan tablas de distribuciones: casi siempre basta con reconocer **qué proceso** genera la variable y calcular su distribución con una DP o una fórmula corta. Estas son las que más aparecen.',
+    { h: 'Binomial (y su versión con probabilidades distintas)' },
+    'n ensayos independientes de sí/no con probabilidad p: P(X = k) = C(n, k)·pᵏ·(1 − p)ⁿ⁻ᵏ, E = np. Si cada ensayo tiene su propia pᵢ ya no hay fórmula bonita, pero la misma DP ensayo por ensayo funciona: cada ensayo reparte la probabilidad entre «un éxito más» y «igual». Sin reposición (cartas, urnas) la distribución es la hipergeométrica.',
+    { py: 'd = [1.0]  # d[i] = P(i éxitos)\nfor p in probabilidades:\n    d = [a * (1 - p) + b * p for a, b in zip(d + [0.0], [0.0] + d)]' },
+    { h: 'Geométrica: esperar un éxito' },
+    'Si cada intento sale bien con probabilidad p, se esperan 1/p intentos. El coleccionista de cupones es una suma de geométricas: con c tipos vistos se esperan n/(n − c) compras para el siguiente, y en total n·H_n ≈ n ln n.',
+    { h: 'Condicional y Bayes' },
+    'P(A | B) = P(A y B) / P(B). Cuando el enunciado da información («sabiendo que exactamente r compraron»), la respuesta es una división: la probabilidad del caso favorable junto con el dato, entre la probabilidad del dato. Bayes es la misma idea leída al revés: P(A | B) = P(B | A)·P(A) / P(B).',
+    { h: 'Continua' },
+    'Con números reales al azar, la probabilidad es una medida: longitud, área o volumen favorable sobre el total. Dos consecuencias muy útiles: los empates tienen probabilidad 0, así que **todos los órdenes de n puntos uniformes son igual de probables** (lo continuo se vuelve conteo), y el k-ésimo menor de n uniformes en [0, 1] tiene esperanza k/(n + 1). La distribución normal y otras continuas prácticamente no aparecen, porque los jueces piden respuestas exactas.'
+  ],
+  algs: ['Probability-Distributions-Binomial', 'Probability-Distributions-CouponCollector', 'Probability-Classic-Problems-Probability-Given', 'Probability-Distributions-ContinuousUniform', 'Probability-Classic-Problems-Serval-and-Bonus-Problem'],
+  teo: [['Probability', 'Distribución binomial'], ['Probability', 'Distribución hipergeométrica'], ['Probability', 'Coleccionista de cupones'], ['Probability', 'Teorema de Bayes'], ['Probability', 'Probabilidad continua y probabilidad geométrica'], ['Probability', 'Estadísticos de orden de uniformes']],
+  preguntas: [
+    { q: 'Se lanzan 10 monedas justas. ¿Cuál es P(exactamente 5 caras)?', a: 'C(10, 5)/2¹⁰ = 252/1024 ≈ 0.246.' },
+    { q: '¿Cuántas compras se esperan para juntar 3 tipos de cupón equiprobables?', a: '3·(1 + 1/2 + 1/3) = 5.5.' },
+    { q: 'x e y son uniformes en [0, 1]. ¿Cuál es P(x + y ≤ 1)?', a: '1/2: el triángulo bajo la recta x + y = 1 ocupa la mitad del cuadrado.' }
+  ],
+  cierre: 'Antes de buscar una fórmula, pregúntate qué proceso genera la variable: casi siempre la distribución sale de una DP con dos o tres transiciones.' }
 ]},
 
 { parte: 'IV. Consultas en rangos', caps: [

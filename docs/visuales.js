@@ -1433,4 +1433,66 @@ V('Probability-Classic-Problems-Lets-Play-Osu', 'E[puntaje] con E[L] (largo del 
   push('Puntaje esperado: ' + res.toFixed(6), { ps, Ls, Rs, i: ps.length });
 }, s => rows([{ t: 'p', v: s.ps, c: s.ps.map((_, k) => k === s.i ? 'a' : k < s.i ? 'g' : '') }, { t: 'E[L]', v: s.Ls.length ? s.Ls : [null], c: s.Ls.map(() => 'b') }, { t: 'E[puntaje]', v: s.Rs.length ? s.Rs : [null], c: s.Rs.map(() => 'g') }]));
 
+// =================== Probabilidad: distribuciones ===================
+V('Probability-Distributions-Binomial', 'La binomial ensayo por ensayo', 'Cada barra es P(i éxitos). Cada ensayo nuevo mueve una parte p de cada barra una posición a la derecha (éxito) y deja 1 − p en su lugar (fracaso). Verde = la barra que se pregunta.', push => {
+  const n = R(5, 9), p = pick([0.3, 0.5, 0.7]), k = R(1, n - 1); let d = [1];
+  const C = (a, b) => { let r = 1; for (let i = 1; i <= b; i++) r = r * (a - b + i) / i; return r; };
+  push('n = ' + n + ' ensayos con p = ' + p + '. Se pregunta P(X = ' + k + ').', { d: d.slice(), n, k, t: 0 });
+  for (let t = 1; t <= n; t++) { d = d.concat([0]).map((v, i) => v * (1 - p) + (i ? d[i - 1] * p : 0));
+    push('Ensayo ' + t + ': d[i] = d[i]·(1 − p) + d[i − 1]·p. E[éxitos hasta ahora] = ' + f3(t * p) + '.', { d: d.slice(), n, k, t }); }
+  push('P(X = ' + k + ') = ' + d[k].toFixed(6) + ' = C(' + n + ', ' + k + ')·' + p + '^' + k + '·' + f3(1 - p) + '^' + (n - k) + ' = ' + (C(n, k) * p ** k * (1 - p) ** (n - k)).toFixed(6) + '. E = np = ' + f3(n * p) + ', Var = np(1−p) = ' + f3(n * p * (1 - p)) + '.', { d, n, k, t: n, fin: 1 });
+}, s => barras(s.d.concat(Array(s.n + 1 - s.d.length).fill(0)), [...Array(s.n + 1).keys()].map(i => i === s.k ? 'g' : 'b'), [...Array(s.n + 1).keys()]));
+
+V('Probability-Distributions-CouponCollector', 'Coleccionista de cupones: una geométrica por cada tipo nuevo', 'Con c tipos vistos, el siguiente nuevo llega tras una espera geométrica de esperanza n/(n − c). Las esperas se suman por linealidad: E = n·H_n.', push => {
+  const n = R(4, 7), W = []; let E = 0;
+  push(n + ' tipos de cupón, todos igual de probables.', { W: [], n, E });
+  for (let c = 0; c < n; c++) { const w = n / (n - c); E += w; W.push(w);
+    push('Con ' + c + ' tipos vistos, un cupón es nuevo con probabilidad ' + (n - c) + '/' + n + ': espera esperada ' + n + '/' + (n - c) + ' = ' + f3(w) + '. Total = ' + f3(E), { W: W.slice(), n, E }); }
+  push('E[compras] = ' + n + '·(1 + 1/2 + … + 1/' + n + ') = ' + E.toFixed(4) + '. Los últimos tipos son los que más cuestan.', { W, n, E });
+}, s => barras(s.W.concat(Array(s.n - s.W.length).fill(0)), s.W.map((_, i) => i === s.W.length - 1 ? 'a' : 'b').concat(Array(s.n - s.W.length).fill('')), [...Array(s.n).keys()].map(c => c + '→' + (c + 1)), s.n));
+
+V('Probability-Distributions-ContinuousUniform', 'Probabilidad geométrica: área favorable / área total', '(x, y) es un punto uniforme en el rectángulo. Verde = región x + y ≤ s; la probabilidad es su área dividida entre a·b. La línea punteada es x + y = s.', push => {
+  const a = R(4, 10), b = R(3, 6);
+  const area = s => { const T = c => c > 0 ? c * c / 2 : 0; return T(s) - T(s - a) - T(s - b) + T(s - a - b); };
+  for (const s of [R(1, 3), Math.min(a, b) + 1, Math.max(a, b), a + b - 2, a + b])
+    push('s = ' + s + ': área = ' + f3(area(s)) + ' de ' + a * b + ' → P(x + y ≤ ' + s + ') = ' + (area(s) / (a * b)).toFixed(4), { a, b, s });
+}, s => { const k = 22, ox = 40, oy = 270, X = x => ox + x * k, Y = y => oy - y * k; let g = '';
+  const pts = []; const clip = (x, y) => [Math.min(Math.max(x, 0), s.a), Math.min(Math.max(y, 0), s.b)];
+  // región: polígono del rectángulo cortado por x + y ≤ s
+  const P = [[0, 0], [Math.min(s.a, s.s), 0]]; if (s.s > s.a) P.push([s.a, Math.min(s.b, s.s - s.a)]); if (s.s > s.b) P.push([Math.min(s.a, s.s - s.b), s.b]); P.push([0, Math.min(s.b, s.s)]);
+  g += '<rect x="' + X(0) + '" y="' + Y(s.b) + '" width="' + s.a * k + '" height="' + s.b * k + '" fill="none" stroke="#1f6feb" stroke-width="2"/>';
+  g += '<polygon points="' + P.map(([x, y]) => X(x) + ',' + Y(y)).join(' ') + '" fill="#2da44e55" stroke="#2da44e"/>';
+  g += '<line x1="' + X(0) + '" y1="' + Y(s.s) + '" x2="' + X(s.s) + '" y2="' + Y(0) + '" stroke="#d4a72c" stroke-width="2" stroke-dasharray="5 4"/>';
+  g += txt(X(s.a), oy + 16, 'a = ' + s.a) + txt(ox - 18, Y(s.b) + 4, 'b = ' + s.b) + txt(X(0) - 6, oy + 16, '0');
+  return '<svg viewBox="0 0 540 290" width="100%" style="max-width:540px;display:block;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden">' + g + '</svg>'; });
+
+V('Probability-Classic-Problems-Probability-Given', 'Bayes: actualizar con lo que se sabe', 'Barras azules = probabilidad de cada amigo antes de saber nada (pᵢ). Barras verdes = después de saber que exactamente r compraron: P(compró y r compraron) / P(r compraron).', push => {
+  const n = 4, p = Array.from({ length: n }, () => pick([0.1, 0.2, 0.3, 0.5, 0.8])), r = R(1, n - 1);
+  const conteo = skip => { let d = [1]; p.forEach((pi, i) => { if (i !== skip) d = d.concat([0]).map((v, j) => v * (1 - pi) + (j ? d[j - 1] * pi : 0)); }); return d; };
+  const total = conteo(-1)[r], post = [];
+  push('Probabilidades de compra: ' + p.join(', ') + '. Se sabe que exactamente ' + r + ' compraron.', { p, post: [] });
+  push('Denominador: P(exactamente ' + r + ' compran) = ' + total.toFixed(4) + ' (DP binomial con probabilidades distintas).', { p, post: [] });
+  p.forEach((pi, i) => { const c = pi * conteo(i)[r - 1]; post.push(c / total);
+    push('Amigo ' + (i + 1) + ': ' + pi + ' · P(' + (r - 1) + ' entre los demás) = ' + c.toFixed(4) + ' → ' + c.toFixed(4) + ' / ' + total.toFixed(4) + ' = ' + (c / total).toFixed(4), { p, post: post.slice() }); });
+  push('Las probabilidades condicionales suman ' + post.reduce((x, y) => x + y, 0).toFixed(2) + ' = r: en promedio compran exactamente r.', { p, post });
+}, s => { const W = 540, H = 180, n = s.p.length; let g = '';
+  s.p.forEach((v, i) => { const x = 30 + i * 125; g += '<rect x="' + x + '" y="' + (150 - v * 120) + '" width="40" height="' + v * 120 + '" fill="#79b8ff"/>' + txt(x + 20, 145 - v * 120, f3(v), { s: 11 });
+    if (s.post[i] !== undefined) g += '<rect x="' + (x + 46) + '" y="' + (150 - s.post[i] * 120) + '" width="40" height="' + s.post[i] * 120 + '" fill="#7ee2a8"/>' + txt(x + 66, 145 - s.post[i] * 120, f3(s.post[i]), { s: 11 });
+    g += txt(x + 43, 168, 'amigo ' + (i + 1), { s: 11 }); });
+  return svgBox(g, W, H); });
+
+V('Probability-Classic-Problems-Serval-and-Bonus-Problem', 'De lo continuo a contar órdenes', 'Arriba: n segmentos al azar en [0, 1] y el punto x (amarillo). Lo único que importa es el orden de los puntos, y todos los órdenes son igual de probables. Abajo: la estimación por simulación se acerca al valor exacto.', push => {
+  const n = 2, k = 1; let hits = 0, tot = 0;
+  const exact = { 1: 1 / 3, 2: 0 }; // se calcula abajo con la DP
+  const dp = (() => { let f0 = [1, 0, 0], f1 = [0, 0, 0]; for (let i = 0; i < 2 * n + 1; i++) { const g0 = [0, 0, 0], g1 = [0, 0, 0];
+    for (let j = 0; j <= n; j++) { if (j < n) { g0[j + 1] += f0[j]; g1[j + 1] += f1[j]; } if (j) { g0[j - 1] += f0[j] * j; g1[j - 1] += f1[j] * j; } if (j >= k) g1[j] += f0[j]; } f0 = g0; f1 = g1; }
+    let num = f1[0]; for (let i = 1; i <= n; i++) num *= 2 * i; let den = 1; for (let i = 1; i <= 2 * n + 1; i++) den *= i; return num / den; })();
+  for (let t = 1; t <= 12; t++) { const segs = Array.from({ length: n }, () => { const u = Math.random(), v = Math.random(); return [Math.min(u, v), Math.max(u, v)]; }), x = Math.random();
+    const c = segs.filter(([a, b]) => a < x && x < b).length; tot++; if (c >= k) hits++;
+    push('Prueba ' + t + ': x queda cubierto por ' + c + ' segmento(s). Estimación: ' + hits + '/' + tot + ' = ' + (hits / tot).toFixed(3) + '; valor exacto (DP sobre órdenes): ' + dp.toFixed(4), { segs, x, c }); }
+}, s => { const X = v => 30 + v * 480; let g = '<line x1="' + X(0) + '" y1="40" x2="' + X(1) + '" y2="40" stroke="#888" stroke-width="2"/>' + txt(X(0), 58, '0') + txt(X(1), 58, 'l');
+  s.segs.forEach(([a, b], i) => g += '<line x1="' + X(a) + '" y1="' + (80 + i * 22) + '" x2="' + X(b) + '" y2="' + (80 + i * 22) + '" stroke="' + (a < s.x && s.x < b ? '#2da44e' : '#1f6feb') + '" stroke-width="6" stroke-linecap="round"/>');
+  g += '<line x1="' + X(s.x) + '" y1="25" x2="' + X(s.x) + '" y2="140" stroke="#d4a72c" stroke-width="2" stroke-dasharray="4 3"/>' + '<circle cx="' + X(s.x) + '" cy="40" r="6" fill="#d4a72c"/>';
+  return svgBox(g, 540, 150); });
+
 })();

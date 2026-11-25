@@ -31,6 +31,7 @@ window.SECCIONES = {
 "Probability": [
   {"t": "Probabilidad y esperanza", "d": "Regla de la suma y del producto, linealidad e indicadores.", "ids": ["Probability-Algorithms-ProbabilityDP", "Probability-Algorithms-LinearityOfExpectation", "Probability-Algorithms-ExpectedMaximum", "Probability-Classic-Problems-Game-on-Tree", "Probability-Classic-Problems-Lets-Play-Osu"]},
   {"t": "Procesos aleatorios", "d": "Cadenas de Markov y DP sobre estados que cambian al azar.", "ids": ["Probability-Algorithms-MarkovChain", "Probability-Classic-Problems-Ilya-and-Escalator", "Probability-Classic-Problems-Journey", "Probability-Classic-Problems-Bag-of-Mice", "Probability-Classic-Problems-Fish"]},
+  {"t": "Distribuciones", "d": "Binomial, geométrica, condicional (Bayes) y continua uniforme.", "ids": ["Probability-Distributions-Binomial", "Probability-Distributions-CouponCollector", "Probability-Classic-Problems-Probability-Given", "Probability-Distributions-ContinuousUniform", "Probability-Classic-Problems-Serval-and-Bonus-Problem"]},
   {"t": "Probabilidad modular", "d": "Respuestas p · q⁻¹ módulo un primo.", "ids": ["Probability-Algorithms-ModularExpectation"]}
 ],
 "Graphs": [
@@ -69,5 +70,9 @@ window.NOMBRE_VISTA = {
  "Probability-Algorithms-LinearityOfExpectation": "Linealidad de la esperanza",
  "Probability-Algorithms-ExpectedMaximum": "Esperanza del máximo",
  "Probability-Algorithms-MarkovChain": "Cadenas de Markov",
- "Probability-Algorithms-ModularExpectation": "Esperanza modular"
+ "Probability-Algorithms-ModularExpectation": "Esperanza modular",
+ "Probability-Distributions-Binomial": "Distribución binomial",
+ "Probability-Distributions-CouponCollector": "Geométrica y cupones",
+ "Probability-Distributions-ContinuousUniform": "Uniforme continua",
+ "Probability-Classic-Problems-Probability-Given": "Probability|Given (Bayes)"
 };
