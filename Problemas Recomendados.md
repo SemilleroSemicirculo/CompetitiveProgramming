@@ -6,12 +6,107 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 
 | Tema | Sencillos | Medios | Difíciles |
 |---|---|---|---|
-| [Programación dinámica (DP)](#programación-dinámica-dp) | 10 | 10 | 10 |
+| [Herramientas: matemáticas, búsqueda binaria y bits (FunctionalTools)](#herramientas-matemáticas-búsqueda-binaria-y-bits-functionaltools) | 10 | 10 | 10 |
 | [Estructuras de datos](#estructuras-de-datos) | 10 | 10 | 10 |
+| [Programación dinámica (DP)](#programación-dinámica-dp) | 10 | 10 | 10 |
+| [Probabilidad](#probabilidad) | 10 | 10 | 10 |
 | [Grafos](#grafos) | 10 | 10 | 10 |
 | [Cadenas (Strings)](#cadenas-strings) | 10 | 10 | 10 |
 | [Geometría](#geometría) | 10 | 10 | 10 |
-| [Herramientas: matemáticas, búsqueda binaria y bits (FunctionalTools)](#herramientas-matemáticas-búsqueda-binaria-y-bits-functionaltools) | 10 | 10 | 10 |
+
+## Herramientas: matemáticas, búsqueda binaria y bits (FunctionalTools)
+
+### Sencillos
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Bit Strings](https://cses.fi/problemset/task/1617) | CSES 1617 | — |
+| 2 | [Trailing Zeros](https://cses.fi/problemset/task/1618) | CSES 1618 | — |
+| 3 | [Common Divisors](https://cses.fi/problemset/task/1081) | CSES 1081 | — |
+| 4 | [Exponentiation II](https://cses.fi/problemset/task/1712) | CSES 1712 | — |
+| 5 | [Apple Division](https://cses.fi/problemset/task/1623) | CSES 1623 | — |
+| 6 | [T-primes](https://codeforces.com/problemset/problem/230/B) | Codeforces 230B | 1300 |
+| 7 | [Vanya and Lanterns](https://codeforces.com/problemset/problem/492/B) | Codeforces 492B | 1200 |
+| 8 | [K-th Not Divisible by n](https://codeforces.com/problemset/problem/1352/C) | Codeforces 1352C | 1200 |
+| 9 | [Worms](https://codeforces.com/problemset/problem/474/B) | Codeforces 474B | 1200 |
+| 10 | [Raising Bacteria](https://codeforces.com/problemset/problem/579/A) | Codeforces 579A | 1000 |
+
+### Medios
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Sum of Divisors](https://cses.fi/problemset/task/1082) | CSES 1082 | — |
+| 2 | [Creating Strings II](https://cses.fi/problemset/task/1715) | CSES 1715 | — |
+| 3 | [Christmas Party](https://cses.fi/problemset/task/1717) | CSES 1717 | — |
+| 4 | [Bracket Sequences I](https://cses.fi/problemset/task/2064) | CSES 2064 | — |
+| 5 | [Maximum Xor Subarray](https://cses.fi/problemset/task/1655) | CSES 1655 | — |
+| 6 | [Books](https://codeforces.com/problemset/problem/279/B) | Codeforces 279B | 1400 |
+| 7 | [Hamburgers](https://codeforces.com/problemset/problem/371/C) | Codeforces 371C | 1600 |
+| 8 | [Maximum Median](https://codeforces.com/problemset/problem/1201/C) | Codeforces 1201C | 1400 |
+| 9 | [k-th divisor](https://codeforces.com/problemset/problem/762/A) | Codeforces 762A | 1400 |
+| 10 | [Row GCD](https://codeforces.com/problemset/problem/1458/A) | Codeforces 1458A | 1600 |
+
+### Difíciles
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Bracket Sequences II](https://cses.fi/problemset/task/2187) | CSES 2187 | — |
+| 2 | [Counting Necklaces](https://cses.fi/problemset/task/2209) | CSES 2209 | — |
+| 3 | [Counting Coprime Pairs](https://cses.fi/problemset/task/2417) | CSES 2417 | — |
+| 4 | [SOS Bit Problem](https://cses.fi/problemset/task/1654) | CSES 1654 | — |
+| 5 | [Counting Grids](https://cses.fi/problemset/task/2210) | CSES 2210 | — |
+| 6 | [Magic Ship](https://codeforces.com/problemset/problem/1117/C) | Codeforces 1117C | 1900 |
+| 7 | [The Football Season](https://codeforces.com/problemset/problem/1244/C) | Codeforces 1244C | 2000 |
+| 8 | [Fill The Bag](https://codeforces.com/problemset/problem/1303/D) | Codeforces 1303D | 1900 |
+| 9 | [Maximum Value](https://codeforces.com/problemset/problem/484/B) | Codeforces 484B | 2100 |
+| 10 | [Modular Stability](https://codeforces.com/problemset/problem/1359/E) | Codeforces 1359E | 2000 |
+
+## Estructuras de datos
+
+### Sencillos
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Distinct Numbers](https://cses.fi/problemset/task/1621) | CSES 1621 | — |
+| 2 | [Apartments](https://cses.fi/problemset/task/1084) | CSES 1084 | — |
+| 3 | [Concert Tickets](https://cses.fi/problemset/task/1091) | CSES 1091 | — |
+| 4 | [Range Xor Queries](https://cses.fi/problemset/task/1650) | CSES 1650 | — |
+| 5 | [Sliding Window Sum](https://cses.fi/problemset/task/3220) | CSES 3220 | — |
+| 6 | [Registration System](https://codeforces.com/problemset/problem/4/C) | Codeforces 4C | 1300 |
+| 7 | [Queries about less or equal elements](https://codeforces.com/problemset/problem/600/B) | Codeforces 600B | 1300 |
+| 8 | [Same Differences](https://codeforces.com/problemset/problem/1520/D) | Codeforces 1520D | 1200 |
+| 9 | [A and B and Compilation Errors](https://codeforces.com/problemset/problem/519/B) | Codeforces 519B | 1100 |
+| 10 | [Romantic Glasses](https://codeforces.com/problemset/problem/1915/E) | Codeforces 1915E | 1300 |
+
+### Medios
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Salary Queries](https://cses.fi/problemset/task/1144) | CSES 1144 | — |
+| 2 | [List Removals](https://cses.fi/problemset/task/1749) | CSES 1749 | — |
+| 3 | [Sliding Window Median](https://cses.fi/problemset/task/1076) | CSES 1076 | — |
+| 4 | [Subarray Sum Queries](https://cses.fi/problemset/task/1190) | CSES 1190 | — |
+| 5 | [Nested Ranges Check](https://cses.fi/problemset/task/2168) | CSES 2168 | — |
+| 6 | [Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C) | Codeforces 276C | 1500 |
+| 7 | [Greg and Array](https://codeforces.com/problemset/problem/295/A) | Codeforces 295A | 1400 |
+| 8 | [Karen and Coffee](https://codeforces.com/problemset/problem/816/B) | Codeforces 816B | 1400 |
+| 9 | [Potions (Hard Version)](https://codeforces.com/problemset/problem/1526/C2) | Codeforces 1526C2 | 1600 |
+| 10 | [Xenia and Bit Operations](https://codeforces.com/problemset/problem/339/D) | Codeforces 339D | 1700 |
+
+### Difíciles
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Polynomial Queries](https://cses.fi/problemset/task/1736) | CSES 1736 | — |
+| 2 | [Range Queries and Copies](https://cses.fi/problemset/task/1737) | CSES 1737 | — |
+| 3 | [Increasing Array Queries](https://cses.fi/problemset/task/2416) | CSES 2416 | — |
+| 4 | [Distinct Values Queries II](https://cses.fi/problemset/task/3356) | CSES 3356 | — |
+| 5 | [Movie Festival Queries](https://cses.fi/problemset/task/1664) | CSES 1664 | — |
+| 6 | [Sereja and Brackets](https://codeforces.com/problemset/problem/380/C) | Codeforces 380C | 2000 |
+| 7 | [Powerful array](https://codeforces.com/problemset/problem/86/D) | Codeforces 86D | 2200 |
+| 8 | [The Child and Sequence](https://codeforces.com/problemset/problem/438/D) | Codeforces 438D | 2300 |
+| 9 | [Ant colony](https://codeforces.com/problemset/problem/474/F) | Codeforces 474F | 2100 |
+| 10 | [Enemy is weak](https://codeforces.com/problemset/problem/61/E) | Codeforces 61E | 1900 |
 
 ## Programación dinámica (DP)
 
@@ -60,52 +155,54 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | 9 | [Clear the String](https://codeforces.com/problemset/problem/1132/F) | Codeforces 1132F | 2000 |
 | 10 | [Modulo Sum](https://codeforces.com/problemset/problem/577/B) | Codeforces 577B | 1900 |
 
-## Estructuras de datos
+## Probabilidad
+
+CSES solo tiene cuatro problemas de probabilidad y ya están resueltos en la carpeta Probability; aquí todos son de Codeforces. En este tema los ratings son más altos en cada nivel.
 
 ### Sencillos
 
 | # | Problema | Juez | Dificultad |
 |---|---|---|---|
-| 1 | [Distinct Numbers](https://cses.fi/problemset/task/1621) | CSES 1621 | — |
-| 2 | [Apartments](https://cses.fi/problemset/task/1084) | CSES 1084 | — |
-| 3 | [Concert Tickets](https://cses.fi/problemset/task/1091) | CSES 1091 | — |
-| 4 | [Range Xor Queries](https://cses.fi/problemset/task/1650) | CSES 1650 | — |
-| 5 | [Sliding Window Sum](https://cses.fi/problemset/task/3220) | CSES 3220 | — |
-| 6 | [Registration System](https://codeforces.com/problemset/problem/4/C) | Codeforces 4C | 1300 |
-| 7 | [Queries about less or equal elements](https://codeforces.com/problemset/problem/600/B) | Codeforces 600B | 1300 |
-| 8 | [Same Differences](https://codeforces.com/problemset/problem/1520/D) | Codeforces 1520D | 1200 |
-| 9 | [A and B and Compilation Errors](https://codeforces.com/problemset/problem/519/B) | Codeforces 519B | 1100 |
-| 10 | [Romantic Glasses](https://codeforces.com/problemset/problem/1915/E) | Codeforces 1915E | 1300 |
+| 1 | [Die Roll](https://codeforces.com/problemset/problem/9/A) | Codeforces 9A | 800 |
+| 2 | [Red-Blue Shuffle](https://codeforces.com/problemset/problem/1459/A) | Codeforces 1459A | 800 |
+| 3 | [Dreamoon and WiFi](https://codeforces.com/problemset/problem/476/B) | Codeforces 476B | 1300 |
+| 4 | [Archer](https://codeforces.com/problemset/problem/312/B) | Codeforces 312B | 1300 |
+| 5 | [Random Events](https://codeforces.com/problemset/problem/1461/C) | Codeforces 1461C | 1500 |
+| 6 | [Little Pony and Expected Maximum](https://codeforces.com/problemset/problem/453/A) | Codeforces 453A | 1600 |
+| 7 | [Basketball Team](https://codeforces.com/problemset/problem/107/B) | Codeforces 107B | 1600 |
+| 8 | [Game with String](https://codeforces.com/problemset/problem/930/B) | Codeforces 930B | 1600 |
+| 9 | [Wet Shark and Flowers](https://codeforces.com/problemset/problem/621/C) | Codeforces 621C | 1700 |
+| 10 | [Puzzles](https://codeforces.com/problemset/problem/696/B) | Codeforces 696B | 1700 |
 
 ### Medios
 
 | # | Problema | Juez | Dificultad |
 |---|---|---|---|
-| 1 | [Salary Queries](https://cses.fi/problemset/task/1144) | CSES 1144 | — |
-| 2 | [List Removals](https://cses.fi/problemset/task/1749) | CSES 1749 | — |
-| 3 | [Sliding Window Median](https://cses.fi/problemset/task/1076) | CSES 1076 | — |
-| 4 | [Subarray Sum Queries](https://cses.fi/problemset/task/1190) | CSES 1190 | — |
-| 5 | [Nested Ranges Check](https://cses.fi/problemset/task/2168) | CSES 2168 | — |
-| 6 | [Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C) | Codeforces 276C | 1500 |
-| 7 | [Greg and Array](https://codeforces.com/problemset/problem/295/A) | Codeforces 295A | 1400 |
-| 8 | [Karen and Coffee](https://codeforces.com/problemset/problem/816/B) | Codeforces 816B | 1400 |
-| 9 | [Potions (Hard Version)](https://codeforces.com/problemset/problem/1526/C2) | Codeforces 1526C2 | 1600 |
-| 10 | [Xenia and Bit Operations](https://codeforces.com/problemset/problem/339/D) | Codeforces 339D | 1700 |
+| 1 | [Santa's Bot](https://codeforces.com/problemset/problem/1279/D) | Codeforces 1279D | 1700 |
+| 2 | [Andrey and Problem](https://codeforces.com/problemset/problem/442/B) | Codeforces 442B | 1800 |
+| 3 | [Falling Anvils](https://codeforces.com/problemset/problem/77/B) | Codeforces 77B | 1800 |
+| 4 | [Jerry's Protest](https://codeforces.com/problemset/problem/626/D) | Codeforces 626D | 1800 |
+| 5 | [LuoTianyi and the Floating Islands (Easy Version)](https://codeforces.com/problemset/problem/1824/B1) | Codeforces 1824B1 | 1800 |
+| 6 | [Bad Luck Island](https://codeforces.com/problemset/problem/540/D) | Codeforces 540D | 1900 |
+| 7 | [Need for Pink Slips](https://codeforces.com/problemset/problem/1543/C) | Codeforces 1543C | 1900 |
+| 8 | [Good Trip](https://codeforces.com/problemset/problem/1925/D) | Codeforces 1925D | 1900 |
+| 9 | [Score of a Tree](https://codeforces.com/problemset/problem/1777/D) | Codeforces 1777D | 1900 |
+| 10 | [Checkpoints](https://codeforces.com/problemset/problem/1453/D) | Codeforces 1453D | 1900 |
 
 ### Difíciles
 
 | # | Problema | Juez | Dificultad |
 |---|---|---|---|
-| 1 | [Polynomial Queries](https://cses.fi/problemset/task/1736) | CSES 1736 | — |
-| 2 | [Range Queries and Copies](https://cses.fi/problemset/task/1737) | CSES 1737 | — |
-| 3 | [Increasing Array Queries](https://cses.fi/problemset/task/2416) | CSES 2416 | — |
-| 4 | [Distinct Values Queries II](https://cses.fi/problemset/task/3356) | CSES 3356 | — |
-| 5 | [Movie Festival Queries](https://cses.fi/problemset/task/1664) | CSES 1664 | — |
-| 6 | [Sereja and Brackets](https://codeforces.com/problemset/problem/380/C) | Codeforces 380C | 2000 |
-| 7 | [Powerful array](https://codeforces.com/problemset/problem/86/D) | Codeforces 86D | 2200 |
-| 8 | [The Child and Sequence](https://codeforces.com/problemset/problem/438/D) | Codeforces 438D | 2300 |
-| 9 | [Ant colony](https://codeforces.com/problemset/problem/474/F) | Codeforces 474F | 2100 |
-| 10 | [Enemy is weak](https://codeforces.com/problemset/problem/61/E) | Codeforces 61E | 1900 |
+| 1 | [Wish I Knew How to Sort](https://codeforces.com/problemset/problem/1753/C) | Codeforces 1753C | 2000 |
+| 2 | [Intercity Travelling](https://codeforces.com/problemset/problem/1009/E) | Codeforces 1009E | 2000 |
+| 3 | [Expected Power](https://codeforces.com/problemset/problem/2020/E) | Codeforces 2020E | 2000 |
+| 4 | [Jon and Orbs](https://codeforces.com/problemset/problem/768/D) | Codeforces 768D | 2200 |
+| 5 | [Makoto and a Blackboard](https://codeforces.com/problemset/problem/1097/D) | Codeforces 1097D | 2200 |
+| 6 | [Another Sith Tournament](https://codeforces.com/problemset/problem/678/E) | Codeforces 678E | 2200 |
+| 7 | [New Year and Arbitrary Arrangement](https://codeforces.com/problemset/problem/908/D) | Codeforces 908D | 2200 |
+| 8 | [Tree Array](https://codeforces.com/problemset/problem/1540/B) | Codeforces 1540B | 2300 |
+| 9 | [Steps to One](https://codeforces.com/problemset/problem/1139/D) | Codeforces 1139D | 2300 |
+| 10 | [Broken robot](https://codeforces.com/problemset/problem/24/D) | Codeforces 24D | 2400 |
 
 ## Grafos
 
@@ -247,50 +344,3 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | 8 | [Number of Parallelograms](https://codeforces.com/problemset/problem/660/D) | Codeforces 660D | 1900 |
 | 9 | [Power Transmission (Hard Edition)](https://codeforces.com/problemset/problem/1163/C2) | Codeforces 1163C2 | 1900 |
 | 10 | [Kalila and Dimna in the Logging Industry](https://codeforces.com/problemset/problem/319/C) | Codeforces 319C | 2100 |
-
-## Herramientas: matemáticas, búsqueda binaria y bits (FunctionalTools)
-
-### Sencillos
-
-| # | Problema | Juez | Dificultad |
-|---|---|---|---|
-| 1 | [Bit Strings](https://cses.fi/problemset/task/1617) | CSES 1617 | — |
-| 2 | [Trailing Zeros](https://cses.fi/problemset/task/1618) | CSES 1618 | — |
-| 3 | [Common Divisors](https://cses.fi/problemset/task/1081) | CSES 1081 | — |
-| 4 | [Exponentiation II](https://cses.fi/problemset/task/1712) | CSES 1712 | — |
-| 5 | [Apple Division](https://cses.fi/problemset/task/1623) | CSES 1623 | — |
-| 6 | [T-primes](https://codeforces.com/problemset/problem/230/B) | Codeforces 230B | 1300 |
-| 7 | [Vanya and Lanterns](https://codeforces.com/problemset/problem/492/B) | Codeforces 492B | 1200 |
-| 8 | [K-th Not Divisible by n](https://codeforces.com/problemset/problem/1352/C) | Codeforces 1352C | 1200 |
-| 9 | [Worms](https://codeforces.com/problemset/problem/474/B) | Codeforces 474B | 1200 |
-| 10 | [Raising Bacteria](https://codeforces.com/problemset/problem/579/A) | Codeforces 579A | 1000 |
-
-### Medios
-
-| # | Problema | Juez | Dificultad |
-|---|---|---|---|
-| 1 | [Sum of Divisors](https://cses.fi/problemset/task/1082) | CSES 1082 | — |
-| 2 | [Creating Strings II](https://cses.fi/problemset/task/1715) | CSES 1715 | — |
-| 3 | [Christmas Party](https://cses.fi/problemset/task/1717) | CSES 1717 | — |
-| 4 | [Bracket Sequences I](https://cses.fi/problemset/task/2064) | CSES 2064 | — |
-| 5 | [Maximum Xor Subarray](https://cses.fi/problemset/task/1655) | CSES 1655 | — |
-| 6 | [Books](https://codeforces.com/problemset/problem/279/B) | Codeforces 279B | 1400 |
-| 7 | [Hamburgers](https://codeforces.com/problemset/problem/371/C) | Codeforces 371C | 1600 |
-| 8 | [Maximum Median](https://codeforces.com/problemset/problem/1201/C) | Codeforces 1201C | 1400 |
-| 9 | [k-th divisor](https://codeforces.com/problemset/problem/762/A) | Codeforces 762A | 1400 |
-| 10 | [Row GCD](https://codeforces.com/problemset/problem/1458/A) | Codeforces 1458A | 1600 |
-
-### Difíciles
-
-| # | Problema | Juez | Dificultad |
-|---|---|---|---|
-| 1 | [Bracket Sequences II](https://cses.fi/problemset/task/2187) | CSES 2187 | — |
-| 2 | [Counting Necklaces](https://cses.fi/problemset/task/2209) | CSES 2209 | — |
-| 3 | [Counting Coprime Pairs](https://cses.fi/problemset/task/2417) | CSES 2417 | — |
-| 4 | [SOS Bit Problem](https://cses.fi/problemset/task/1654) | CSES 1654 | — |
-| 5 | [Counting Grids](https://cses.fi/problemset/task/2210) | CSES 2210 | — |
-| 6 | [Magic Ship](https://codeforces.com/problemset/problem/1117/C) | Codeforces 1117C | 1900 |
-| 7 | [The Football Season](https://codeforces.com/problemset/problem/1244/C) | Codeforces 1244C | 2000 |
-| 8 | [Fill The Bag](https://codeforces.com/problemset/problem/1303/D) | Codeforces 1303D | 1900 |
-| 9 | [Maximum Value](https://codeforces.com/problemset/problem/484/B) | Codeforces 484B | 2100 |
-| 10 | [Modular Stability](https://codeforces.com/problemset/problem/1359/E) | Codeforces 1359E | 2000 |

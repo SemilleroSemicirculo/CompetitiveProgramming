@@ -451,3 +451,49 @@ C("FunctionalTools-Classic-Problems-Prime-Multiples", 2, "Inclusión-exclusión:
   "Contar los múltiplos de al menos uno es contar una unión de conjuntos. Los múltiplos de un producto de primos distintos son la intersección de sus conjuntos, y hay ⌊n / producto⌋. Con 2^k subconjuntos (k ≤ 20) alcanza; los productos que pasan de n aportan 0 y se descartan antes de desbordar.",
   "Contar elementos que cumplen al menos una de varias condiciones.",
   ["Para cada subconjunto no vacío S: prod = Π primos de S (descartar si > n).", "Sumar ⌊n / prod⌋ si |S| es impar, restarlo si es par."]);
+
+// ---------- Probabilidad ----------
+C("Probability-Algorithms-ProbabilityDP", 1, "Una DP de probabilidades: en vez de contar formas, cada estado guarda qué tan probable es, y cada transición multiplica por la probabilidad de ese paso.",
+  "Es la misma idea que contar formas de sumar con dados, pero dividiendo entre 6 en cada lanzamiento: p[d][s] es la probabilidad de que tras d dados la suma sea s, y p[d][s] = Σ p[d−1][s−c] / 6 para c = 1..6. Al final se suman las probabilidades de las sumas en [a, b]. Funciona porque los dados son independientes: la probabilidad de una secuencia es el producto de las de cada paso, y los caminos distintos que llegan al mismo estado se suman (regla de la suma para eventos disjuntos).",
+  "Cuando un proceso avanza por pasos aleatorios independientes y se pregunta la probabilidad de terminar en cierto estado.",
+  ["p[0][0] = 1.", "p[d][s] = Σ_{c=1..6} p[d−1][s−c] / 6.", "Respuesta = Σ_{s=a..b} p[n][s], impresa con seis decimales."]);
+C("Probability-Algorithms-LinearityOfExpectation", 1, "Linealidad de la esperanza: el número esperado de inversiones es la suma, par por par, de la probabilidad de que ese par sea una inversión.",
+  "La esperanza de una suma es la suma de las esperanzas, incluso si las variables NO son independientes. Se escribe el total como suma de indicadores (1 si el par (i, j) es inversión, 0 si no); la esperanza de un indicador es su probabilidad. Así, un problema sobre todos los arreglos posibles (un número enorme) se vuelve n² problemas pequeños: P(x_i > x_j) contando los casos favorables entre r_i · r_j.",
+  "Cada vez que piden un valor esperado de un conteo (pares, inversiones, casillas, pasos): descomponerlo en indicadores.",
+  ["Escribir X = Σ indicadores I_{ij}.", "E[X] = Σ P(I_{ij} = 1) por linealidad.", "P(x_i > x_j) = (Σ_{v=1..r_i} min(v−1, r_j)) / (r_i · r_j)."]);
+C("Probability-Algorithms-ExpectedMaximum", 2, "Para el máximo se usa la función de distribución: P(máx ≤ m) = (m/k)^n porque todos deben ser ≤ m; restando se obtiene P(máx = m).",
+  "Calcular directamente la probabilidad de que el máximo sea exactamente m es incómodo, pero «el máximo es ≤ m» equivale a «todos son ≤ m», y como los niños son independientes, esa probabilidad es un producto: (m/k)^n. Entonces P(máx = m) = (m/k)^n − ((m−1)/k)^n y E[máx] = Σ m · P(máx = m). Equivalente: E[máx] = Σ_{m≥1} P(máx ≥ m).",
+  "Esperanzas de máximos, mínimos u órdenes de variables independientes.",
+  ["F(m) = P(máx ≤ m) = (m/k)^n.", "P(máx = m) = F(m) − F(m−1).", "E = Σ_{m=1..k} m · P(máx = m)."]);
+C("Probability-Algorithms-MarkovChain", 2, "Cada robot es una cadena de Markov: su distribución tras k pasos sale de aplicar k veces las probabilidades de transición.",
+  "En una cadena de Markov, el siguiente estado solo depende del actual. Si p es la distribución de un robot (probabilidad de estar en cada casilla), un paso reparte la probabilidad de cada casilla en partes iguales entre sus vecinas válidas. Tras k pasos se conoce p para cada robot inicial. Como los robots son independientes, P(casilla c vacía) = Π (1 − p_robot(c)), y por linealidad el número esperado de vacías es la suma de esas probabilidades. Con k muy grande, el mismo paso se puede hacer con potencias de la matriz de transición.",
+  "Procesos aleatorios por pasos (caminatas, juegos, máquinas de estados) y valores esperados sobre ellos.",
+  ["Para cada robot: p = indicadora de su casilla inicial.", "k veces: q[v] += p[c] / grado(c) para cada vecino v de c.", "vacía[c] *= 1 − p[c].", "Respuesta = Σ vacía[c]."]);
+C("Probability-Algorithms-ModularExpectation", 3, "Cuando la esperanza es una fracción p/q, se imprime p · q^(−1) módulo un primo; toda la cuenta se hace en aritmética modular.",
+  "Muchos problemas piden la respuesta «módulo 998244353»: como el módulo es primo, cada fracción p/q tiene un representante p · q^(M−2). Probabilidades como p_i/100 se convierten en p_i · inv(100) y se opera normal (sumas y productos módulo M). Aquí, un intento llega al espejo i solo si los anteriores dijeron que sí, así que los días esperados de un intento son 1 + q1 + q1q2 + … + q1⋯q_{n−1}; cada intento tiene éxito con probabilidad q1⋯qn y los intentos se repiten como una geométrica, así que se divide entre q1⋯qn.",
+  "Siempre que una probabilidad o esperanza se pida «como p·q⁻¹ mód M».",
+  ["inv100 = 100^(M−2) mód M.", "num = Σ_{i=0}^{n−1} (q1⋯qi), con el producto vacío = 1.", "Respuesta = num · (q1⋯qn)^(M−2) mód M."]);
+C("Probability-Classic-Problems-Bag-of-Mice", 2, "DP sobre (blancos, negros): cada extracción y cada ratón que salta llevan a un estado más pequeño con su probabilidad.",
+  "P[w][b] es la probabilidad de que gane la princesa si le toca sacar. Ella gana de una con w/(w+b). Si saca negro, el dragón también debe sacar negro (si no, gana él) y después salta un ratón al azar, blanco o negro, y vuelve a sacar la princesa con un ratón menos de ese color. Se combinan las ramas multiplicando probabilidades y sumando los casos disjuntos.",
+  "Juegos por turnos con azar donde el estado se achica en cada ronda.",
+  ["P[w][0] = 1 (w ≥ 1), P[0][b] = 0.", "P[w][b] = w/t + (b/t)·((b−1)/(t−1))·[ (w/(t−2))·P[w−1][b−2] + ((b−2)/(t−2))·P[w][b−3] ].", "Respuesta = P[W][B]."]);
+C("Probability-Classic-Problems-Ilya-and-Escalator", 2, "DP sobre el tiempo: d[i] = probabilidad de que haya i personas en la escalera; cada segundo entra una con probabilidad p.",
+  "Cada segundo el primero de la fila entra con probabilidad p o se queda con 1 − p. Si ya entraron los n, no cambia nada. Llevando la distribución completa segundo a segundo, al final la esperanza es Σ i · d[i]. Es un ejemplo de cadena de Markov en una línea: muy común en problemas de colas y procesos.",
+  "Procesos que avanzan un paso con cierta probabilidad durante un tiempo fijo.",
+  ["d[0] = 1.", "Cada segundo: d'[i+1] += d[i]·p, d'[i] += d[i]·(1−p) para i < n, d'[n] += d[n].", "Respuesta = Σ i·d[i]."]);
+C("Probability-Classic-Problems-Fish", 3, "DP de probabilidades sobre subconjuntos: P[mask] = probabilidad de que en algún momento queden vivos exactamente esos peces.",
+  "Desde un conjunto de k peces vivos, cada uno de los k(k−1)/2 pares se encuentra con la misma probabilidad, y del par (i, j) muere j con probabilidad a[i][j]. Así, P[mask sin j] recibe P[mask] · a[i][j] / pares por cada i vivo. Como cada paso quita un pez, se recorren las máscaras de mayor a menor. La respuesta para el pez i es P[{i}].",
+  "Procesos aleatorios con n ≤ 20 elementos donde el estado es qué elementos quedan.",
+  ["P[todos] = 1.", "Para cada mask (de mayor a menor) con k ≥ 2: para cada j vivo, P[mask − j] += P[mask] · Σ_{i vivo} a[i][j] / (k(k−1)/2).", "Imprimir P[{i}] para cada i."]);
+C("Probability-Classic-Problems-Journey", 1, "La probabilidad de pasar por un nodo es la de su padre dividida entre los hijos del padre; el largo esperado es Σ prob(hoja) · profundidad(hoja).",
+  "El caballo empieza en la raíz y en cada ciudad elige uniformemente entre los hijos (las ciudades no visitadas). Con un BFS desde la raíz, prob[hijo] = prob[padre] / (número de hijos). El viaje termina en una hoja, así que la esperanza del largo es la suma sobre hojas de prob · profundidad. También se puede ver como E[v] = 1 + promedio de E[hijos].",
+  "Caminatas aleatorias en árboles y esperanzas de profundidad.",
+  ["BFS desde 1 calculando profundidad y prob.", "prob[hijo] = prob[u] / hijos(u).", "Respuesta = Σ hojas prob · profundidad."]);
+C("Probability-Classic-Problems-Game-on-Tree", 2, "Con indicadores: un nodo cuenta como paso solo si se elige antes que todos sus ancestros, y eso pasa con probabilidad 1 / profundidad.",
+  "El número de pasos es la cantidad de nodos que se eligen directamente. Un nodo v se elige directamente si, entre él y sus ancestros (depth(v) nodos en total), es el primero en ser escogido; por simetría, cada uno de ellos es el primero con la misma probabilidad. Por linealidad de la esperanza, E[pasos] = Σ_v 1/depth(v). Es el ejemplo clásico de cómo un indicador bien elegido convierte un proceso complicado en una suma simple.",
+  "Esperanzas de procesos con eliminaciones aleatorias: busca un indicador por elemento.",
+  ["Profundidades con BFS (raíz = 1).", "Respuesta = Σ 1 / depth(v)."]);
+C("Probability-Classic-Problems-Lets-Play-Osu", 3, "Para la esperanza de un cuadrado se usa (L+1)² − L² = 2L + 1: basta llevar E[L], el largo esperado del bloque actual.",
+  "El puntaje no es lineal (es una suma de cuadrados), así que no se puede sumar probabilidades directamente. El truco es mirar cuánto sube el puntaje en cada clic: si el bloque de aciertos que termina en i−1 tiene largo L y el clic i acierta, el puntaje sube 2L + 1. Por linealidad, E[subida] = p_i · (2·E[L] + 1), y E[L] se actualiza como p_i · (E[L] + 1). Todo en O(n).",
+  "Esperanzas de funciones no lineales (cuadrados, productos) de procesos secuenciales.",
+  ["len = 0, res = 0.", "Para cada p: res += p·(2·len + 1); len = p·(len + 1).", "Imprimir res."]);

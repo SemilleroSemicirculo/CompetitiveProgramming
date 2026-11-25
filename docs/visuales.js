@@ -42,7 +42,9 @@ const rows = rs => rs.map(r => cellsRow(r.t, r.v, r.c)).join('');
 const table = (g, cls, rl, cl) => '<div style="overflow:auto"><table style="border-collapse:separate;border-spacing:3px">' + (cl ? '<tr><td></td>' + cl.map(x => '<td class="cell" style="font-weight:700">' + x + '</td>').join('') + '</tr>' : '') + g.map((row, i) => '<tr>' + (rl ? '<td class="cell" style="font-weight:700">' + rl[i] + '</td>' : '') + row.map((x, j) => '<td class="cell ' + ((cls && cls[i] && cls[i][j]) || '') + '">' + (x === null || x === undefined ? '·' : fmt(x)) + '</td>').join('') + '</tr>').join('') + '</table></div>';
 const COL = { g: '#2da44e', a: '#d4a72c', b: '#1f6feb', r: '#cf222e', p: '#8250df', o: '#fb8f44', k: '#57606a' };
 function graph(G) {
-  const W = G.W || 540, H = G.H || 280, rad = 15;
+  const W = G.W || 540, rad = 15;
+  // el alto se ajusta a los nodos para que nada quede cortado
+  const H = Math.max(G.H || 280, Math.max(0, ...G.nodes.filter(v => !v.hide).map(v => v.y)) + 30);
   let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="max-width:' + W + 'px;display:block"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#888"/></marker></defs>';
   for (const e of G.edges) {
     const A = G.nodes[e.a], B = G.nodes[e.b];
@@ -86,7 +88,8 @@ function randTree(n, W = 540, H = 260) {
   let leaf = 0; const leaves = [];
   const place = u => { if (!kids[u].length) { pos[u] = leaf++; return pos[u]; } const xs = kids[u].map(place); pos[u] = (Math.min(...xs) + Math.max(...xs)) / 2; return pos[u]; };
   place(0);
-  const xy = [...Array(n).keys()].map(u => ({ x: Math.round(30 + (W - 60) * (leaf > 1 ? pos[u] / (leaf - 1) : 0.5)), y: Math.round(30 + (H - 60) * (maxd ? depth[u] / maxd : 0)) }));
+  const gap = Math.max(54, maxd ? (H - 60) / maxd : 0);
+  const xy = [...Array(n).keys()].map(u => ({ x: Math.round(30 + (W - 60) * (leaf > 1 ? pos[u] / (leaf - 1) : 0.5)), y: Math.round(34 + gap * depth[u]) }));
   return { par, kids, xy, depth };
 }
 const nodesOf = (xy, f) => xy.map((p, i) => Object.assign({ x: p.x, y: p.y, l: i + 1 }, f ? f(i) : {}));
@@ -639,7 +642,7 @@ V('Graphs-Algorithms-Graph-Traversal-Tarjan', 'Tarjan: componentes fuertemente c
         else if (on[u]) { low[v] = Math.min(low[v], disc[u]); lab(); push('Arista hacia ' + (u + 1) + ', que está en la pila: low[' + (v + 1) + '] = ' + low[v] + '.', s); } }
       else { call.pop(); if (call.length) { const p = call[call.length - 1][0]; low[p] = Math.min(low[p], low[v]); }
         if (low[v] === disc[v]) { const col = SCC_COLORS[c++ % 6], mem = []; let x; do { x = st.pop(); on[x] = false; s.nc[x] = col; mem.push(x + 1); } while (x !== v); lab(); push('low = descubrimiento en ' + (v + 1) + ': componente {' + mem.join(', ') + '}.', s); } } } }
-  push('Hay ' + c + ' componentes fuertemente conexas.', s);
+  push(c === 1 ? 'Todo el grafo es una sola componente fuertemente conexa.' : 'Hay ' + c + ' componentes fuertemente conexas.', s);
 }, GR);
 
 V('Graphs-Algorithms-Graph-Traversal-Kosaraju', 'Kosaraju: dos recorridos', 'Primera pasada: orden de salida. Segunda: sobre el grafo invertido, cada recorrido es una componente.', push => {
@@ -983,5 +986,451 @@ V('Strings-Algorithms-SuffixArray', 'Arreglo de sufijos por duplicación', 'En c
   for (let k = 1; k < n; k *= 2) { key = i => rk[i] * (n + 1) + (rk[(i + k) % n] + 1); sa.sort((a, b) => key(a) - key(b)); rk = re(); show(2 * k, 'Se ordena por los primeros ' + 2 * k + ' caracteres usando los rangos anteriores.'); if (rk[sa[n - 1]] === n - 1) break; }
   push('Rangos todos distintos: el arreglo de sufijos es [' + sa.join(', ') + '].', { tab: sa.map(i => [i, s.slice(i), rk[i]]), k: n, fin: true });
 }, st => table(st.tab.map(([i, suf, r]) => [i, '<b>' + suf.slice(0, st.k) + '</b>' + suf.slice(st.k), r]), st.tab.map(() => ['', st.fin ? 'g' : '', '']), null, ['pos', 'sufijo', 'rango']));
+
+// =================== Problemas clásicos de CSES ===================
+// cuadrícula con colores propios por celda: cells[i][j] = { t: texto, bg: color o '', c: clase }
+const gridHtml = (cells, size = 30) => '<div style="display:inline-grid;grid-template-columns:repeat(' + cells[0].length + ',' + size + 'px);gap:3px;margin:8px 0">' +
+  cells.flat().map(x => '<div class="cell ' + (x.c || '') + '" style="min-width:0;padding:5px 0;' + (x.bg ? 'background:' + x.bg + ';color:#fff;border-color:' + x.bg : '') + '">' + (x.t === undefined || x.t === '' ? '&nbsp;' : x.t) + '</div>').join('') + '</div>';
+const ROOMC = ['#2da44e', '#1f6feb', '#fb8f44', '#8250df', '#cf222e', '#d4a72c', '#0a7ea4', '#bf3989'];
+
+// ---------- DP ----------
+V('DP-Classic-Problems-Dice-Combinations', 'Formas de sumar n con un dado', 'Amarillo = suma que se calcula; azul = las seis sumas anteriores de las que puede venir (el último dado vale 1..6).', push => {
+  const n = R(7, 11), dp = Array(n + 1).fill(null); dp[0] = 1;
+  push('dp[0] = 1: la suma 0 se forma de una sola forma (sin lanzar).', { dp: dp.slice(), s: 0 });
+  for (let s = 1; s <= n; s++) { const from = []; let v = 0; for (let k = 1; k <= 6 && k <= s; k++) { from.push(s - k); v += dp[s - k]; } dp[s] = v;
+    push('dp[' + s + '] = ' + from.map(x => 'dp[' + x + ']').join(' + ') + ' = ' + v, { dp: dp.slice(), s, from }); }
+  push('Hay ' + dp[n] + ' formas de sumar ' + n + '.', { dp: dp.slice(), s: n, fin: 1 });
+}, s => rows([{ t: 'suma', v: s.dp.map((_, i) => i) }, { t: 'dp', v: s.dp, c: s.dp.map((v, i) => i === s.s ? (s.fin ? 'g' : 'a') : s.from && s.from.includes(i) ? 'b' : v !== null ? 'g' : '') }]));
+
+V('DP-Classic-Problems-Grid-Paths-I', 'Caminos en una cuadrícula con trampas', 'Rojo = trampa (0 caminos); amarillo = celda que se calcula; azul = de dónde puede llegar (arriba e izquierda).', push => {
+  const n = 5, trap = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => (i + j > 0 && i + j < 2 * n - 2 && Math.random() < 0.2)));
+  const dp = trap.map(r => r.map(() => null));
+  const st = (i, j, m) => push(m, { trap, dp: clone(dp), i, j });
+  st(-1, -1, 'Solo se puede ir a la derecha o abajo. Se llena fila por fila.');
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+    if (trap[i][j]) { dp[i][j] = 0; continue; }
+    if (!i && !j) { dp[0][0] = 1; st(0, 0, 'La esquina de inicio tiene 1 camino.'); continue; }
+    const up = i ? dp[i - 1][j] : 0, left = j ? dp[i][j - 1] : 0; dp[i][j] = up + left;
+    st(i, j, '(' + (i + 1) + ', ' + (j + 1) + ') = ' + up + ' (desde arriba) + ' + left + ' (desde la izquierda) = ' + dp[i][j]);
+  }
+  st(n - 1, n - 1, 'Respuesta: ' + dp[n - 1][n - 1] + ' caminos hasta la esquina final.');
+}, s => gridHtml(s.dp.map((r, i) => r.map((v, j) => s.trap[i][j] ? { t: '✕', c: 'r' } : { t: v === null ? '' : v, c: i === s.i && j === s.j ? 'a' : (i === s.i - 1 && j === s.j) || (i === s.i && j === s.j - 1) ? 'b' : v !== null ? 'g' : '' })), 40));
+
+V('DP-Classic-Problems-Money-Sums', 'Sumas que se pueden formar con monedas', 'Verde = suma alcanzable; amarillo = sumas nuevas que aparecen al agregar la moneda (cada vieja s da s + x).', push => {
+  const xs = Array.from({ length: 4 }, () => R(1, 6)), T = xs.reduce((a, b) => a + b, 0); let can = new Set([0]);
+  push('Con ninguna moneda solo se forma la suma 0. Monedas: ' + xs.join(', '), { T, can: [...can], nw: [], xs, k: -1 });
+  xs.forEach((x, k) => { const nw = [...can].map(v => v + x).filter(v => !can.has(v)); nw.forEach(v => can.add(v));
+    push('Moneda ' + x + ': cada suma s alcanzable da también s + ' + x + '. Nuevas: ' + (nw.length ? [...new Set(nw)].sort((a, b) => a - b).join(', ') : 'ninguna'), { T, can: [...can], nw, xs, k }); });
+  const res = [...can].filter(v => v).sort((a, b) => a - b);
+  push(res.length + ' sumas distintas: ' + res.join(' '), { T, can: [...can], nw: [], xs, k: xs.length });
+}, s => rows([{ t: 'monedas', v: s.xs, c: s.xs.map((_, k) => k === s.k ? 'a' : k < s.k ? 'g' : '') }, { t: 'suma', v: [...Array(s.T + 1).keys()], c: [...Array(s.T + 1).keys()].map(v => s.nw.includes(v) ? 'a' : s.can.includes(v) ? 'g' : '') }]));
+
+V('DP-Classic-Problems-Removal-Game', 'Juego de quitar extremos (DP de intervalos)', 'd[l][r] = (mis puntos − los del rival) si me toca jugar en x[l..r]. Amarillo = tramo que se calcula; azul = los dos tramos que deja cada jugada.', push => {
+  const n = 5, x = Array.from({ length: n }, () => R(1, 9)), d = x.map(() => Array(n).fill(null));
+  const st = (l, r, m) => push(m, { x, d: clone(d), l, r });
+  st(-1, -1, 'Lista: ' + x.join(', ') + '. Se calculan los tramos de menor a mayor largo.');
+  for (let i = 0; i < n; i++) d[i][i] = x[i];
+  st(-1, -1, 'Tramos de largo 1: el que juega toma el único número.');
+  for (let len = 2; len <= n; len++) for (let l = 0; l + len <= n; l++) { const r = l + len - 1, a = x[l] - d[l + 1][r], b = x[r] - d[l][r - 1]; d[l][r] = Math.max(a, b);
+    st(l, r, '[' + (l + 1) + ', ' + (r + 1) + ']: tomar ' + x[l] + ' deja ventaja ' + a + '; tomar ' + x[r] + ' deja ' + b + ' → ' + d[l][r]); }
+  const tot = x.reduce((a, b) => a + b, 0);
+  st(0, n - 1, 'Ventaja final ' + d[0][n - 1] + ' y total ' + tot + ': el primero obtiene (' + tot + ' + ' + d[0][n - 1] + ') / 2 = ' + (tot + d[0][n - 1]) / 2 + '.');
+}, s => cellsRow('lista', s.x, s.x.map((_, i) => i >= s.l && i <= s.r ? 'b' : '')) + table(s.d.map(r => r.map(v => v === null ? '·' : v)), s.d.map((r, i) => r.map((v, j) => i === s.l && j === s.r ? 'a' : (i === s.l + 1 && j === s.r) || (i === s.l && j === s.r - 1) ? 'b' : v !== null ? 'g' : '')), s.x.map((_, i) => 'l=' + (i + 1)), s.x.map((_, i) => 'r=' + (i + 1))));
+
+V('DP-Classic-Problems-Counting-Numbers', 'DP de dígitos: contar hasta x', 'Se cuenta f(x) = números en [0, x] sin dos dígitos vecinos iguales. Verde = prefijo copiado de x; amarillo = posición donde se pone un dígito menor.', push => {
+  const x = R(1200, 9899), s = String(x), n = s.length; let res = 1;
+  push('Contar en [0, ' + x + ']. Se empieza contando el 0.', { s, i: -1, res });
+  for (let L = 1; L < n; L++) { res += 9 ** L; push('Números de ' + L + ' cifra(s): 9 opciones para la primera y 9 para cada siguiente (distinta a la anterior) = ' + 9 ** L + '. Total: ' + res, { s, i: -1, res }); }
+  for (let i = 0; i < n; i++) { const opts = []; for (let d = i ? 0 : 1; d < +s[i]; d++) if (!i || d !== +s[i - 1]) opts.push(d);
+    res += opts.length * 9 ** (n - 1 - i);
+    push('Prefijo ' + (s.slice(0, i) || '(vacío)') + ' y en la posición ' + (i + 1) + ' un dígito menor que ' + s[i] + ': {' + opts.join(', ') + '} × 9^' + (n - 1 - i) + '. Total: ' + res, { s, i, res });
+    if (i && s[i] === s[i - 1]) { push('x tiene dos ' + s[i] + ' seguidos: ningún número con este prefijo sirve. f(' + x + ') = ' + res, { s, i, res, stop: 1 }); return; } }
+  res++; push(x + ' mismo no tiene vecinos iguales: se suma. f(' + x + ') = ' + res + '. La respuesta de [a, b] es f(b) − f(a − 1).', { s, i: n, res });
+}, s => cellsRow('x', [...s.s], [...s.s].map((_, i) => i < s.i ? 'g' : i === s.i ? (s.stop ? 'r' : 'a') : s.i >= s.s.length ? 'g' : '')) + cellsRow('f(x) parcial', [s.res], ['b']));
+
+// ---------- Estructuras de datos ----------
+V('Data-Structures-Classic-Problems-Static-Range-Sum-Queries', 'Sumas de prefijos', 'Azul = rango consultado; amarillo = los dos prefijos que se restan: p[b] − p[a−1].', push => {
+  const n = 8, x = Array.from({ length: n }, () => R(1, 9)), p = [0]; x.forEach(v => p.push(p[p.length - 1] + v));
+  push('Se precalcula p[i] = x₁ + … + xᵢ una sola vez, en O(n).', { x, p, q: null });
+  for (let t = 0; t < 3; t++) { const a = R(1, n - 1), b = R(a, n); push('Suma de [' + a + ', ' + b + '] = p[' + b + '] − p[' + (a - 1) + '] = ' + p[b] + ' − ' + p[a - 1] + ' = ' + (p[b] - p[a - 1]) + '. O(1) por consulta.', { x, p, q: [a, b] }); }
+}, s => rows([{ t: 'i', v: [...Array(s.p.length).keys()] }, { t: 'x', v: [null, ...s.x], c: [null, ...s.x].map((_, i) => s.q && i >= s.q[0] && i <= s.q[1] ? 'b' : '') }, { t: 'p', v: s.p, c: s.p.map((_, i) => s.q && (i === s.q[1] || i === s.q[0] - 1) ? 'a' : '') }]));
+
+V('Data-Structures-Classic-Problems-Forest-Queries', 'Sumas de prefijos en 2D', 'Izquierda: el bosque (árbol = 🌲). Derecha: p[i][j] = árboles en el rectángulo (1,1)–(i,j). Azul = rectángulo consultado; amarillo = los cuatro valores que se combinan.', push => {
+  const n = 5, g = Array.from({ length: n }, () => Array.from({ length: n }, () => Math.random() < 0.4 ? 1 : 0)), p = Array.from({ length: n + 1 }, () => Array(n + 1).fill(0));
+  for (let i = 1; i <= n; i++) for (let j = 1; j <= n; j++) p[i][j] = p[i - 1][j] + p[i][j - 1] - p[i - 1][j - 1] + g[i - 1][j - 1];
+  push('p se construye con inclusión-exclusión: arriba + izquierda − esquina + la celda.', { g, p, q: null });
+  for (let t = 0; t < 2; t++) { const y1 = R(1, 3), x1 = R(1, 3), y2 = R(y1, n), x2 = R(x1, n), v = p[y2][x2] - p[y1 - 1][x2] - p[y2][x1 - 1] + p[y1 - 1][x1 - 1];
+    push('(' + y1 + ',' + x1 + ')–(' + y2 + ',' + x2 + '): ' + p[y2][x2] + ' − ' + p[y1 - 1][x2] + ' − ' + p[y2][x1 - 1] + ' + ' + p[y1 - 1][x1 - 1] + ' = ' + v + ' árboles.', { g, p, q: [y1, x1, y2, x2] }); }
+}, s => { const inQ = (i, j) => s.q && i >= s.q[0] && i <= s.q[2] && j >= s.q[1] && j <= s.q[3];
+  const key = s.q ? [[s.q[2], s.q[3]], [s.q[0] - 1, s.q[3]], [s.q[2], s.q[1] - 1], [s.q[0] - 1, s.q[1] - 1]].map(x => x.join(',')) : [];
+  return '<div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">' + gridHtml(s.g.map((r, i) => r.map((v, j) => ({ t: v ? '🌲' : '', c: inQ(i + 1, j + 1) ? 'b' : '' })))) +
+    table(s.p.map(r => r), s.p.map((r, i) => r.map((_, j) => key.includes(i + ',' + j) ? 'a' : inQ(i, j) ? 'b' : '')), s.p.map((_, i) => i), s.p.map((_, j) => j)) + '</div>'; });
+
+V('Data-Structures-Classic-Problems-Range-Update-Queries', 'Sumar a un rango con el arreglo de diferencias', 'Sumar u a [a, b] cambia solo dos casillas de d (+u en a, −u en b+1). El valor de k es el original más d₁ + … + d_k (azul).', push => {
+  const n = 8, x = Array.from({ length: n }, () => R(1, 9)), d = Array(n + 2).fill(0);
+  const val = k => x[k - 1] + d.slice(1, k + 1).reduce((a, b) => a + b, 0);
+  push('Se guardan los cambios como diferencias (en el código, dentro de un Fenwick Tree).', { x, d: d.slice(1, n + 1), hl: [], q: 0 });
+  for (let t = 0; t < 5; t++) {
+    if (t % 2 === 0) { const a = R(1, n - 1), b = R(a, n), u = R(1, 5); d[a] += u; if (b + 1 <= n) d[b + 1] -= u;
+      push('Sumar ' + u + ' a [' + a + ', ' + b + ']: d[' + a + '] += ' + u + (b + 1 <= n ? ' y d[' + (b + 1) + '] −= ' + u : '') + '.', { x, d: d.slice(1, n + 1), hl: [a, b + 1], q: 0 }); }
+    else { const k = R(1, n); push('Valor en ' + k + ' = ' + x[k - 1] + ' + (d₁ + … + d_' + k + ') = ' + val(k) + '.', { x, d: d.slice(1, n + 1), hl: [], q: k }); }
+  }
+}, s => rows([{ t: 'original', v: s.x, c: s.x.map((_, i) => i + 1 === s.q ? 'a' : '') }, { t: 'd', v: s.d, c: s.d.map((_, i) => s.hl.includes(i + 1) ? 'a' : i < s.q ? 'b' : '') }]));
+
+V('Data-Structures-Classic-Problems-Hotel-Queries', 'Primer hotel con espacio (descenso en Segment Tree)', 'Cada nodo guarda el máximo de cuartos libres de su tramo. Azul = camino de bajada; amarillo = hotel asignado.', push => {
+  const n = 8, L = segLayout(n), t = {}, h = Array.from({ length: n }, () => R(1, 9));
+  const build = (id, l, r) => { if (l === r) { t[id] = h[l]; return; } const m = (l + r) >> 1; build(2 * id, l, m); build(2 * id + 1, m + 1, r); t[id] = Math.max(t[2 * id], t[2 * id + 1]); };
+  build(1, 0, n - 1);
+  const S = (m, c = {}) => push(m, { L, t: Object.assign({}, t), c });
+  S('Cuartos libres de cada hotel en las hojas; cada padre = máximo de sus hijos.');
+  for (let g = 0; g < 4; g++) { const r = R(1, 8), c = {};
+    if (t[1] < r) { c[1] = 'r'; S('Un grupo pide ' + r + ': ni el máximo (' + t[1] + ') alcanza → 0.', c); continue; }
+    let id = 1, l = 0, rr = n - 1; const path = [];
+    while (l < rr) { c[id] = 'b'; path.push(id); const m = (l + rr) >> 1; if (t[2 * id] >= r) { id = 2 * id; rr = m; } else { id = 2 * id + 1; l = m + 1; } }
+    c[id] = 'a'; S('Un grupo pide ' + r + ': se baja por la izquierda si su máximo alcanza → hotel ' + (l + 1) + '.', c);
+    t[id] -= r; path.reverse().forEach(v => t[v] = Math.max(t[2 * v], t[2 * v + 1]));
+    S('Al hotel ' + (l + 1) + ' le quedan ' + t[id] + ' cuartos; se recalcula el camino a la raíz.', c); }
+}, s => graph({ W: 540, H: 250, nodes: s.L.nodes.map(nd => ({ x: nd.x, y: nd.y + 14, l: s.t[nd.id], c: s.c[nd.id] || '', s: nd.l === nd.r ? 'h' + (nd.l + 1) : '' })), edges: s.L.edges.map(([u, v]) => ({ a: s.L.idx[u], b: s.L.idx[v] })) }));
+
+V('Data-Structures-Classic-Problems-Prefix-Sum-Queries', 'Segment Tree con nodos (suma, mejor prefijo)', 'Cada nodo muestra suma/prefijo. Verde = nodos que forman la consulta, combinados de izquierda a derecha: prefijo = max(P_izq, S_izq + P_der).', push => {
+  const n = 8, L = segLayout(n), S = {}, P = {}, x = Array.from({ length: n }, () => R(-5, 6));
+  const pull = id => { S[id] = S[2 * id] + S[2 * id + 1]; P[id] = Math.max(P[2 * id], S[2 * id] + P[2 * id + 1]); };
+  const build = (id, l, r) => { if (l === r) { S[id] = x[l]; P[id] = Math.max(0, x[l]); return; } const m = (l + r) >> 1; build(2 * id, l, m); build(2 * id + 1, m + 1, r); pull(id); };
+  build(1, 0, n - 1);
+  const st = (m, c = {}) => push(m, { L, S: Object.assign({}, S), P: Object.assign({}, P), c });
+  st('Arreglo: ' + x.join(', ') + '. Hoja = (x, max(0, x)).');
+  for (let q = 0; q < 2; q++) { const a = R(0, 3), b = R(a + 2, n - 1), c = {}, used = [];
+    (function go(id, l, r) { if (r < a || l > b) return; if (a <= l && r <= b) { used.push(id); c[id] = 'g'; return; } c[id] = 'b'; const m = (l + r) >> 1; go(2 * id, l, m); go(2 * id + 1, m + 1, r); })(1, 0, n - 1);
+    let s = 0, p = 0; const log = []; used.forEach(id => { p = Math.max(p, s + P[id]); s += S[id]; log.push('(' + S[id] + '/' + P[id] + ')'); });
+    st('Consulta [' + (a + 1) + ', ' + (b + 1) + ']: se combinan ' + log.join(' · ') + ' en orden → mejor prefijo = ' + p + '.', c); }
+}, s => graph({ W: 540, H: 250, nodes: s.L.nodes.map(nd => ({ x: nd.x, y: nd.y + 14, l: s.S[nd.id], c: s.c[nd.id] || '', s: 'p ' + s.P[nd.id] })), edges: s.L.edges.map(([u, v]) => ({ a: s.L.idx[u], b: s.L.idx[v] })) }));
+
+// ---------- Grafos ----------
+V('Graphs-Classic-Problems-Counting-Rooms', 'Contar cuartos (flood fill)', 'Gris oscuro = pared. Cada color es un cuarto: al encontrar piso sin visitar se pinta entero.', push => {
+  const n = 6, m = 10, wall = Array.from({ length: n }, () => Array.from({ length: m }, () => Math.random() < 0.38)), col = wall.map(r => r.map(() => -1));
+  const st = (msg, cur) => push(msg, { wall, col: clone(col), cur });
+  st('Mapa del edificio. Se recorre fila por fila buscando piso sin visitar.');
+  let rooms = 0;
+  for (let i = 0; i < n; i++) for (let j = 0; j < m; j++) { if (wall[i][j] || col[i][j] >= 0) continue;
+    const q = [[i, j]]; col[i][j] = rooms; let k = 0;
+    while (k < q.length) { const [a, b] = q[k++]; for (const [x, y] of [[a + 1, b], [a - 1, b], [a, b + 1], [a, b - 1]]) if (x >= 0 && y >= 0 && x < n && y < m && !wall[x][y] && col[x][y] < 0) { col[x][y] = rooms; q.push([x, y]); } }
+    rooms++; st('Piso nuevo en (' + (i + 1) + ', ' + (j + 1) + '): cuarto ' + rooms + ' (' + q.length + ' celdas).', [i, j]); }
+  st('Hay ' + rooms + ' cuartos.');
+}, s => gridHtml(s.wall.map((r, i) => r.map((w, j) => w ? { bg: '#57606a' } : s.col[i][j] >= 0 ? { bg: ROOMC[s.col[i][j] % ROOMC.length], t: s.cur && s.cur[0] === i && s.cur[1] === j ? '★' : '' } : { t: '' }))));
+
+V('Graphs-Classic-Problems-Labyrinth', 'BFS en un laberinto y reconstrucción del camino', 'Los números son la distancia desde A. Amarillo = frontera actual del BFS; verde = el camino más corto, reconstruido desde B.', push => {
+  const n = 6, m = 10; let wall, A = [0, 0], B = [n - 1, m - 1], dist;
+  for (let tries = 0; tries < 50; tries++) { wall = Array.from({ length: n }, () => Array.from({ length: m }, () => Math.random() < 0.3)); wall[0][0] = wall[n - 1][m - 1] = false;
+    dist = wall.map(r => r.map(() => -1)); dist[0][0] = 0; const q = [A]; for (let k = 0; k < q.length; k++) { const [a, b] = q[k]; for (const [x, y] of [[a + 1, b], [a - 1, b], [a, b + 1], [a, b - 1]]) if (x >= 0 && y >= 0 && x < n && y < m && !wall[x][y] && dist[x][y] < 0) { dist[x][y] = dist[a][b] + 1; q.push([x, y]); } }
+    if (dist[n - 1][m - 1] > 0) break; }
+  const D = dist[n - 1][m - 1], show = d => dist.map(r => r.map(v => v >= 0 && v <= d ? v : -1));
+  push('A arriba a la izquierda, B abajo a la derecha.', { wall, d: show(0), front: 0, path: [] });
+  for (let d = 1; d <= Math.max(D, 0); d += Math.max(1, Math.ceil(D / 6))) push('Nivel ' + d + ' del BFS: celdas a distancia ' + d + '.', { wall, d: show(d), front: d, path: [] });
+  if (D < 0) { push('B no es alcanzable: NO.', { wall, d: show(99), front: -1, path: [] }); return; }
+  const path = [B.join(',')]; let [x, y] = B; const dirs = [];
+  while (dist[x][y] > 0) for (const [a, b, c] of [[x - 1, y, 'D'], [x + 1, y, 'U'], [x, y - 1, 'R'], [x, y + 1, 'L']]) if (a >= 0 && b >= 0 && a < n && b < m && dist[a][b] === dist[x][y] - 1) { dirs.push(c); x = a; y = b; path.push(a + ',' + b); break; }
+  push('Desde B se retrocede siempre a una celda con distancia una menos: YES, ' + D + ' pasos: ' + dirs.reverse().join(''), { wall, d: show(99), front: -1, path });
+}, s => gridHtml(s.wall.map((r, i) => r.map((w, j) => { const k = i + ',' + j, v = s.d[i][j];
+  if (w) return { bg: '#57606a' }; const t = i === 0 && j === 0 ? 'A' : i === s.wall.length - 1 && j === r.length - 1 ? 'B' : v >= 0 ? v : '';
+  return { t, c: s.path.includes(k) ? 'g' : v === s.front ? 'a' : v >= 0 ? 'b' : '' }; }))));
+
+V('Graphs-Classic-Problems-Flight-Discount', 'Un cupón: Dijkstra desde el inicio y desde el final', 'Etiqueta arriba de cada ciudad: distancia desde 1 / distancia hasta n. Amarillo = vuelo donde conviene usar el cupón.', push => {
+  const n = 6, xy = circleLayout(n), E = []; const has = new Set();
+  for (let i = 0; i < n - 1; i++) { E.push({ a: i, b: i + 1, w: R(2, 9) }); has.add(i + ',' + (i + 1)); }
+  while (E.length < 9) { const a = R(0, n - 1), b = R(0, n - 1); if (a !== b && !has.has(a + ',' + b)) { has.add(a + ',' + b); E.push({ a, b, w: R(2, 20) }); } }
+  const dij = (s, rev) => { const d = Array(n).fill(Infinity), done = Array(n).fill(false); d[s] = 0; for (let it = 0; it < n; it++) { let u = -1; for (let v = 0; v < n; v++) if (!done[v] && (u < 0 || d[v] < d[u])) u = v; if (d[u] === Infinity) break; done[u] = true; for (const e of E) { const [x, y] = rev ? [e.b, e.a] : [e.a, e.b]; if (x === u && d[u] + e.w < d[y]) d[y] = d[u] + e.w; } } return d; };
+  const d1 = dij(0), dn = dij(n - 1, true), s = GS(xy, E, true);
+  s.nc[0] = 'b'; s.nc[n - 1] = 'o';
+  s.ns = d1.map(v => fmt(v) + ' / ?'); push('Primero: Dijkstra desde la ciudad 1 (primer número).', clone(s));
+  s.ns = d1.map((v, i) => fmt(v) + ' / ' + fmt(dn[i])); push('Luego: Dijkstra desde n en el grafo con las flechas al revés (segundo número = cuánto falta hasta n).', clone(s));
+  let best = Infinity, bk = -1;
+  E.forEach((e, k) => { const c = d1[e.a] + Math.floor(e.w / 2) + dn[e.b]; if (c < best) { best = c; bk = k; } });
+  s.ec[bk] = 'a'; const e = E[bk];
+  push('Para cada vuelo a → b: d1[a] + ⌊c/2⌋ + dn[b]. El mejor es ' + (e.a + 1) + ' → ' + (e.b + 1) + ': ' + d1[e.a] + ' + ' + Math.floor(e.w / 2) + ' + ' + dn[e.b] + ' = ' + best + '.', clone(s));
+}, GR);
+
+V('Graphs-Classic-Problems-Longest-Flight-Route', 'Camino más largo en un DAG', 'Etiqueta = máximo de ciudades en una ruta desde 1 (−: no se llega). Amarillo = ciudad que se procesa en orden topológico; verde = la ruta final.', push => {
+  const n = 7, xy = circleLayout(n), E = [], has = new Set();
+  const order = [0, ...shuffle([...Array(n - 2).keys()].map(i => i + 1)), n - 1], pos = {}; order.forEach((v, i) => pos[v] = i);
+  while (E.length < 11) { let a = R(0, n - 1), b = R(0, n - 1); if (a === b) continue; if (pos[a] > pos[b]) [a, b] = [b, a]; if (!has.has(a + ',' + b)) { has.add(a + ',' + b); E.push({ a, b }); } }
+  const s = GS(xy, E, true), best = Array(n).fill(-1), par = Array(n).fill(-1); best[0] = 1;
+  s.ns = best.map(v => v < 0 ? '−' : v); push('No hay ciclos. Se procesa en orden topológico: ' + order.map(v => v + 1).join(', '), clone(s));
+  for (const u of order) { s.nc = s.nc.map(c => c === 'a' ? 'k' : c); s.nc[u] = 'a';
+    for (const e of E) if (e.a === u && best[u] > 0 && best[u] + 1 > best[e.b]) { best[e.b] = best[u] + 1; par[e.b] = u; }
+    s.ns = best.map(v => v < 0 ? '−' : v); push('Ciudad ' + (u + 1) + (best[u] > 0 ? ': se extiende su mejor ruta (' + best[u] + ') a sus vecinas.' : ': no se llega desde 1, se salta.'), clone(s)); }
+  s.nc = s.nc.map(() => '');
+  if (best[n - 1] < 0) { push('No se llega a ' + n + ': IMPOSSIBLE.', s); return; }
+  const path = [n - 1]; while (par[path[path.length - 1]] >= 0) path.push(par[path[path.length - 1]]); path.reverse();
+  path.forEach(v => s.nc[v] = 'g'); E.forEach((e, k) => { for (let i = 0; i + 1 < path.length; i++) if (e.a === path[i] && e.b === path[i + 1]) s.ec[k] = 'g'; });
+  push('Ruta con ' + best[n - 1] + ' ciudades: ' + path.map(v => v + 1).join(' → '), s);
+}, GR);
+
+V('Graphs-Classic-Problems-Subordinates', 'Subordinados = tamaño del subárbol − 1', 'Se procesa de las hojas hacia el director (orden BFS al revés). Etiqueta = subordinados ya contados; amarillo = empleado que suma a su jefe.', push => {
+  const n = 10, { T, s } = treeState(n), sub = Array(n).fill(0), order = [0]; for (const u of order) order.push(...T.kids[u]);
+  s.ns = sub.map(() => 0); push('Orden BFS desde el director (1): ' + order.map(v => v + 1).join(', ') + '. Se recorre al revés.', clone(s));
+  for (const v of order.slice(1).reverse()) { const p = T.par[v]; sub[p] += sub[v] + 1; s.nc = s.nc.map(c => c === 'a' ? 'g' : c); s.nc[v] = 'a'; s.ns = sub.slice();
+    push('Empleado ' + (v + 1) + ' (' + sub[v] + ' subordinados): su jefe ' + (p + 1) + ' suma ' + (sub[v] + 1) + ' → ' + sub[p] + '.', clone(s)); }
+  s.nc = s.nc.map(() => 'g'); push('Listo: ' + sub.join(' '), s);
+}, GR);
+
+// ---------- Cadenas ----------
+const CP_STR = ['abacabab', 'aabaaab', 'abcabcab', 'abababab', 'aaabaaa', 'abcabca'];
+V('Strings-Classic-Problems-Finding-Borders', 'Bordes con la función de prefijos', 'π[i] = mayor borde de s[0..i]. Los bordes de s son π[n−1], luego π[π[n−1]−1], y así (verde = borde actual).', push => {
+  const s = pick(CP_STR), n = s.length, pi = Array(n).fill(null); pi[0] = 0;
+  push('Se calcula π de izquierda a derecha.', { s, pi: pi.slice(), i: 0, b: 0 });
+  for (let i = 1; i < n; i++) { let j = pi[i - 1]; while (j && s[i] !== s[j]) j = pi[j - 1]; if (s[i] === s[j]) j++; pi[i] = j; push('π[' + i + '] = ' + j, { s, pi: pi.slice(), i, b: 0 }); }
+  const res = []; for (let b = pi[n - 1]; b; b = pi[b - 1]) { res.push(b); push('Borde de largo ' + b + ': "' + s.slice(0, b) + '" es prefijo y sufijo.', { s, pi: pi.slice(), i: -1, b }); }
+  push('Bordes: ' + (res.length ? res.reverse().join(' ') : 'ninguno'), { s, pi: pi.slice(), i: -1, b: 0 });
+}, s => rows([{ t: 's', v: [...s.s], c: [...s.s].map((_, k) => s.b && (k < s.b || k >= s.s.length - s.b) ? 'g' : k === s.i ? 'a' : '') }, { t: 'π', v: s.pi, c: s.pi.map((v, k) => k === s.i ? 'a' : v !== null ? 'b' : '') }]));
+
+V('Strings-Classic-Problems-Finding-Periods', 'Periodos con la función Z', 'p es periodo si z[p] = n − p: desde p, la cadena coincide con su prefijo hasta el final. Verde = periodo; rojo = no.', push => {
+  const s = pick(CP_STR), n = s.length, z = Array(n).fill(0);
+  for (let i = 1, l = 0, r = 0; i < n; i++) { if (i < r) z[i] = Math.min(r - i, z[i - l]); while (i + z[i] < n && s[z[i]] === s[i + z[i]]) z[i]++; if (i + z[i] > r) { l = i; r = i + z[i]; } }
+  const per = []; push('Función Z de "' + s + '".', { s, z, p: -1, per: [] });
+  for (let p = 1; p < n; p++) { const ok = z[p] === n - p; if (ok) per.push(p); push('p = ' + p + ': z[' + p + '] = ' + z[p] + (ok ? ' = n − p → periodo "' + s.slice(0, p) + '"' : ' < ' + (n - p) + ' → no'), { s, z, p, per: per.slice(), ok }); }
+  per.push(n); push('Periodos: ' + per.join(' ') + ' (n siempre lo es).', { s, z, p: -1, per });
+}, s => rows([{ t: 's', v: [...s.s], c: [...s.s].map((_, k) => s.p > 0 && k >= s.p ? (s.ok ? 'g' : 'r') : '') }, { t: 'z', v: s.z, c: s.z.map((_, k) => k === s.p ? 'a' : s.per.includes(k) ? 'g' : '') }]));
+
+V('Strings-Classic-Problems-Distinct-Subsequences', 'Subsecuencias distintas', 'T = subsecuencias distintas (con la vacía). Cada letra duplica T, pero se resta lo que había antes de su aparición anterior (last).', push => {
+  const s = pick(['abab', 'aybabtu', 'abcab', 'aabb', 'abca']); let T = 1; const last = {}, hist = [1];
+  push('T = 1 (solo la vacía).', { s, i: -1, hist: hist.slice(), last: { ...last } });
+  for (let i = 0; i < s.length; i++) { const c = s[i], L = last[c] || 0, nT = 2 * T - L; last[c] = T; T = nT; hist.push(T);
+    push('"' + c + '": T = 2·' + hist[i] + ' − ' + L + ' = ' + T + (L ? ' (las que ya terminaban en ' + c + ' se repetían)' : ''), { s, i, hist: hist.slice(), last: { ...last } }); }
+  push('Sin la vacía: ' + (T - 1) + ' subsecuencias distintas.', { s, i: s.length, hist, last });
+}, s => rows([{ t: 'letra', v: ['∅', ...s.s], c: ['', ...[...s.s].map((_, k) => k === s.i ? 'a' : k < s.i ? 'g' : '')] }, { t: 'T', v: s.hist, c: s.hist.map((_, k) => k === s.i + 1 ? 'a' : 'g') }]) + '<p class="note">last: ' + (Object.entries(s.last).map(([c, v]) => c + '=' + v).join(', ') || '—') + '</p>');
+
+V('Strings-Classic-Problems-Repeating-Substring', 'Mayor subcadena repetida con el suffix array', 'Sufijos ordenados y LCP con el vecino de arriba. El mayor LCP (verde) es la subcadena repetida más larga.', push => {
+  const s = pick(['banana', 'abracadabra', 'mississippi', 'cabababc', 'abcabcd']), sa = [...Array(s.length).keys()].sort((a, b) => s.slice(a) < s.slice(b) ? -1 : 1);
+  const lcp = sa.map((v, i) => { if (!i) return 0; const a = s.slice(v), b = s.slice(sa[i - 1]); let k = 0; while (k < a.length && a[k] === b[k]) k++; return k; });
+  push('Sufijos de "' + s + '" ordenados alfabéticamente.', { s, sa, lcp, k: -1, best: -1 });
+  let best = 0, bi = 0; for (let i = 1; i < sa.length; i++) { if (lcp[i] > best) { best = lcp[i]; bi = i; } push('LCP con el anterior = ' + lcp[i] + (lcp[i] === best && i === bi ? ' (nuevo máximo)' : ''), { s, sa, lcp, k: i, best: bi }); }
+  push(best ? 'La subcadena repetida más larga es "' + s.substr(sa[bi], best) + '" (largo ' + best + ').' : 'Nada se repite: −1.', { s, sa, lcp, k: -1, best: bi });
+}, s => table(s.sa.map((v, i) => [v, s.s.slice(v), s.lcp[i]]), s.sa.map((_, i) => i === s.best ? ['g', 'g', 'g'] : i === s.k ? ['a', 'a', 'a'] : ['', '', '']), null, ['pos', 'sufijo', 'LCP']));
+
+V('Strings-Classic-Problems-Required-Substring', 'Contar cadenas que contienen el patrón (DP sobre KMP)', 'Alfabeto reducido a {A, B} para que se vea. dp[k] = cadenas que aún no contienen el patrón y llevan k letras emparejadas; las que llegan a m (verde) ya lo contienen.', push => {
+  const p = pick(['ABA', 'AAB', 'ABB', 'BAB']), m = p.length, n = 5, pi = [0];
+  for (let i = 1; i < m; i++) { let j = pi[i - 1]; while (j && p[i] !== p[j]) j = pi[j - 1]; if (p[i] === p[j]) j++; pi.push(j); }
+  const go = (k, c) => { while (k && p[k] !== c) k = pi[k - 1]; return p[k] === c ? k + 1 : 0; };
+  let dp = Array(m).fill(0); dp[0] = 1; let total = 1, hit = 0; const tab = [[...dp, 0]];
+  push('Patrón "' + p + '". go[k][c] = letras emparejadas tras leer c con k emparejadas.', { tab: tab.slice(), m, len: 0 });
+  for (let len = 1; len <= n; len++) { const nd = Array(m).fill(0); let nh = 0; for (let k = 0; k < m; k++) for (const c of 'AB') { const t = go(k, c); if (t < m) nd[t] += dp[k]; else nh += dp[k]; }
+    total *= 2; hit = total - nd.reduce((a, b) => a + b, 0); dp = nd; tab.push([...dp, hit]);
+    push('Largo ' + len + ': ' + nd.reduce((a, b) => a + b, 0) + ' cadenas aún sin el patrón, ' + hit + ' lo contienen (= 2^' + len + ' − las que no).', { tab: tab.slice(), m, len }); }
+}, s => table(s.tab, s.tab.map((r, i) => r.map((_, k) => k === s.m ? 'g' : i === s.len ? 'a' : '')), s.tab.map((_, i) => 'largo ' + i), [...Array(s.m).keys()].map(k => 'k=' + k).concat(['contienen'])));
+
+// ---------- Geometría ----------
+V('Geometry-Classic-Problems-Point-Location-Test', 'Izquierda, derecha o sobre la recta', 'Se mira desde p1 hacia p2. Verde = LEFT (cruz > 0), rojo = RIGHT (cruz < 0), amarillo = TOUCH.', push => {
+  const p1 = [-8, -4], p2 = [8, 3], pts = Array.from({ length: 6 }, () => [R(-10, 10), R(-6, 6)]); pts.push([0, -0.5]); const done = [];
+  push('Recta de p1 a p2.', { p1, p2, pts, done: [] });
+  pts.forEach(q => { const c = cross(p1, p2, q); done.push(c); push('(' + q.join(', ') + '): cruz = ' + c + ' → ' + (c > 0 ? 'LEFT' : c < 0 ? 'RIGHT' : 'TOUCH'), { p1, p2, pts, done: done.slice() }); });
+}, s => { const d = [s.p2[0] - s.p1[0], s.p2[1] - s.p1[1]]; let g = gridBg() + seg([s.p1[0] - d[0], s.p1[1] - d[1]], [s.p2[0] + d[0], s.p2[1] + d[1]], '#999', 1, 1) + seg(s.p1, s.p2, '#1f6feb', 3) + dot(s.p1, '#1f6feb', 5, 'p1') + dot(s.p2, '#1f6feb', 5, 'p2');
+  s.pts.forEach((q, i) => { const c = s.done[i]; g += dot(q, c === undefined ? '#999' : c > 0 ? '#2da44e' : c < 0 ? '#cf222e' : '#d4a72c', i === s.done.length - 1 ? 7 : 5); }); return svgBox(g, G0.W, G0.H); });
+
+V('Geometry-Classic-Problems-Maximum-Manhattan-Distances', 'Distancia Manhattan máxima con u = x + y, v = x − y', 'Azul = puntos con u = x + y mínimo y máximo; naranja = con v = x − y mínimo y máximo. La respuesta es el mayor de los dos rangos.', push => {
+  const P = []; let S = new Set(); while (P.length < 7) { const p = [R(-10, 10), R(-6, 6)]; if (!S.has(p + '')) { S.add(p + ''); P.push(p); } }
+  for (let k = 1; k <= P.length; k++) { const Q = P.slice(0, k), u = Q.map(p => p[0] + p[1]), v = Q.map(p => p[0] - p[1]);
+    const du = Math.max(...u) - Math.min(...u), dv = Math.max(...v) - Math.min(...v);
+    push('Se agrega (' + P[k - 1].join(', ') + '). Rango de u = ' + du + ', rango de v = ' + dv + ' → máximo = ' + Math.max(du, dv), { Q, u, v }); }
+}, s => { let g = gridBg(); const iu = [s.u.indexOf(Math.min(...s.u)), s.u.indexOf(Math.max(...s.u))], iv = [s.v.indexOf(Math.min(...s.v)), s.v.indexOf(Math.max(...s.v))];
+  if (s.Q.length > 1) { g += seg(s.Q[iu[0]], s.Q[iu[1]], '#1f6feb', 1.5, 1) + seg(s.Q[iv[0]], s.Q[iv[1]], '#fb8f44', 1.5, 1); }
+  s.Q.forEach((p, i) => g += dot(p, iu.includes(i) ? '#1f6feb' : iv.includes(i) ? '#fb8f44' : '#888', i === s.Q.length - 1 ? 7 : 5)); return svgBox(g, G0.W, G0.H); });
+
+V('Geometry-Classic-Problems-Intersection-Points', 'Barrido para contar cruces', 'La línea amarilla barre de izquierda a derecha. Azul = horizontales activos; cada vertical (verde) cuenta los activos con altura dentro de su rango.', push => {
+  const H = [], Vt = []; const ys = shuffle([-5, -3, -1, 1, 3, 5]).slice(0, 4), xs = shuffle([-8, -5, -2, 1, 4, 7]).slice(0, 4);
+  ys.forEach(y => { const a = R(-11, -4), b = R(2, 11); H.push([a + 0.5, y, b - 0.5]); });
+  xs.forEach(x => { const a = R(-6, -1), b = R(1, 6); Vt.push([x, a + 0.5, b - 0.5]); });
+  const ev = [...H.map((h, i) => [h[0], 0, i]), ...Vt.map((v, i) => [v[0], 1, i]), ...H.map((h, i) => [h[2], 2, i])].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const act = new Set(); let tot = 0;
+  push('Segmentos horizontales y verticales.', { H, Vt, x: null, act: [], tot, cv: -1 });
+  for (const [x, t, i] of ev) {
+    if (t === 0) { act.add(i); push('Empieza un horizontal (y = ' + H[i][1] + '): se activa.', { H, Vt, x, act: [...act], tot, cv: -1 }); }
+    else if (t === 2) { act.delete(i); push('Termina el horizontal y = ' + H[i][1] + '.', { H, Vt, x, act: [...act], tot, cv: -1 }); }
+    else { const v = Vt[i], c = [...act].filter(k => H[k][1] >= v[1] && H[k][1] <= v[2]).length; tot += c; push('Vertical en x = ' + v[0] + ': cruza ' + c + ' horizontal(es) activo(s). Total = ' + tot, { H, Vt, x, act: [...act], tot, cv: i }); }
+  }
+  push('Hay ' + tot + ' puntos de intersección.', { H, Vt, x: null, act: [], tot, cv: -1 });
+}, s => { let g = gridBg(); s.H.forEach((h, i) => g += seg([h[0], h[1]], [h[2], h[1]], s.act.includes(i) ? '#1f6feb' : '#aaa', 3));
+  s.Vt.forEach((v, i) => g += seg([v[0], v[1]], [v[0], v[2]], i === s.cv ? '#2da44e' : '#aaa', 3));
+  if (s.x !== null) g += seg([s.x, -7], [s.x, 7], '#d4a72c', 2, 1); return svgBox(g, G0.W, G0.H); });
+
+V('Geometry-Classic-Problems-Area-of-Rectangles', 'Área de la unión con barrido', 'Entre dos eventos seguidos en x, el largo cubierto en y no cambia: el área de esa franja (verde) es largo × ancho.', push => {
+  const Rs = Array.from({ length: 3 }, () => { const x1 = R(-10, 3), y1 = R(-6, 1); return [x1, y1, x1 + R(3, 7), y1 + R(2, 5)]; });
+  const xs = [...new Set(Rs.flatMap(r => [r[0], r[2]]))].sort((a, b) => a - b); let area = 0; const strips = [];
+  push('Rectángulos (pueden encimarse). Eventos en x: ' + xs.join(', '), { Rs, strips: [], cur: null });
+  for (let i = 0; i + 1 < xs.length; i++) { const a = xs[i], b = xs[i + 1], iv = Rs.filter(r => r[0] <= a && r[2] >= b).map(r => [r[1], r[3]]).sort((p, q) => p[0] - q[0]);
+    let cov = 0, lo = -Infinity, hi = -Infinity; const parts = []; for (const [y1, y2] of iv) { if (y1 > hi) { if (hi > lo) { cov += hi - lo; parts.push([lo, hi]); } lo = y1; hi = y2; } else hi = Math.max(hi, y2); } if (hi > lo) { cov += hi - lo; parts.push([lo, hi]); }
+    area += cov * (b - a); parts.forEach(p => strips.push([a, p[0], b, p[1]]));
+    push('Franja x ∈ [' + a + ', ' + b + ']: cubierto en y = ' + cov + ' → ' + cov + ' × ' + (b - a) + ' = ' + cov * (b - a) + '. Área = ' + area, { Rs, strips: strips.slice(), cur: [a, b] }); }
+  push('Área total de la unión: ' + area, { Rs, strips, cur: null });
+}, s => { let g = gridBg(); s.strips.forEach(r => g += poly([[r[0], r[1]], [r[2], r[1]], [r[2], r[3]], [r[0], r[3]]], '#2da44e55', 'none'));
+  s.Rs.forEach(r => g += poly([[r[0], r[1]], [r[2], r[1]], [r[2], r[3]], [r[0], r[3]]], 'none', '#1f6feb'));
+  if (s.cur) g += seg([s.cur[0], -7], [s.cur[0], 7], '#d4a72c', 1.5, 1) + seg([s.cur[1], -7], [s.cur[1], 7], '#d4a72c', 1.5, 1); return svgBox(g, G0.W, G0.H); });
+
+V('Geometry-Classic-Problems-Lines-and-Queries-I', 'Máximo entre rectas en un punto', 'Cada consulta x busca la recta más alta en ese x (punto verde). El Li Chao Tree lo responde en O(log X) sin revisar todas las rectas.', push => {
+  const L = []; const ops = [];
+  for (let k = 0; k < 7; k++) ops.push(k % 2 === 0 || !L.length ? 'add' : 'q');
+  for (const o of ops) {
+    if (o === 'add' || !L.length) { const a = R(-4, 4) / 8, b = R(-4, 4); L.push([a, b]); push('Se agrega la recta y = ' + a + 'x ' + (b < 0 ? '− ' + -b : '+ ' + b), { L: L.slice(), q: null }); }
+    else { const x = R(-9, 9), ys = L.map(([a, b]) => a * x + b), m = Math.max(...ys); push('Consulta x = ' + x + ': la recta más alta da ' + m + '.', { L: L.slice(), q: [x, m, ys.indexOf(m)] }); }
+  }
+}, s => { let g = gridBg(); s.L.forEach(([a, b], i) => g += seg([-12, a * -12 + b], [12, a * 12 + b], s.q && s.q[2] === i ? '#2da44e' : '#1f6feb', s.q && s.q[2] === i ? 3 : 1.5));
+  if (s.q) g += seg([s.q[0], -7], [s.q[0], 7], '#d4a72c', 1.5, 1) + dot([s.q[0], s.q[1]], '#2da44e', 6); return svgBox(g, G0.W, G0.H); });
+
+// ---------- Herramientas ----------
+V('FunctionalTools-Classic-Problems-Exponentiation', 'a^b con exponenciación binaria', 'Se recorren los bits de b de menor a mayor: la base se eleva al cuadrado en cada paso y se multiplica en el resultado si el bit está encendido (verde).', push => {
+  const M = 1000000007, a = R(2, 9), b = R(10, 60), bits = b.toString(2).split('').reverse().map(Number); let base = a, res = 1;
+  push(a + '^' + b + ' mód 10^9+7. En binario b = ' + b.toString(2) + '.', { bits, j: -1, base, res });
+  bits.forEach((bt, j) => { if (bt) res = res * base % M; push('Bit ' + j + (bt ? ' encendido: resultado ×= ' + base : ' apagado: no se multiplica') + '.', { bits, j, base, res });
+    base = Number(BigInt(base) * BigInt(base) % BigInt(M)); });
+  push('Resultado: ' + res + ' con solo ' + bits.length + ' cuadrados en vez de ' + b + ' multiplicaciones.', { bits, j: bits.length, base, res });
+}, s => rows([{ t: 'bits de b', v: s.bits, c: s.bits.map((bt, j) => j === s.j ? 'a' : j < s.j ? (bt ? 'g' : 'r') : '') }, { t: 'base actual', v: [s.base] }, { t: 'resultado', v: [s.res], c: ['g'] }]));
+
+V('FunctionalTools-Classic-Problems-Counting-Divisors', 'Cantidad de divisores con la criba del menor primo', 'spf[x] = menor primo que divide a x. Se divide por spf repetidamente; si x = p₁^e₁·p₂^e₂…, hay (e₁+1)(e₂+1)… divisores.', push => {
+  const x0 = pick([360, 720, 1260, 840, 2520, 504, 1800]); let x = x0; const spf = v => { for (let p = 2; p * p <= v; p++) if (v % p === 0) return p; return v; };
+  const fac = []; push('x = ' + x0 + '.', { fac: [], x });
+  while (x > 1) { const p = spf(x); let e = 0; while (x % p === 0) { x /= p; e++; } fac.push([p, e]); push('spf = ' + p + ': aparece ' + e + ' vez(veces). Queda ' + x + '.', { fac: fac.slice(), x }); }
+  const d = fac.reduce((r, [, e]) => r * (e + 1), 1);
+  push(x0 + ' = ' + fac.map(([p, e]) => p + '^' + e).join(' · ') + ' → ' + fac.map(([, e]) => '(' + e + '+1)').join('·') + ' = ' + d + ' divisores.', { fac, x, d });
+}, s => rows([{ t: 'primo', v: s.fac.length ? s.fac.map(f => f[0]) : [null], c: s.fac.map(() => 'g') }, { t: 'exponente', v: s.fac.length ? s.fac.map(f => f[1]) : [null], c: s.fac.map(() => 'b') }, { t: 'resto', v: [s.x] }]));
+
+V('FunctionalTools-Classic-Problems-Distributing-Apples', 'Estrellas y barras', 'Cada fila es un reparto: ★ = manzana, | = separador entre niños. Elegir dónde van las n − 1 barras entre m + n − 1 lugares da C(m + n − 1, n − 1).', push => {
+  const n = 3, m = R(2, 4), all = []; const C = (a, b) => { let r = 1; for (let i = 1; i <= b; i++) r = r * (a - b + i) / i; return Math.round(r); };
+  for (let i = 0; i <= m; i++) for (let j = 0; i + j <= m; j++) all.push([i, j, m - i - j]);
+  push(m + ' manzanas entre ' + n + ' niños: hay ' + (m + n - 1) + ' lugares y se eligen ' + (n - 1) + ' para las barras.', { all, k: 0, m, n });
+  for (let k = 1; k <= all.length; k += Math.max(1, Math.floor(all.length / 4))) push('Repartos listados: ' + k + '.', { all, k, m, n });
+  push('Total = C(' + (m + n - 1) + ', ' + (n - 1) + ') = ' + C(m + n - 1, n - 1) + ' = ' + all.length + ' repartos.', { all, k: all.length, m, n });
+}, s => '<div style="font:16px ui-monospace,monospace;line-height:1.7;columns:2;max-width:520px">' + s.all.slice(0, s.k).map(r => r.map(c => '★'.repeat(c)).join('<b style="color:var(--acc)">|</b>') + ' <small style="color:var(--mut)">(' + r.join(', ') + ')</small>').join('<br>') + '</div>');
+
+V('FunctionalTools-Classic-Problems-Array-Division', 'Búsqueda binaria sobre la suma máxima', 'Para un L se llenan las partes golosamente (cada color es una parte). Si salen ≤ k partes, L sirve y se busca uno menor.', push => {
+  const n = 9, k = 3, x = Array.from({ length: n }, () => R(1, 9)); let lo = Math.max(...x), hi = x.reduce((a, b) => a + b, 0);
+  const parts = L => { const g = []; let s = 0, c = 0; for (const v of x) { if (s + v > L) { c++; s = 0; } s += v; g.push(c); } return g; };
+  push('Partir en k = ' + k + ' partes. La respuesta está entre ' + lo + ' (el mayor) y ' + hi + ' (la suma).', { x, g: x.map(() => 0), lo, hi, L: null });
+  while (lo < hi) { const L = (lo + hi) >> 1, g = parts(L), cnt = g[g.length - 1] + 1, ok = cnt <= k;
+    push('L = ' + L + ': salen ' + cnt + ' partes → ' + (ok ? 'sirve, se busca menor' : 'no sirve, se busca mayor') + '.', { x, g, lo, hi, L, ok });
+    if (ok) hi = L; else lo = L + 1; }
+  push('La menor suma máxima es ' + lo + '.', { x, g: parts(lo), lo, hi, L: lo, ok: true });
+}, s => '<div class="cells">' + s.x.map((v, i) => '<div class="cell" style="background:' + ROOMC[s.g[i] % ROOMC.length] + ';color:#fff;border-color:transparent">' + v + '</div>').join('') + '</div>' + cellsRow('rango', [s.lo + ' … ' + s.hi], ['b']));
+
+V('FunctionalTools-Classic-Problems-Prime-Multiples', 'Inclusión-exclusión', 'Cada subconjunto de primos aporta ⌊n / producto⌋ con signo + (tamaño impar) o − (par). Abajo: los números de 1 a n divisibles por alguno (verde).', push => {
+  const n = R(30, 60), a = pick([[2, 3], [2, 5], [3, 5], [2, 3, 5], [2, 3, 7]]), terms = [];
+  push('n = ' + n + ', primos ' + a.join(', ') + '.', { n, a, terms: [], tot: 0, done: false });
+  let tot = 0;
+  for (let mask = 1; mask < 1 << a.length; mask++) { const S = a.filter((_, i) => mask >> i & 1), p = S.reduce((x, y) => x * y, 1), sg = S.length % 2 ? 1 : -1; tot += sg * Math.floor(n / p);
+    terms.push([S.join('·'), sg > 0 ? '+' : '−', Math.floor(n / p)]); push('{' + S.join(', ') + '}: ' + (sg > 0 ? '+' : '−') + '⌊' + n + '/' + p + '⌋ = ' + (sg > 0 ? '+' : '−') + Math.floor(n / p) + '. Total = ' + tot, { n, a, terms: terms.slice(), tot, done: false }); }
+  push(tot + ' números de 1 a ' + n + ' son divisibles por al menos uno.', { n, a, terms, tot, done: true });
+}, s => table(s.terms.length ? s.terms : [['—', '', '']], s.terms.map(() => ['', '', 'b']), null, ['subconjunto', 'signo', '⌊n/prod⌋']) +
+  (s.done ? '<div class="cells">' + [...Array(s.n).keys()].map(i => i + 1).map(v => '<div class="cell ' + (s.a.some(p => v % p === 0) ? 'g' : '') + '" style="min-width:30px">' + v + '</div>').join('') + '</div>' : ''));
+
+// =================== Probabilidad ===================
+const f3 = x => (Math.round(x * 1000) / 1000).toFixed(3).replace(/\.?0+$/, '') || '0';
+const barras = (vals, hl, labs, maxV) => { const W = 540, H = 170, n = vals.length, bw = Math.min(40, (W - 20) / n - 2), m = maxV || Math.max(...vals, 1e-9); let g = '';
+  vals.forEach((v, i) => { const h = (H - 40) * v / m, x = 10 + i * ((W - 20) / n); g += '<rect x="' + x + '" y="' + (H - 22 - h) + '" width="' + bw + '" height="' + h + '" rx="3" fill="' + (hl && hl[i] ? (FILL[hl[i]] || '#7ee2a8') : '#c9d1d9') + '"/>';
+    if (labs) g += txt(x + bw / 2, H - 8, labs[i], { s: 10 }); });
+  return svgBox(g, W, H); };
+
+V('Probability-Algorithms-ProbabilityDP', 'Distribución de la suma de varios dados', 'Cada barra es la probabilidad de una suma. Al lanzar otro dado, cada barra se reparte en seis partes iguales (1/6) hacia s+1 … s+6. Verde = sumas dentro de [a, b].', push => {
+  const n = R(2, 4), a = R(n + 1, 3 * n), b = R(a, Math.min(6 * n, a + 2 * n)); let p = [1];
+  push('Con 0 dados la suma es 0 con probabilidad 1. Se busca P(' + a + ' ≤ suma ≤ ' + b + ') con ' + n + ' dados.', { p: p.slice(), a, b, n, d: 0 });
+  for (let d = 1; d <= n; d++) { const q = Array(p.length + 6).fill(0); p.forEach((v, s) => { for (let c = 1; c <= 6; c++) q[s + c] += v / 6; }); p = q;
+    push('Dado ' + d + ': p[s] = (p[s−1] + … + p[s−6]) / 6. Suma más probable: ' + p.indexOf(Math.max(...p)) + '.', { p: p.slice(), a, b, n, d }); }
+  const res = p.slice(a, b + 1).reduce((x, y) => x + y, 0);
+  push('P(' + a + ' ≤ suma ≤ ' + b + ') = ' + res.toFixed(6), { p, a, b, n, d: n, fin: 1 });
+}, s => barras(s.p, s.p.map((_, i) => s.fin && i >= s.a && i <= s.b ? 'g' : ''), s.p.map((_, i) => i % 2 === 0 || s.p.length < 14 ? i : '')));
+
+V('Probability-Algorithms-LinearityOfExpectation', 'Linealidad de la esperanza: par por par', 'E[inversiones] = Σ P(x_i > x_j) sobre los pares i < j, aunque los pares no sean independientes. Amarillo = par que se suma.', push => {
+  const n = 4, r = Array.from({ length: n }, () => R(2, 6)); let tot = 0; const done = [];
+  push('x_i es uniforme en [1, r_i]: r = ' + r.join(', ') + '.', { r, i: -1, j: -1, tot, done: [] });
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) { let fav = 0; for (let v = 1; v <= r[i]; v++) fav += Math.min(v - 1, r[j]); const pr = fav / (r[i] * r[j]); tot += pr; done.push([i, j, pr]);
+    push('P(x_' + (i + 1) + ' > x_' + (j + 1) + ') = ' + fav + ' / ' + (r[i] * r[j]) + ' = ' + f3(pr) + '. Acumulado: ' + tot.toFixed(4), { r, i, j, tot, done: done.slice() }); }
+  push('Número esperado de inversiones: ' + tot.toFixed(6), { r, i: -1, j: -1, tot, done });
+}, s => cellsRow('r', s.r, s.r.map((_, k) => k === s.i || k === s.j ? 'a' : '')) + table(s.done.length ? s.done.map(([i, j, p]) => ['(' + (i + 1) + ', ' + (j + 1) + ')', f3(p)]) : [['—', '']], s.done.map(([i, j]) => i === s.i && j === s.j ? ['a', 'a'] : ['g', 'g']), null, ['par', 'P(inversión)']));
+
+V('Probability-Algorithms-ExpectedMaximum', 'Esperanza del máximo con P(máx ≤ m) = (m/k)ⁿ', 'Azul = P(máx ≤ m); verde = P(máx = m) = la diferencia de dos azules consecutivos. E[máx] = Σ m · P(máx = m).', push => {
+  const n = R(2, 4), k = R(5, 8), F = [], P = []; let E = 0;
+  push(n + ' niños, cada uno con un número al azar de 1 a ' + k + '.', { F: [], P: [], k, m: 0 });
+  for (let m = 1; m <= k; m++) { F.push((m / k) ** n); P.push(F[m - 1] - (m > 1 ? F[m - 2] : 0)); E += m * P[m - 1];
+    push('m = ' + m + ': P(máx ≤ ' + m + ') = (' + m + '/' + k + ')^' + n + ' = ' + f3(F[m - 1]) + ' → P(máx = ' + m + ') = ' + f3(P[m - 1]) + '. E parcial = ' + E.toFixed(4), { F: F.slice(), P: P.slice(), k, m }); }
+  push('E[máx] = ' + E.toFixed(6), { F, P, k, m: k });
+}, s => { const pad = a => a.concat(Array(s.k - a.length).fill(0)); return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+  '<div><small>P(máx ≤ m)</small>' + barras(pad(s.F), pad(s.F).map((_, i) => i < s.m ? 'b' : ''), [...Array(s.k).keys()].map(i => i + 1), 1) + '</div>' +
+  '<div><small>P(máx = m)</small>' + barras(pad(s.P), pad(s.P).map((_, i) => i === s.m - 1 ? 'a' : i < s.m ? 'g' : ''), [...Array(s.k).keys()].map(i => i + 1), 1) + '</div></div>'; });
+
+V('Probability-Algorithms-MarkovChain', 'Un robot como cadena de Markov', 'Tablero 5×5 (en el problema es 8×8). El color es la probabilidad de que el robot esté en cada casilla; en cada paso se reparte por igual entre las vecinas válidas.', push => {
+  const N = 5, st = R(0, N * N - 1); let p = Array(N * N).fill(0); p[st] = 1;
+  const nb = c => { const x = Math.floor(c / N), y = c % N; return [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]].filter(([a, b]) => a >= 0 && b >= 0 && a < N && b < N).map(([a, b]) => a * N + b); };
+  push('El robot empieza en la casilla marcada con probabilidad 1.', { p: p.slice(), N, k: 0 });
+  for (let k = 1; k <= 6; k++) { const q = Array(N * N).fill(0); p.forEach((v, c) => { if (v) { const L = nb(c); L.forEach(u => q[u] += v / L.length); } }); p = q;
+    push('Paso ' + k + ': cada casilla manda su probabilidad dividida entre sus ' + '2–4 vecinas. La suma sigue siendo 1.', { p: p.slice(), N, k }); }
+  push('Con la distribución de cada robot: P(casilla vacía) = Π (1 − p_robot), y E[vacías] = Σ P(vacía).', { p, N, k: 6 });
+}, s => { const m = Math.max(...s.p); return gridHtml(Array.from({ length: s.N }, (_, i) => Array.from({ length: s.N }, (_, j) => { const v = s.p[i * s.N + j];
+  return { t: v ? f3(v) : '', bg: v ? 'rgba(31,111,235,' + (0.15 + 0.85 * v / m).toFixed(2) + ')' : '' }; })), 52); });
+
+V('Probability-Algorithms-ModularExpectation', 'Esperanza módulo un primo', 'Arriba: la cuenta con fracciones reales. Abajo: la misma cuenta módulo 998244353 (cada a/b se guarda como a · b⁻¹). Ambas representan el mismo número.', push => {
+  const M = 998244353n, pw = (b, e) => { let r = 1n; b %= M; while (e > 0n) { if (e & 1n) r = r * b % M; b = b * b % M; e >>= 1n; } return r; };
+  const n = 3, ps = Array.from({ length: n }, () => pick([10, 20, 25, 50, 80])), inv100 = pw(100n, M - 2n);
+  let num = 0, prod = 1, numM = 0n, prodM = 1n; const rowsF = [], rowsM = [];
+  push('Espejos con probabilidades ' + ps.map(p => p + '%').join(', ') + '. E = (1 + q1 + q1q2) / (q1q2q3).', { rowsF: [], rowsM: [] });
+  ps.forEach((p, i) => { num += prod; numM = (numM + prodM) % M; prod *= p / 100; prodM = prodM * (BigInt(p) * inv100 % M) % M;
+    rowsF.push(['i=' + (i + 1), f3(num), f3(prod)]); rowsM.push(['i=' + (i + 1), String(numM), String(prodM)]);
+    push('Se suma el producto actual al numerador y se multiplica por q' + (i + 1) + ' = ' + p + '/100.', { rowsF: rowsF.slice(), rowsM: rowsM.slice() }); });
+  const E = num / prod, EM = numM * pw(prodM, M - 2n) % M;
+  push('E = ' + f3(num) + ' / ' + f3(prod) + ' = ' + E.toFixed(4) + ' días. Módulo M: ' + numM + ' · (' + prodM + ')^(M−2) = ' + EM + '.', { rowsF, rowsM, E: [E.toFixed(4), String(EM)] });
+}, s => '<div style="display:flex;gap:18px;flex-wrap:wrap">' + table(s.rowsF.length ? s.rowsF : [['', '', '']], null, null, ['', 'numerador', 'q1⋯qi']) + table(s.rowsM.length ? s.rowsM : [['', '', '']], null, null, ['', 'num mód M', 'prod mód M']) + '</div>' + (s.E ? cellsRow('E', s.E, ['g', 'g']) : ''));
+
+V('Probability-Classic-Problems-Bag-of-Mice', 'Tabla P[w][b]: ¿gana la princesa?', 'P[w][b] = probabilidad de que gane la princesa si le toca sacar con w blancos y b negros. Amarillo = celda que se calcula; azul = celdas de las que depende (w−1, b−2) y (w, b−3).', push => {
+  const W = 4, B = 5, P = Array.from({ length: W + 1 }, () => Array(B + 1).fill(null));
+  for (let b = 0; b <= B; b++) P[0][b] = 0; for (let w = 1; w <= W; w++) P[w][0] = 1;
+  const st = (w, b, m) => push(m, { P: clone(P), w, b });
+  st(-1, -1, 'Sin blancos gana el dragón (0); sin negros gana la princesa (1).');
+  for (let w = 1; w <= W; w++) for (let b = 1; b <= B; b++) { const t = w + b; let r = w / t;
+    if (b >= 2) { const both = b / t * (b - 1) / (t - 1); if (t > 2) r += both * w / (t - 2) * P[w - 1][b - 2]; if (b >= 3) r += both * (b - 2) / (t - 2) * P[w][b - 3]; }
+    P[w][b] = r; st(w, b, 'P[' + w + '][' + b + '] = ' + w + '/' + t + ' (blanco ya) + ramas en que ambos sacan negro y salta un ratón = ' + f3(r)); }
+  st(W, B, 'Con ' + W + ' blancos y ' + B + ' negros la princesa gana con probabilidad ' + P[W][B].toFixed(6) + '.');
+}, s => table(s.P.map(r => r.map(v => v === null ? '·' : f3(v))), s.P.map((r, w) => r.map((v, b) => w === s.w && b === s.b ? 'a' : (w === s.w - 1 && b === s.b - 2) || (w === s.w && b === s.b - 3) ? 'b' : v !== null ? 'g' : '')), s.P.map((_, w) => 'w=' + w), s.P[0].map((_, b) => 'b=' + b)));
+
+V('Probability-Classic-Problems-Ilya-and-Escalator', 'Distribución de personas en la escalera', 'Cada barra es la probabilidad de que haya i personas en la escalera. Cada segundo, con probabilidad p entra el primero de la fila.', push => {
+  const n = 5, p = pick([0.3, 0.5, 0.7]), T = 8; let d = [1, 0, 0, 0, 0, 0];
+  const E = () => d.reduce((s, v, i) => s + i * v, 0);
+  push(n + ' personas en fila, p = ' + p + '. Al inicio nadie ha entrado.', { d: d.slice(), t: 0 });
+  for (let t = 1; t <= T; t++) { const e = Array(n + 1).fill(0); for (let i = 0; i < n; i++) { e[i + 1] += d[i] * p; e[i] += d[i] * (1 - p); } e[n] += d[n]; d = e;
+    push('Segundo ' + t + ': E[personas] = Σ i·d[i] = ' + E().toFixed(4), { d: d.slice(), t }); }
+}, s => barras(s.d, s.d.map(() => 'b'), s.d.map((_, i) => i), 1));
+
+V('Probability-Classic-Problems-Fish', 'Probabilidad de cada conjunto de sobrevivientes', 'Cada fila es un conjunto de peces vivos (máscara) y su probabilidad de llegar a ocurrir. Se pasa de conjuntos grandes a pequeños; amarillo = conjunto que reparte su probabilidad.', push => {
+  const n = 3, a = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]; for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) { const x = pick([0.2, 0.5, 0.7, 0.9]); a[i][j] = x; a[j][i] = Math.round((1 - x) * 10) / 10; }
+  const P = Array(1 << n).fill(0); P[(1 << n) - 1] = 1; const name = m => '{' + [...Array(n).keys()].filter(i => m >> i & 1).map(i => i + 1).join(',') + '}';
+  const S = (m, cur) => push(m, { P: P.slice(), cur, n });
+  S('Matriz a: ' + a.map((r, i) => r.map((x, j) => i < j ? (i + 1) + '→' + (j + 1) + ': ' + x : '').filter(Boolean).join(', ')).filter(Boolean).join(', ') + '. Todos vivos con probabilidad 1.', -1);
+  for (let m = (1 << n) - 1; m > 0; m--) { const alive = [...Array(n).keys()].filter(i => m >> i & 1), k = alive.length; if (k < 2 || !P[m]) continue;
+    const pares = k * (k - 1) / 2; for (const j of alive) for (const i of alive) if (i !== j) P[m ^ (1 << j)] += P[m] / pares * a[i][j];
+    S(name(m) + ': cada uno de los ' + pares + ' pares se encuentra con probabilidad 1/' + pares + '; se reparte entre los conjuntos con un pez menos.', m); }
+  S('Respuesta: ' + [...Array(n).keys()].map(i => 'pez ' + (i + 1) + ' = ' + f3(P[1 << i])).join(', '), 0);
+}, s => table([...Array(1 << s.n).keys()].reverse().filter(m => m).map(m => ['{' + [...Array(s.n).keys()].filter(i => m >> i & 1).map(i => i + 1).join(',') + '}', f3(s.P[m])]),
+  [...Array(1 << s.n).keys()].reverse().filter(m => m).map(m => m === s.cur ? ['a', 'a'] : s.P[m] ? ['g', 'g'] : ['', '']), null, ['vivos', 'probabilidad']));
+
+V('Probability-Classic-Problems-Journey', 'Probabilidad de llegar a cada ciudad', 'Etiqueta = probabilidad de pasar por esa ciudad: la del padre dividida entre sus hijos. Verde = hojas, donde termina el viaje; E = Σ prob(hoja) · profundidad.', push => {
+  const n = 10, { T, s } = treeState(n), prob = Array(n).fill(0); prob[0] = 1; let E = 0;
+  s.ns = prob.map(v => v ? f3(v) : ''); s.nc[0] = 'a'; push('El caballo sale de la ciudad 1 con probabilidad 1.', clone(s));
+  const order = [0]; for (const u of order) { const k = T.kids[u]; s.nc[u] = k.length ? 'b' : 'g';
+    if (!k.length) { E += prob[u] * T.depth[u]; push('Ciudad ' + (u + 1) + ' es hoja: aporta ' + f3(prob[u]) + ' × ' + T.depth[u] + '. E = ' + f3(E), clone(s)); continue; }
+    k.forEach(v => { prob[v] = prob[u] / k.length; order.push(v); }); s.ns = prob.map(v => v ? f3(v) : '');
+    push('Desde ' + (u + 1) + ' hay ' + k.length + ' caminos nuevos: cada hijo recibe ' + f3(prob[u]) + ' / ' + k.length + '.', clone(s)); }
+  push('Largo esperado del viaje: ' + E.toFixed(6), s);
+}, GR);
+
+V('Probability-Classic-Problems-Game-on-Tree', 'Indicadores: E[pasos] = Σ 1 / profundidad', 'Un nodo cuenta como paso solo si se elige antes que todos sus ancestros: entre esos profundidad(v) nodos, cada uno es el primero con la misma probabilidad. Etiqueta = 1/profundidad.', push => {
+  const n = 9, { T, s } = treeState(n); let E = 0; const order = [0]; for (const u of order) order.push(...T.kids[u]);
+  push('Árbol con raíz 1 (profundidad 1).', clone(s));
+  for (const u of order) { const d = T.depth[u] + 1; E += 1 / d; s.nc = s.nc.map(c => c === 'a' ? 'g' : c); s.nc[u] = 'a'; s.ns[u] = '1/' + d;
+    push('Nodo ' + (u + 1) + ' (profundidad ' + d + '): P(elegirlo directamente) = 1/' + d + '. E = ' + E.toFixed(4), clone(s)); }
+  s.nc = s.nc.map(() => 'g'); push('Número esperado de pasos: ' + E.toFixed(6), s);
+}, GR);
+
+V('Probability-Classic-Problems-Lets-Play-Osu', 'E[puntaje] con E[L] (largo del bloque actual)', 'Si el clic acierta, el puntaje sube (L+1)² − L² = 2L + 1. Se lleva E[L] y se suma p · (2·E[L] + 1) en cada clic.', push => {
+  const ps = Array.from({ length: 7 }, () => pick([0.2, 0.5, 0.8, 0.9, 1])); let L = 0, res = 0; const Ls = [], Rs = [];
+  push('Probabilidad de acertar cada clic: ' + ps.join(', '), { ps, Ls: [], Rs: [], i: -1 });
+  ps.forEach((p, i) => { res += p * (2 * L + 1); L = p * (L + 1); Ls.push(f3(L)); Rs.push(f3(res));
+    push('Clic ' + (i + 1) + ' (p = ' + p + '): E[puntaje] += ' + p + '·(2·E[L] + 1); E[L] = ' + p + '·(E[L] + 1) = ' + f3(L) + '.', { ps, Ls: Ls.slice(), Rs: Rs.slice(), i }); });
+  push('Puntaje esperado: ' + res.toFixed(6), { ps, Ls, Rs, i: ps.length });
+}, s => rows([{ t: 'p', v: s.ps, c: s.ps.map((_, k) => k === s.i ? 'a' : k < s.i ? 'g' : '') }, { t: 'E[L]', v: s.Ls.length ? s.Ls : [null], c: s.Ls.map(() => 'b') }, { t: 'E[puntaje]', v: s.Rs.length ? s.Rs : [null], c: s.Rs.map(() => 'g') }]));
 
 })();

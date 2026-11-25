@@ -48,7 +48,7 @@ window.LIBRO = [
     { h: 'Dos punteros' },
     'Cuando el arreglo está ordenado y buscas un par con suma x, no hace falta probar todos los pares. Con un índice al inicio y otro al final: si la suma es pequeña, avanzas el izquierdo; si es grande, retrocedes el derecho. Cada paso descarta un elemento para siempre, así que el total es O(n).'
   ],
-  algs: ['FunctionalTools-Codes-BS', 'FunctionalTools-Codes-BS-library', 'FunctionalTools-Codes-BinarySearchAnswer', 'FunctionalTools-Codes-TS', 'Data-Structures-Algorithms-TwoPointers'],
+  algs: ['FunctionalTools-Codes-BS', 'FunctionalTools-Codes-BS-library', 'FunctionalTools-Codes-BinarySearchAnswer', 'FunctionalTools-Classic-Problems-Array-Division', 'FunctionalTools-Codes-TS', 'Data-Structures-Algorithms-TwoPointers'],
   teo: [['FunctionalTools', 'Correctitud de la búsqueda binaria']],
   preguntas: [
     { q: '¿Cuántas iteraciones hace la búsqueda binaria sobre 10⁹ valores posibles?', a: 'Unas 30, porque 2³⁰ ≈ 10⁹.' },
@@ -71,7 +71,7 @@ window.LIBRO = [
     { h: 'Matrices' },
     'Una recurrencia como Fibonacci, `F(n) = F(n-1) + F(n-2)`, se puede escribir como una matriz 2×2 que multiplica al vector (F(n-1), F(n-2)). Elevar esa matriz a la n con exponenciación binaria da F(n) en O(log n), incluso para n = 10¹⁸.'
   ],
-  algs: ['FunctionalTools-Codes-Sieve', 'FunctionalTools-Codes-ModArithmetic', 'FunctionalTools-Codes-MatrixExponentiation'],
+  algs: ['FunctionalTools-Codes-Sieve', 'FunctionalTools-Classic-Problems-Counting-Divisors', 'FunctionalTools-Codes-ModArithmetic', 'FunctionalTools-Classic-Problems-Exponentiation', 'FunctionalTools-Codes-MatrixExponentiation', 'FunctionalTools-Classic-Problems-Distributing-Apples', 'FunctionalTools-Classic-Problems-Prime-Multiples'],
   teo: [['FunctionalTools', 'Criba de Eratóstenes'], ['FunctionalTools', 'Exponenciación binaria'], ['FunctionalTools', 'Pequeño teorema de Fermat'], ['FunctionalTools', 'Algoritmo de Euclides e identidad de Bézout'], ['FunctionalTools', 'Teorema fundamental de la aritmética'], ['FunctionalTools', 'Inverso modular'], ['FunctionalTools', 'Fórmula de Legendre']],
   preguntas: [
     { q: '¿Por qué en la criba basta empezar a tachar desde p²?', a: 'Los múltiplos menores de p² tienen un factor primo menor que p, así que ya fueron tachados.' },
@@ -137,7 +137,7 @@ window.LIBRO = [
     { h: 'Kadane' },
     'El subarreglo de suma máxima es la DP más corta que existe: la mejor suma que termina en i es `max(a[i], mejor[i-1] + a[i])`. Una línea, O(n).'
   ],
-  algs: ['DP-Algorithms-Kadane1D', 'DP-Algorithms-CoinChange', 'DP-Algorithms-CoinCombinations', 'DP-Algorithms-Knapsack'],
+  algs: ['DP-Classic-Problems-Dice-Combinations', 'DP-Classic-Problems-Grid-Paths-I', 'DP-Algorithms-Kadane1D', 'DP-Algorithms-CoinChange', 'DP-Algorithms-CoinCombinations', 'DP-Algorithms-Knapsack', 'DP-Classic-Problems-Money-Sums'],
   teo: [['DP', 'Principio de optimalidad de Bellman'], ['DP', 'Número de estados × costo de transición'], ['DP', 'Mochila: pseudo-polinomial']],
   preguntas: [
     { q: 'En mochila 0/1 con un solo arreglo, ¿qué pasa si recorres la capacidad de menor a mayor?', a: 'Cada objeto puede usarse varias veces: obtienes la mochila "sin límite" en vez de la 0/1.' },
@@ -157,7 +157,7 @@ window.LIBRO = [
     { h: 'Kadane en 2D' },
     'Fijar un par de filas convierte la matriz en un arreglo de sumas de columna, y sobre él corres Kadane. Es una técnica general: **fijar una dimensión para reducir el problema a uno que ya sabes resolver**.'
   ],
-  algs: ['DP-Algorithms-LIS-I', 'DP-Algorithms-LIS-II', 'DP-Algorithms-LCS', 'DP-Algorithms-EditDistance', 'DP-Algorithms-Kadane2D'],
+  algs: ['DP-Algorithms-LIS-I', 'DP-Algorithms-LIS-II', 'DP-Algorithms-LCS', 'DP-Algorithms-EditDistance', 'DP-Algorithms-Kadane2D', 'DP-Classic-Problems-Removal-Game'],
   teo: [['DP', 'Cota inferior de la LIS'], ['DP', 'Teorema de Erdős–Szekeres'], ['DP', 'Teorema de Dilworth (y su dual de Mirsky)']],
   preguntas: [
     { q: 'En LIS O(n log n), ¿el arreglo t es una subsecuencia creciente real?', a: 'No necesariamente: solo su longitud es correcta. Para reconstruir la secuencia hay que guardar de qué posición vino cada elemento.' },
@@ -173,7 +173,7 @@ window.LIBRO = [
     { h: 'Hacia las finales' },
     'En niveles altos, la DP no cambia de idea, pero las transiciones se aceleran con estructura matemática: si la función de costo cumple la desigualdad del cuadrángulo, el punto óptimo de corte es monótono (Knuth, divide y vencerás); si las transiciones son rectas, el **Convex Hull Trick** las responde en O(log n); y si hay una restricción de "exactamente k", el **truco de Aliens** la convierte en una penalización lagrangiana. Lee esas entradas de teoría: son el puente entre este curso y la optimización matemática.'
   ],
-  algs: ['DP-Algorithms-BitmaskDP', 'DP-Classic-Problems-Campeonato'],
+  algs: ['DP-Algorithms-BitmaskDP', 'DP-Classic-Problems-Counting-Numbers', 'DP-Classic-Problems-Campeonato'],
   teo: [['DP', 'DP sobre subconjuntos y SOS (suma sobre subconjuntos)'], ['DP', 'Desigualdad del cuadrángulo y optimización de Knuth'], ['DP', 'Divide y vencerás para DP'], ['DP', 'Convex Hull Trick y Li Chao'], ['DP', 'Truco de Aliens (WQS / relajación lagrangiana)']],
   preguntas: [
     { q: '¿Cuántos estados y transiciones tiene una DP de bitmask con n = 20?', a: '2²⁰ ≈ 10⁶ estados con 20 transiciones cada uno: unos 2·10⁷ pasos.' },
@@ -182,7 +182,52 @@ window.LIBRO = [
   cierre: 'Ya tienes las bases de DP. En las finales, la DP se combina con convexidad y dualidad: conceptos de optimización que vale la pena estudiar formalmente.' }
 ]},
 
-{ parte: 'III. Consultas en rangos', caps: [
+{ parte: 'III. Probabilidad', caps: [
+
+{ t: 'Probabilidad y valor esperado',
+  obj: ['Calcular probabilidades combinando la regla de la suma y la del producto.', 'Usar la linealidad de la esperanza y las variables indicadoras.', 'Calcular esperanzas de máximos y de funciones no lineales.'],
+  clase: [
+    'En programación competitiva aparecen dos tipos de preguntas con azar: **¿qué tan probable es que pase algo?** y **¿cuánto vale en promedio?** (el valor esperado o esperanza). Casi nunca se resuelven listando todos los casos, que suelen ser una cantidad astronómica, sino con dos o tres ideas que conviene dominar.',
+    { h: 'Probabilidades por pasos' },
+    'Si un proceso avanza por pasos independientes, la probabilidad de una secuencia es el **producto** de las de cada paso, y la de un estado es la **suma** sobre todos los caminos que llegan a él. Eso es exactamente una DP donde cada casilla guarda una probabilidad en lugar de un conteo. Con dados: `p[d][s]` es la probabilidad de que d dados sumen s.',
+    { py: 'p = [1.0]\nfor _ in range(n):\n    q = [0.0] * (len(p) + 6)\n    for s, ps in enumerate(p):\n        for c in range(1, 7):\n            q[s + c] += ps / 6\n    p = q\nprint(sum(p[a:b + 1]))' },
+    { h: 'Linealidad de la esperanza' },
+    'La idea más poderosa del tema: **E[X + Y] = E[X] + E[Y] siempre**, aunque X e Y dependan una de la otra. Para un conteo, se escribe como suma de **indicadores** (1 si pasa algo, 0 si no), y la esperanza de un indicador es su probabilidad. Así, el número esperado de inversiones es la suma de P(x_i > x_j) sobre los pares; y en Game on Tree, cada nodo cuenta como paso con probabilidad 1/profundidad.',
+    { h: 'Máximos y funciones no lineales' },
+    'Para el máximo de variables independientes, «el máximo es ≤ m» equivale a «todas son ≤ m», que es un producto. Para un cuadrado, E[X²] no es E[X]²: se mira cuánto **aumenta** el valor en cada paso ((L+1)² − L² = 2L + 1) y a esa expresión lineal sí se le aplica la linealidad.'
+  ],
+  algs: ['Probability-Algorithms-ProbabilityDP', 'Probability-Algorithms-LinearityOfExpectation', 'Probability-Algorithms-ExpectedMaximum', 'Probability-Classic-Problems-Journey', 'Probability-Classic-Problems-Game-on-Tree', 'Probability-Classic-Problems-Lets-Play-Osu'],
+  teo: [['Probability', 'Regla de la suma y del producto'], ['Probability', 'Linealidad de la esperanza'], ['Probability', 'Variables indicadoras'], ['Probability', 'Máximo y mínimo de variables independientes'], ['Probability', 'Esperanza de un cuadrado']],
+  preguntas: [
+    { q: '¿La linealidad de la esperanza necesita que las variables sean independientes?', a: 'No. E[X + Y] = E[X] + E[Y] vale siempre; la independencia solo se necesita para multiplicar: E[X·Y] = E[X]·E[Y].' },
+    { q: 'Si lanzas 3 dados, ¿cuál es el valor esperado de la suma?', a: '3 · 3.5 = 10.5, por linealidad, sin calcular la distribución.' },
+    { q: '¿Cuál es P(máx ≤ m) para n números independientes uniformes en [1, k]?', a: '(m/k)^n, porque todos deben ser ≤ m.' }
+  ],
+  cierre: 'Ante cualquier «valor esperado de un conteo», la primera pregunta es: ¿de qué indicadores es suma este conteo? Muchas veces el problema se resuelve ahí mismo.' },
+
+{ t: 'Procesos aleatorios y probabilidad modular',
+  obj: ['Modelar procesos con estados y transiciones aleatorias (cadenas de Markov).', 'Hacer DP de probabilidades sobre estados que se achican, incluso subconjuntos.', 'Expresar probabilidades y esperanzas módulo un primo.'],
+  clase: [
+    'Muchos problemas describen un proceso que cambia de estado al azar: un robot que se mueve, una fila que avanza, peces que se comen, ratones que saltan. La pregunta es siempre la misma: **¿cuál es el estado mínimo que describe la situación?** Con eso se arma una DP sobre la distribución de probabilidades.',
+    { h: 'Cadenas de Markov' },
+    'Si el siguiente estado solo depende del actual, basta llevar la distribución p (la probabilidad de estar en cada estado) y aplicar las transiciones paso a paso. Si los pasos son muchísimos, la misma transición se escribe como una matriz y se eleva a la k con exponenciación rápida.',
+    { h: 'Estados que se achican' },
+    'En Bag of Mice el estado es (blancos, negros) y cada ronda quita ratones; en Fish el estado es el conjunto de peces vivos (una máscara de bits) y cada encuentro quita uno. Como el estado siempre se achica, se recorre de los estados grandes a los pequeños repartiendo la probabilidad, sin ciclos.',
+    { h: 'Respuestas módulo un primo' },
+    'Cuando la respuesta es una fracción p/q, muchos jueces piden p · q⁻¹ mód 998244353. Como el módulo es primo, q⁻¹ = q^(M−2), y una probabilidad como 37/100 se guarda como 37 · 100⁻¹. Toda la cuenta se hace con sumas y productos modulares, sin decimales.',
+    { py: 'MOD = 998244353\ninv100 = pow(100, MOD - 2, MOD)\nq = 37 * inv100 % MOD      # 0.37 representado módulo MOD\nprint(q * 100 % MOD)       # 37: la fracción se recupera' }
+  ],
+  algs: ['Probability-Algorithms-MarkovChain', 'Probability-Classic-Problems-Ilya-and-Escalator', 'Probability-Classic-Problems-Bag-of-Mice', 'Probability-Classic-Problems-Fish', 'Probability-Algorithms-ModularExpectation'],
+  teo: [['Probability', 'Probabilidad condicional y probabilidad total'], ['Probability', 'Cadenas de Markov y matriz de transición'], ['Probability', 'Esperanza de una variable geométrica'], ['Probability', 'Fracciones módulo un primo'], ['Probability', 'Esperanza con ciclos: sistema de ecuaciones']],
+  preguntas: [
+    { q: 'Un intento tiene éxito con probabilidad 1/4. ¿Cuántos intentos se esperan hasta el primer éxito?', a: '4: la variable es geométrica y su esperanza es 1/p.' },
+    { q: '¿Por qué en Fish se recorren las máscaras de mayor a menor?', a: 'Porque cada encuentro quita un pez: la probabilidad solo pasa de un conjunto a otro más pequeño, así que cuando se procesa un conjunto ya se sumó todo lo que llega a él.' },
+    { q: '¿Cómo se representa 1/2 módulo 998244353?', a: 'Como 2^(M−2) mód M = 499122177, porque 2 · 499122177 ≡ 1.' }
+  ],
+  cierre: 'Con probabilidades, la DP es la misma de siempre: estado, transición y orden. Lo único que cambia es que cada transición se multiplica por su probabilidad.' }
+]},
+
+{ parte: 'IV. Consultas en rangos', caps: [
 
 { t: 'Consultas en rangos',
   obj: ['Responder mínimos de rangos en O(1) con Sparse Table.', 'Sumas con actualizaciones usando Fenwick.', 'Usar el Segment Tree con cualquier operación asociativa.', 'Modificar rangos enteros con Lazy Segment Tree.', 'Reordenar consultas con el algoritmo de Mo.'],
@@ -202,7 +247,7 @@ window.LIBRO = [
     { h: 'Mo: cuando ninguna estructura sirve' },
     'Si la operación es difícil de combinar (por ejemplo, contar valores distintos), Mo ordena las consultas por bloques de tamaño √n para que los extremos se muevan poco en total: O((n + q)√n). Es un algoritmo **offline**: necesita conocer todas las consultas de antemano.'
   ],
-  algs: ['Data-Structures-Algorithms-SparseTable', 'Data-Structures-Algorithms-FenwickTree', 'Data-Structures-Algorithms-SegmentTree', 'Data-Structures-Algorithms-LazySegmentTree', 'Data-Structures-Algorithms-MoAlgorithm'],
+  algs: ['Data-Structures-Classic-Problems-Static-Range-Sum-Queries', 'Data-Structures-Classic-Problems-Forest-Queries', 'Data-Structures-Algorithms-SparseTable', 'Data-Structures-Algorithms-FenwickTree', 'Data-Structures-Classic-Problems-Range-Update-Queries', 'Data-Structures-Algorithms-SegmentTree', 'Data-Structures-Classic-Problems-Hotel-Queries', 'Data-Structures-Classic-Problems-Prefix-Sum-Queries', 'Data-Structures-Algorithms-LazySegmentTree', 'Data-Structures-Algorithms-MoAlgorithm'],
   teo: [['Data Structures', 'Operaciones idempotentes en Sparse Table'], ['Data Structures', 'Cota de Fenwick'], ['Data Structures', 'Descomposición canónica del Segment Tree'], ['Data Structures', 'Algoritmo de Mo'], ['Data Structures', 'Estructuras persistentes']],
   preguntas: [
     { q: '¿Por qué la Sparse Table no sirve para sumas con dos bloques solapados?', a: 'Porque la suma no es idempotente: los elementos de la zona común se contarían dos veces.' },
@@ -212,7 +257,7 @@ window.LIBRO = [
   cierre: 'Escalera para recordar: prefijos (sin cambios) → Sparse Table (mínimos sin cambios) → Fenwick (sumas con cambios) → Segment Tree (casi todo) → Mo (lo que no se combina).' }
 ]},
 
-{ parte: 'IV. Grafos', caps: [
+{ parte: 'V. Grafos', caps: [
 
 { t: 'Recorridos de grafos',
   obj: ['Representar un grafo con listas de adyacencia.', 'Recorrer con DFS y BFS y saber cuándo usar cada uno.', 'Detectar ciclos, bipartición y orden topológico.'],
@@ -226,7 +271,7 @@ window.LIBRO = [
     { h: 'Lo que un recorrido revela' },
     'Con un solo recorrido puedes saber si el grafo es **bipartito** (dos colores sin conflicto ⇔ no hay ciclos impares), si tiene **ciclos** (una arista que vuelve a un ancestro en el camino actual) o, si es dirigido y sin ciclos, un **orden topológico** que respeta todas las dependencias.'
   ],
-  algs: ['Graphs-Algorithms-Graph-Traversal-DFS', 'Graphs-Algorithms-Graph-Traversal-BFS', 'Graphs-Algorithms-Graph-Traversal-Bipartite', 'Graphs-Algorithms-Miscellaneous-CycleFindingUndirected', 'Graphs-Algorithms-Miscellaneous-CycleFindingDirected', 'Graphs-Algorithms-Graph-Traversal-TopologicalSort'],
+  algs: ['Graphs-Algorithms-Graph-Traversal-DFS', 'Graphs-Classic-Problems-Counting-Rooms', 'Graphs-Algorithms-Graph-Traversal-BFS', 'Graphs-Classic-Problems-Labyrinth', 'Graphs-Algorithms-Graph-Traversal-Bipartite', 'Graphs-Algorithms-Miscellaneous-CycleFindingUndirected', 'Graphs-Algorithms-Miscellaneous-CycleFindingDirected', 'Graphs-Algorithms-Graph-Traversal-TopologicalSort', 'Graphs-Classic-Problems-Longest-Flight-Route'],
   teo: [['Graphs', 'Lema del apretón de manos'], ['Graphs', 'BFS da caminos más cortos'], ['Graphs', 'Bipartito ⇔ sin ciclos impares'], ['Graphs', 'Ordenamiento topológico ⇔ DAG']],
   preguntas: [
     { q: 'En un grafo dirigido, ¿por qué no basta "llegar a un nodo ya visitado" para decir que hay ciclo?', a: 'Porque ese nodo puede estar ya terminado en otra rama. Hay ciclo solo si está en el camino actual de la DFS.' },
@@ -245,7 +290,7 @@ window.LIBRO = [
     'Bellman-Ford relaja todas las aristas n − 1 veces; tolera pesos negativos y una ronda extra que todavía mejore algo delata un ciclo negativo. Floyd-Warshall calcula todos los pares con tres ciclos anidados, O(n³), ideal para n ≤ 500. Su estado es una DP: "distancia de i a j usando solo los primeros k nodos como intermedios".',
     { nota: 'Resumen: pesos ≥ 0 → Dijkstra. Pesos negativos → Bellman-Ford. Todos los pares con n pequeño → Floyd-Warshall. Pesos 0/1 → BFS con deque.' }
   ],
-  algs: ['Graphs-Algorithms-Graph-Traversal-Djikstra', 'Graphs-Algorithms-Graph-Traversal-BellmanFord', 'Graphs-Algorithms-Graph-Traversal-FloydWarshall'],
+  algs: ['Graphs-Algorithms-Graph-Traversal-Djikstra', 'Graphs-Classic-Problems-Flight-Discount', 'Graphs-Algorithms-Graph-Traversal-BellmanFord', 'Graphs-Algorithms-Graph-Traversal-FloydWarshall'],
   teo: [['Graphs', 'Correctitud de Dijkstra']],
   preguntas: [
     { q: '¿Por qué el código de Dijkstra salta las entradas con d > dist[u]?', a: 'Porque heapq no permite bajar prioridades: se insertan duplicados y las entradas viejas se ignoran al salir.' },
@@ -300,7 +345,7 @@ window.LIBRO = [
     { h: 'Centroides' },
     'El centroide es el nodo que al quitarlo deja pedazos de tamaño a lo sumo n/2. Quitarlo y repetir en cada pedazo produce una jerarquía de profundidad O(log n): la **descomposición por centroides**, que permite contar caminos con alguna propiedad en O(n log n). El centroide también sirve de raíz canónica para comparar árboles sin raíz (isomorfismo).'
   ],
-  algs: ['Graphs-Algorithms-Graph-Traversal-Diameter', 'Graphs-Algorithms-Trees-TreeDistances', 'Graphs-Algorithms-Trees-BinaryLifting', 'Graphs-Algorithms-Trees-LCA', 'Graphs-Algorithms-Trees-EulerTour', 'Graphs-Algorithms-Trees-Centroid', 'Graphs-Algorithms-Trees-CentroidDecomposition', 'Graphs-Algorithms-Trees-TreeIsomorfismRooted', 'Graphs-Algorithms-Trees-TreeIsomorfism'],
+  algs: ['Graphs-Classic-Problems-Subordinates', 'Graphs-Algorithms-Graph-Traversal-Diameter', 'Graphs-Algorithms-Trees-TreeDistances', 'Graphs-Algorithms-Trees-BinaryLifting', 'Graphs-Algorithms-Trees-LCA', 'Graphs-Algorithms-Trees-EulerTour', 'Graphs-Algorithms-Trees-Centroid', 'Graphs-Algorithms-Trees-CentroidDecomposition', 'Graphs-Algorithms-Trees-TreeIsomorfismRooted', 'Graphs-Algorithms-Trees-TreeIsomorfism'],
   teo: [['Graphs', 'Caracterización de árboles'], ['Data Structures', 'Descomposición heavy-light'], ['Data Structures', 'Técnica de los más pequeños (small to large)']],
   preguntas: [
     { q: '¿Por qué la descomposición por centroides tiene profundidad O(log n)?', a: 'Porque cada pedazo tiene a lo sumo la mitad de los nodos del anterior.' },
@@ -309,7 +354,7 @@ window.LIBRO = [
   cierre: 'Los árboles son el lugar donde se juntan todas las ideas del curso: recorridos, DP, potencias de 2 y estructuras de rangos.' }
 ]},
 
-{ parte: 'V. Cadenas', caps: [
+{ parte: 'VI. Cadenas', caps: [
 
 { t: 'Algoritmos de cadenas',
   obj: ['Buscar un patrón en tiempo lineal (KMP, Z, hashing).', 'Guardar diccionarios de palabras en un trie.', 'Encontrar palíndromos y rotaciones mínimas en O(n).', 'Ordenar todos los sufijos de un texto.'],
@@ -322,7 +367,7 @@ window.LIBRO = [
     { h: 'Estructuras' },
     'El **trie** guarda palabras compartiendo prefijos y combina muy bien con DP. **Manacher** encuentra todos los palíndromos en O(n) reutilizando la simetría del palíndromo más a la derecha. La **rotación mínima** se encuentra comparando dos candidatos y descartando al perdedor junto con todo lo que ya se comparó. El **arreglo de sufijos** ordena todos los sufijos duplicando la longitud comparada en cada ronda; con él se responden casi todas las preguntas sobre subcadenas.'
   ],
-  algs: ['Strings-Algorithms-KMP-I', 'Strings-Algorithms-KMP-II', 'Strings-Algorithms-ZFunction', 'Strings-Algorithms-RabinKarp', 'Strings-Algorithms-PrefixTrie', 'Strings-Algorithms-Manacher', 'Strings-Algorithms-MinimalRotation', 'Strings-Algorithms-SuffixArray'],
+  algs: ['Strings-Algorithms-KMP-I', 'Strings-Algorithms-KMP-II', 'Strings-Classic-Problems-Finding-Borders', 'Strings-Algorithms-ZFunction', 'Strings-Classic-Problems-Finding-Periods', 'Strings-Algorithms-RabinKarp', 'Strings-Algorithms-PrefixTrie', 'Strings-Algorithms-Manacher', 'Strings-Algorithms-MinimalRotation', 'Strings-Algorithms-SuffixArray', 'Strings-Classic-Problems-Repeating-Substring', 'Strings-Classic-Problems-Distinct-Subsequences', 'Strings-Classic-Problems-Required-Substring'],
   teo: [['Strings', 'Función de prefijos (KMP)'], ['Strings', 'Período y borde'], ['Strings', 'Probabilidad de colisión del hashing'], ['Strings', 'Subcadenas distintas con Suffix Array'], ['Strings', 'Aho–Corasick']],
   preguntas: [
     { q: '¿Por qué se pone un separador como "#" entre el patrón y el texto?', a: 'Para que ninguna coincidencia pueda cruzar del patrón al texto: así z[i] o el borde nunca superan el largo del patrón.' },
@@ -331,7 +376,7 @@ window.LIBRO = [
   cierre: 'KMP o Z para buscar, hashing para comparar rápido, trie para diccionarios y arreglo de sufijos para todo lo demás.' }
 ]},
 
-{ parte: 'VI. Geometría', caps: [
+{ parte: 'VII. Geometría', caps: [
 
 { t: 'Geometría computacional',
   obj: ['Usar el producto cruz para orientación, áreas e intersecciones.', 'Contar puntos enteros con el teorema de Pick.', 'Construir la envolvente convexa y encontrar el par más cercano.'],
@@ -345,7 +390,7 @@ window.LIBRO = [
     { h: 'Envolvente convexa y par más cercano' },
     'La envolvente convexa se construye ordenando los puntos y manteniendo una pila que solo gira en un sentido: O(n log n), y se demuestra que no se puede mejorar. El par más cercano usa divide y vencerás o una línea de barrido con una franja de ancho d.'
   ],
-  algs: ['Geometry-Point', 'Geometry-Shoelace', 'Geometry-SegmentIntersection', 'Geometry-PointInPolygon', 'Geometry-PolygonLatticePoints', 'Geometry-ConvexHull', 'Geometry-ClosestPair'],
+  algs: ['Geometry-Point', 'Geometry-Classic-Problems-Point-Location-Test', 'Geometry-Shoelace', 'Geometry-SegmentIntersection', 'Geometry-PointInPolygon', 'Geometry-PolygonLatticePoints', 'Geometry-ConvexHull', 'Geometry-ClosestPair', 'Geometry-Classic-Problems-Maximum-Manhattan-Distances', 'Geometry-Classic-Problems-Intersection-Points', 'Geometry-Classic-Problems-Area-of-Rectangles', 'Geometry-Classic-Problems-Lines-and-Queries-I'],
   teo: [['Geometry', 'Producto cruz y orientación'], ['Geometry', 'Fórmula del Shoelace'], ['Geometry', 'Teorema de Pick'], ['Geometry', 'Cota inferior de la envolvente convexa'], ['Geometry', 'Rotating calipers']],
   preguntas: [
     { q: 'Un triángulo con vértices enteros tiene área 10 y 6 puntos en el borde. ¿Cuántos puntos enteros tiene dentro?', a: 'Por Pick: 10 = I + 3 − 1, así que I = 8.' },
@@ -354,7 +399,7 @@ window.LIBRO = [
   cierre: 'Con el producto cruz y enteros resuelves el 80 % de los problemas de geometría de competencia.' }
 ]},
 
-{ parte: 'VII. Optimización en redes', caps: [
+{ parte: 'VIII. Optimización en redes', caps: [
 
 { t: 'Flujos, emparejamientos y costo mínimo',
   obj: ['Calcular el flujo máximo con caminos aumentantes.', 'Entender el teorema de flujo máximo = corte mínimo.', 'Modelar asignaciones como emparejamientos.', 'Optimizar costo además de cantidad.'],

@@ -31,6 +31,7 @@ Estudiantes, autodidactas y entusiastas de la programación competitiva que dese
 ## 🏋️ Para practicar
 
 - Cada tema tiene, además de los algoritmos, una carpeta **Classic Problems** con problemas clásicos de CSES resueltos en C++ y Python.
+- La carpeta **Probability** cubre probabilidad y valor esperado: DP de probabilidades, linealidad de la esperanza, cadenas de Markov y respuestas módulo un primo.
 - En [Problemas Recomendados.md](Problemas%20Recomendados.md) hay 30 problemas sin resolver por tema (10 sencillos, 10 medios y 10 difíciles) de CSES y Codeforces.
 
 ---

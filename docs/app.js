@@ -1,6 +1,13 @@
 (function(){
 const A = window.ALGORITMOS, K = window.CONTENIDO || {}, DEMOS = window.DEMOS || {};
 const nav = document.getElementById('nav'), main = document.getElementById('main');
+// ---------- Organización por técnica (secciones.js) ----------
+const SEC = window.SECCIONES || {}, CARP = window.CARPETAS || {}, VISTA = window.NOMBRE_VISTA || {};
+const cn = c => CARP[c] || c;
+{ const pos = {}; let k = 0;
+  for (const c of Object.keys(SEC)) for (const g of SEC[c]) for (const id of g.ids) pos[id] = [k++, g];
+  for (const a of A) { const p = pos[a.id]; if (p) { a.sub = p[1].t; a.subDesc = p[1].d; } if (VISTA[a.id]) a.nombre = VISTA[a.id]; }
+  A.sort((x, y) => ((pos[x.id] || [1e9])[0]) - ((pos[y.id] || [1e9])[0])); }
 const byId = Object.fromEntries(A.map(a => [a.id, a]));
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const NIV = {1:'Básico', 2:'Intermedio', 3:'Avanzado', 4:'Finales mundiales'};
@@ -55,16 +62,16 @@ function resaltar(src){
 }
 
 // ---------- Menú lateral ----------
-const ORDEN = ['DP','Data Structures','FunctionalTools','Geometry','Graphs','Strings'];
+const ORDEN = Object.keys(CARP).length ? Object.keys(CARP) : ['DP','Data Structures','FunctionalTools','Geometry','Graphs','Strings'];
 function menu(filtro){
   if (modo === 'libro') return menuLibro();
   const f = (filtro || '').toLowerCase(); let h = '';
   for (const c of ORDEN) {
     const items = A.filter(a => a.carpeta === c && (!f || (a.nombre+' '+a.algoritmo+' '+((K[a.id]||{}).idea||'')).toLowerCase().includes(f)));
     if (!items.length) continue;
-    h += '<h4>'+c+'</h4>'; let sub = '';
+    h += '<h4>'+esc(cn(c))+'</h4>'; let sub = '';
     for (const a of items) {
-      if (a.sub !== sub) { sub = a.sub; if (sub !== '-') h += '<h5>'+esc(sub.split('/').pop())+'</h5>'; }
+      if (a.sub !== sub) { sub = a.sub; if (sub !== '-') h += '<h5 title="'+esc(a.subDesc||'')+'">'+esc(sub)+'</h5>'; }
       const n = (K[a.id]||{}).nivel || 1;
       h += '<a href="#/'+a.id+'" data-id="'+a.id+'"><span class="dot lvl'+n+'"></span>'+esc(a.nombre)+'</a>';
     }
@@ -164,13 +171,13 @@ function inicio(){
     document.getElementById('cx').innerHTML = CX.map(([t,f]) => barra(t, f(n))).join(''); }
   ns2.oninput = upd2; upd2();
 
-  document.getElementById('temas').innerHTML = ORDEN.map(c => { const it = A.filter(a => a.carpeta === c); return '<a class="opt" style="text-decoration:none" href="#/elegir" data-c="'+c+'"><span class="ic">'+ICON[c]+'</span><b>'+c+'</b><small>'+DESC[c]+' · '+it.length+' algoritmos</small></a>'; }).join('');
+  document.getElementById('temas').innerHTML = ORDEN.map(c => { const it = A.filter(a => a.carpeta === c); return '<a class="opt" style="text-decoration:none" href="#/elegir" data-c="'+c+'"><span class="ic">'+ICON[c]+'</span><b>'+esc(cn(c))+'</b><small>'+DESC[c]+' · '+it.length+' lecciones</small></a>'; }).join('');
   main.querySelectorAll('#temas [data-c]').forEach(b => b.onclick = () => { elegido = [b.dataset.c]; });
 }
 
 // ---------- Elegir algoritmo (carpetas del repositorio) ----------
-const ICON = {'DP':'🧩','Data Structures':'🗂️','Graphs':'🕸️','Strings':'🔤','Geometry':'📐','FunctionalTools':'🧰'};
-const DESC = {'DP':'Programación dinámica: dividir un problema en subproblemas y reutilizar respuestas.','Data Structures':'Estructuras de datos: guardar información para consultarla y cambiarla rápido.','Graphs':'Grafos: ciudades, rutas, redes y árboles.','Strings':'Cadenas: buscar y comparar textos.','Geometry':'Geometría: puntos, polígonos y vectores.','FunctionalTools':'Herramientas: búsqueda binaria, primos y matemáticas.'};
+const ICON = {'DP':'🧩','Data Structures':'🗂️','Graphs':'🕸️','Strings':'🔤','Geometry':'📐','FunctionalTools':'🧰','Probability':'🎲'};
+const DESC = {'DP':'Programación dinámica: dividir un problema en subproblemas y reutilizar respuestas.','Data Structures':'Estructuras de datos: guardar información para consultarla y cambiarla rápido.','Graphs':'Grafos: ciudades, rutas, redes y árboles.','Strings':'Cadenas: buscar y comparar textos.','Geometry':'Geometría: puntos, polígonos y vectores.','FunctionalTools':'Herramientas: búsqueda binaria, primos y matemáticas.','Probability':'Probabilidad: valor esperado, procesos aleatorios y respuestas módulo un primo.'};
 function tarjeta(id){
   const a = byId[id], c = K[id] || {};
   return '<a class="opt" style="text-decoration:none" href="#/'+id+'">'+lvl(c.nivel||1)+(DEMOS[id]?' <small>con demo</small>':'')+'<b style="margin-top:8px">'+esc(a.nombre)+'</b><small>'+esc(c.idea||a.algoritmo)+'</small></a>';
@@ -179,19 +186,19 @@ let elegido = [];  // [carpeta, subcarpeta]
 window.__reset = () => { elegido = []; };
 function elegir(){
   const [c, sub] = elegido;
-  let h = '<h1>Elige un algoritmo</h1><p class="note">Las opciones siguen las carpetas del repositorio.</p>';
-  const ruta = ['Repositorio'].concat(elegido);
+  let h = '<h1>Elige un algoritmo</h1><p class="note">Organizado por tema y por técnica, de lo básico a lo avanzado.</p>';
+  const ruta = ['Temas'].concat(elegido.map((x, i) => i === 0 ? cn(x) : x));
   h += '<div class="wiz-path">' + ruta.map((p,i) => i < ruta.length-1 ? '<button data-i="'+i+'">'+esc(p)+'</button> ›' : '<span>'+esc(p)+'</span>').join(' ') + '</div>';
   if (!c) {
-    h += '<h2>¿Qué carpeta quieres explorar?</h2><div class="opts">' + ORDEN.map((x,i) => '<button class="opt" data-c="'+x+'" style="animation-delay:'+i*40+'ms"><span class="ic">'+ICON[x]+'</span><b>'+x+'</b><small>'+DESC[x]+' · '+A.filter(a=>a.carpeta===x).length+' algoritmos</small></button>').join('') + '</div>';
+    h += '<h2>¿Qué carpeta quieres explorar?</h2><div class="opts">' + ORDEN.map((x,i) => '<button class="opt" data-c="'+x+'" style="animation-delay:'+i*40+'ms"><span class="ic">'+ICON[x]+'</span><b>'+esc(cn(x))+'</b><small>'+DESC[x]+' · '+A.filter(a=>a.carpeta===x).length+' lecciones</small></button>').join('') + '</div>';
   } else {
     const items = A.filter(a => a.carpeta === c);
     const subs = [...new Set(items.map(a => a.sub))];
     if (subs.length > 1 && !sub) {
-      h += '<h2>'+esc(c)+'</h2><p>'+esc(DESC[c])+'</p><div class="opts">' + subs.map((x,i) => { const n = items.filter(a=>a.sub===x); return '<button class="opt" data-s="'+esc(x)+'" style="animation-delay:'+i*40+'ms"><span class="ic">📁</span><b>'+esc(x.split('/').pop())+'</b><small>'+n.map(a=>esc(a.nombre)).join(', ')+'</small></button>'; }).join('') + '</div>';
+      h += '<h2>'+esc(cn(c))+'</h2><p>'+esc(DESC[c])+'</p><div class="opts">' + subs.map((x,i) => { const n = items.filter(a=>a.sub===x); return '<button class="opt" data-s="'+esc(x)+'" style="animation-delay:'+i*40+'ms"><span class="ic">📁</span><b>'+esc(x)+'</b><small>'+esc(n[0].subDesc ? n[0].subDesc + ' ' : '')+n.length+(n.length === 1 ? ' lección: ' : ' lecciones: ')+n.map(a=>esc(a.nombre)).join(', ')+'</small></button>'; }).join('') + '</div>';
     } else {
       const lista = items.filter(a => !sub || a.sub === sub).sort((x,y) => ((K[x.id]||{}).nivel||1) - ((K[y.id]||{}).nivel||1));
-      h += '<h2>'+esc(sub ? sub.split('/').pop() : c)+'</h2><p class="note">Ordenados de básico a avanzado.</p><div class="opts">' + lista.map(a => tarjeta(a.id)).join('') + '</div>';
+      h += '<h2>'+esc(sub || cn(c))+'</h2><p class="note">Ordenados de básico a avanzado.</p><div class="opts">' + lista.map(a => tarjeta(a.id)).join('') + '</div>';
     }
   }
   main.innerHTML = h;
@@ -206,7 +213,7 @@ function ruta(){
   for (const n of [1,2,3]) {
     h += '<div class="box"><h3>'+lvl(n)+'</h3>';
     for (const c of ORDEN) { const it = A.filter(a => a.carpeta === c && (K[a.id]||{}).nivel === n); if (!it.length) continue;
-      h += '<h5 style="margin:12px 0 2px;color:var(--mut)">'+c+'</h5>' + it.map(a => '<a href="#/'+a.id+'">'+esc(a.nombre)+'</a>').join(''); }
+      h += '<h5 style="margin:12px 0 2px;color:var(--mut)">'+esc(cn(c))+'</h5>' + it.map(a => '<a href="#/'+a.id+'">'+esc(a.nombre)+'</a>').join(''); }
     h += '</div>';
   }
   main.innerHTML = h + '</div>';
@@ -216,7 +223,7 @@ function ruta(){
 let teoCarpeta = 'Graphs';
 const TEO_NOMBRE = {'FunctionalTools': 'Matemáticas y teoría de números'};
 const TEO_DESC = {'FunctionalTools': 'Teoría de números y la matemática que se usa en todo lo demás: primos, divisibilidad, congruencias, combinatoria y álgebra.'};
-const teoNombre = c => TEO_NOMBRE[c] || c;
+const teoNombre = c => cn(c);
 function teoria(){
   const T = window.TEORIA || {};
   let h = '<h1>Teoría</h1><p class="note">Los teoremas y resultados que más se usan en cada tema, desde lo básico hasta lo que aparece en la Maratón Nacional ACIS y en las finales mundiales del ICPC.</p>';
@@ -225,7 +232,7 @@ function teoria(){
   h += '<p>'+esc(TEO_DESC[teoCarpeta]||DESC[teoCarpeta]||'')+'</p>';
   h += items.map(t => '<div class="box" style="margin:12px 0"><h3>'+lvl(t.l)+' '+esc(t.n)+'</h3><p>'+esc(t.e)+'</p><p class="note"><b>Para qué sirve:</b> '+esc(t.u)+'</p></div>').join('');
   const algs = A.filter(a => a.carpeta === teoCarpeta);
-  h += '<h3>Algoritmos de esta carpeta</h3><p>' + algs.map(a => '<a href="#/'+a.id+'">'+esc(a.nombre)+'</a>').join(' · ') + '</p>';
+  h += '<h3>Lecciones de este tema</h3><p>' + algs.map(a => '<a href="#/'+a.id+'">'+esc(a.nombre)+'</a>').join(' · ') + '</p>';
   main.innerHTML = h;
   main.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { teoCarpeta = b.dataset.t; teoria(); });
 }
@@ -295,7 +302,7 @@ function pagina(a){
   const mismo = A.filter(x => x.carpeta === a.carpeta), i = mismo.indexOf(a), prev = mismo[i-1], next = mismo[i+1];
   const L = modo === 'libro' && capDe[a.id], cap = L && CAPS[L.num - 1];
   let h = L ? '<div class="crumb"><a href="#/libro">El libro</a> › <a href="#/libro/'+cap.num+'">Capítulo '+cap.num+'. '+esc(cap.t)+'</a> › Lección '+(L.k + 1)+' de '+cap.algs.length+'</div><h1>'
-            : '<div class="crumb">'+esc(a.carpeta)+(a.sub !== '-' ? ' › '+esc(a.sub.replace(/\//g,' › ')) : '')+'</div><h1>'+esc(a.nombre)+'</h1><p>'+lvl(c.nivel||1)+' <span class="note">'+esc(a.algoritmo)+'</span></p>';
+            : '<div class="crumb">'+esc(cn(a.carpeta))+(a.sub !== '-' ? ' › '+esc(a.sub) : '')+'</div><h1>'+esc(a.nombre)+'</h1><p>'+lvl(c.nivel||1)+' <span class="note">'+esc(a.algoritmo)+'</span></p>';
   if (c.idea) h += '<div class="idea">'+esc(c.idea)+'</div>';
   if (c.texto) h += '<h2>¿Cómo funciona?</h2><p>'+esc(c.texto)+'</p>';
   if (dem) h += '<h2>Míralo en acción</h2><div id="demo"></div>';
