@@ -333,35 +333,78 @@ function segLayout(n, W = 540, H = 260) {
     if (l === r) return; const m = (l + r) >> 1; build(2 * id, l, m, d + 1, x0, (x0 + x1) / 2); build(2 * id + 1, m + 1, r, d + 1, (x0 + x1) / 2, x1); edges.push([id, 2 * id], [id, 2 * id + 1]); })(1, 0, n - 1, 0, 10, W - 10);
   return { nodes, edges, idx };
 }
-V('Data-Structures-Algorithms-SegmentTreeMin', 'Segment Tree de mínimos', 'Cada nodo guarda el mínimo de su tramo. Amarillo = camino que se recalcula; verde = nodos que responden la consulta.', push => {
-  const n = 8, a = Array.from({ length: n }, () => R(1, 20)), L = segLayout(n), t = {};
-  (function b(id, l, r) { if (l === r) { t[id] = a[l]; return; } const m = (l + r) >> 1; b(2 * id, l, m); b(2 * id + 1, m + 1, r); t[id] = Math.min(t[2 * id], t[2 * id + 1]); })(1, 0, n - 1);
-  const st = (c = {}) => ({ L, t: Object.assign({}, t), c });
-  push('Árbol construido: las hojas son el arreglo y cada padre es el mínimo de sus hijos.', st());
-  const p = R(0, n - 1), v = R(0, 20), path = {}; (function u(id, l, r) { path[id] = 'a'; if (l === r) { t[id] = v; return; } const m = (l + r) >> 1; p <= m ? u(2 * id, l, m) : u(2 * id + 1, m + 1, r); t[id] = Math.min(t[2 * id], t[2 * id + 1]); })(1, 0, n - 1);
-  push('Se cambia a[' + (p + 1) + '] = ' + v + ': solo se recalcula el camino hasta la raíz.', st(path));
-  const ql = R(0, 3), qr = R(ql + 2, n - 1), used = {}; let res = Infinity;
-  (function q(id, l, r) { if (r < ql || l > qr) return; if (ql <= l && r <= qr) { used[id] = 'g'; res = Math.min(res, t[id]); return; } used[id] = 'b'; const m = (l + r) >> 1; q(2 * id, l, m); q(2 * id + 1, m + 1, r); })(1, 0, n - 1);
-  push('Consulta [' + (ql + 1) + ', ' + (qr + 1) + ']: bastan los nodos verdes. Mínimo = ' + res, st(used));
-}, s => graph({ W: 540, H: 260, nodes: s.L.nodes.map(nd => ({ x: nd.x, y: nd.y, l: s.t[nd.id], c: s.c[nd.id] || '', s: nd.l === nd.r ? '[' + (nd.l + 1) + ']' : '' })), edges: s.L.edges.map(([u, v]) => ({ a: s.L.idx[u], b: s.L.idx[v] })) }));
+// Segment Tree general: la operación se elige con un selector (suma, mínimo, máximo, gcd).
+const gcdF = (a, b) => b ? gcdF(b, a % b) : a;
+const SEG_OPS = {
+  suma: { n: 'suma', f: (a, b) => a + b, e: 0, w: (x, y) => x + ' + ' + y, vals: () => R(1, 9) },
+  min: { n: 'mínimo', f: Math.min, e: Infinity, w: (x, y) => 'min(' + x + ', ' + y + ')', vals: () => R(1, 20) },
+  max: { n: 'máximo', f: Math.max, e: -Infinity, w: (x, y) => 'max(' + x + ', ' + y + ')', vals: () => R(1, 20) },
+  gcd: { n: 'gcd', f: gcdF, e: 0, w: (x, y) => 'gcd(' + x + ', ' + y + ')', vals: () => pick([2, 3, 4, 6, 8, 9, 12, 18, 24, 30, 36]) }
+};
+let segOp = 'suma';
+V('Data-Structures-Algorithms-SegmentTree', 'Segment Tree con cualquier operación asociativa', 'Elige la operación. Arriba de cada nodo está su tramo. Amarillo = nodo que se calcula · azul = nodo a medias (se baja a sus hijos) · verde = nodo que se usa entero · gris = fuera del rango (aporta el neutro).', push => {
+  const O = SEG_OPS[segOp], n = 8, a = Array.from({ length: n }, O.vals), L = segLayout(n), t = {}, rg = {};
+  (function b(id, l, r) { rg[id] = [l, r]; if (l === r) return; const m = (l + r) >> 1; b(2 * id, l, m); b(2 * id + 1, m + 1, r); })(1, 0, n - 1);
+  const nm = id => '[' + (rg[id][0] + 1) + (rg[id][0] === rg[id][1] ? '' : '–' + (rg[id][1] + 1)) + ']';
+  const S = (m, c = {}, q) => push(m, { L, rg, t: Object.assign({}, t), a: a.slice(), c: Object.assign({}, c), q });
+  S('Operación: ' + O.n + ' (neutro ' + fmt(O.e) + '). Cada nodo va a guardar la ' + O.n + ' de su tramo.');
+  const ids = Object.keys(rg).map(Number), leaf = id => rg[id][0] === rg[id][1];
+  const c0 = {}; ids.filter(leaf).forEach(id => { t[id] = a[rg[id][0]]; c0[id] = 'a'; });
+  S('Las hojas son los elementos del arreglo.', c0);
+  const depth = id => Math.floor(Math.log2(id));
+  for (let d = Math.max(...ids.map(depth)) - 1; d >= 0; d--) {
+    const lv = ids.filter(id => !leaf(id) && depth(id) === d), c = {};
+    lv.forEach(id => { t[id] = O.f(t[2 * id], t[2 * id + 1]); c[id] = 'a'; });
+    const ej = lv[0];
+    S('Nivel ' + d + ': cada nodo combina a sus dos hijos. Por ejemplo, ' + nm(ej) + ' = ' + O.w(fmt(t[2 * ej]), fmt(t[2 * ej + 1])) + ' = ' + fmt(t[ej]) + '.' + (d === 0 ? ' La raíz tiene la ' + O.n + ' de todo el arreglo.' : ''), c);
+  }
+  // actualización puntual
+  const p = R(0, n - 1), v = O.vals(); let id = 1; const path = [];
+  while (!leaf(id)) { path.push(id); id = p <= rg[id][0] + ((rg[id][1] - rg[id][0]) >> 1) ? 2 * id : 2 * id + 1; }
+  a[p] = v; t[id] = v; const cu = { [id]: 'a' };
+  S('update: a[' + (p + 1) + '] = ' + v + '. Se cambia la hoja y luego solo se recalculan sus ancestros.', cu);
+  for (const u of path.reverse()) { t[u] = O.f(t[2 * u], t[2 * u + 1]); cu[u] = 'a'; S('Se recalcula ' + nm(u) + ' = ' + O.w(fmt(t[2 * u]), fmt(t[2 * u + 1])) + ' = ' + fmt(t[u]) + '.', cu); }
+  S('Listo: se tocaron ' + (path.length + 1) + ' nodos (la altura del árbol), no los ' + n + ' elementos. O(log n).', cu);
+  // consulta
+  const ql = R(0, 3), qr = R(ql + 2, n - 1), cq = {}; let res = O.e, used = 0;
+  S('query [' + (ql + 1) + ', ' + (qr + 1) + ']: se empieza en la raíz con resultado = neutro (' + fmt(O.e) + ').', cq, [ql, qr]);
+  (function q(u) { const [l, r] = rg[u];
+    if (r < ql || l > qr) { cq[u] = 'k'; S(nm(u) + ' está fuera del rango: se ignora.', cq, [ql, qr]); return; }
+    if (ql <= l && r <= qr) { const old = res; res = O.f(res, t[u]); used++; cq[u] = 'g'; S(nm(u) + ' está completo dentro del rango: se usa entero. Resultado = ' + O.w(fmt(old), fmt(t[u])) + ' = ' + fmt(res) + '.', cq, [ql, qr]); return; }
+    cq[u] = 'b'; S(nm(u) + ' está a medias: se baja a sus dos hijos.', cq, [ql, qr]); q(2 * u); q(2 * u + 1); })(1);
+  S('Respuesta: la ' + O.n + ' de [' + (ql + 1) + ', ' + (qr + 1) + '] es ' + fmt(res) + ', usando solo ' + used + ' nodos verdes. Cambia la operación arriba: el algoritmo es idéntico.', cq, [ql, qr]);
+}, s => graph({ W: 540, H: 270, nodes: s.L.nodes.map(nd => ({ x: nd.x, y: nd.y + 14, l: s.t[nd.id] === undefined ? '' : fmt(s.t[nd.id]), c: s.c[nd.id] || '', s: nd.l === nd.r ? '[' + (nd.l + 1) + ']' : (nd.l + 1) + '–' + (nd.r + 1) })), edges: s.L.edges.map(([u, v]) => ({ a: s.L.idx[u], b: s.L.idx[v] })) })
+  + cellsRow('arreglo', s.a, s.a.map((_, i) => s.q && i >= s.q[0] && i <= s.q[1] ? 'b' : '')));
+{ const base = D['Data-Structures-Algorithms-SegmentTree'];
+  D['Data-Structures-Algorithms-SegmentTree'] = box => { base(box); const w = box.lastElementChild, row = w.querySelector('.row');
+    const lab = el('<label style="margin-left:auto">Operación <select>' + Object.entries(SEG_OPS).map(([k, o]) => '<option value="' + k + '"' + (k === segOp ? ' selected' : '') + '>' + o.n + '</option>').join('') + '</select></label>');
+    row.appendChild(lab); lab.querySelector('select').onchange = e => { segOp = e.target.value; w.querySelector('[data-k=n]').click(); }; }; }
 
-V('Data-Structures-Algorithms-SegmentTree', 'Segment Tree con propagación perezosa', 'Cada nodo muestra su suma; la etiqueta de arriba (+x) es una suma pendiente que todavía no se bajó a los hijos.', push => {
-  const n = 8, a = Array.from({ length: n }, () => R(1, 9)), L = segLayout(n), sum = {}, lz = {}, size = {};
-  (function b(id, l, r) { size[id] = r - l + 1; lz[id] = 0; if (l === r) { sum[id] = a[l]; return; } const m = (l + r) >> 1; b(2 * id, l, m); b(2 * id + 1, m + 1, r); sum[id] = sum[2 * id] + sum[2 * id + 1]; })(1, 0, n - 1);
-  const st = (c = {}) => ({ L, sum: Object.assign({}, sum), lz: Object.assign({}, lz), c });
-  push('Árbol de sumas construido.', st());
-  const apply = (id, x) => { sum[id] += x * size[id]; lz[id] += x; };
-  const push2 = id => { if (lz[id]) { apply(2 * id, lz[id]); apply(2 * id + 1, lz[id]); lz[id] = 0; } };
+V('Data-Structures-Algorithms-LazySegmentTree', 'Lazy Segment Tree: sumar a un rango', 'Cada nodo muestra la suma de su tramo; arriba, su tramo y su etiqueta pendiente (+x) si tiene. Verde = cubre el rango entero (se actualiza y se deja la etiqueta) · azul = a medias (se baja la etiqueta y se entra) · gris = fuera.', push => {
+  const n = 8, a = Array.from({ length: n }, () => R(1, 9)), L = segLayout(n), sum = {}, lz = {}, rg = {};
+  (function b(id, l, r) { rg[id] = [l, r]; lz[id] = 0; if (l === r) { sum[id] = a[l]; return; } const m = (l + r) >> 1; b(2 * id, l, m); b(2 * id + 1, m + 1, r); sum[id] = sum[2 * id] + sum[2 * id + 1]; })(1, 0, n - 1);
+  const len = id => rg[id][1] - rg[id][0] + 1, nm = id => '[' + (rg[id][0] + 1) + (len(id) > 1 ? '–' + (rg[id][1] + 1) : '') + ']';
+  const S = (m, c = {}) => push(m, { L, sum: Object.assign({}, sum), lz: Object.assign({}, lz), c: Object.assign({}, c) });
+  S('Segment Tree de sumas, sin nada pendiente. Sin lazy, sumar x a un rango obligaría a tocar cada hoja.');
+  const apply = (id, x) => { sum[id] += x * len(id); if (len(id) > 1) lz[id] += x; };
+  const pushDown = (id, c) => { if (lz[id] && len(id) > 1) { const x = lz[id]; apply(2 * id, x); apply(2 * id + 1, x); lz[id] = 0; S('push: ' + nm(id) + ' tenía +' + x + ' pendiente; se baja a sus dos hijos antes de entrar.', c); } };
   for (let rep = 0; rep < 2; rep++) {
     const ql = R(0, 4), qr = R(ql + 1, n - 1), x = R(1, 5), c = {};
-    (function u(id, l, r) { if (r < ql || l > qr) return; if (ql <= l && r <= qr) { apply(id, x); c[id] = 'g'; return; } c[id] = 'b'; push2(id); const m = (l + r) >> 1; u(2 * id, l, m); u(2 * id + 1, m + 1, r); sum[id] = sum[2 * id] + sum[2 * id + 1]; })(1, 0, n - 1);
-    push('Sumar ' + x + ' a [' + (ql + 1) + ', ' + (qr + 1) + ']: los nodos verdes cubren el rango y se quedan con la nota +' + x + ' sin bajar a las hojas.', st(c));
+    S('update: sumar ' + x + ' a [' + (ql + 1) + ', ' + (qr + 1) + '].', c);
+    (function u(id) { const [l, r] = rg[id];
+      if (r < ql || l > qr) { c[id] = 'k'; return; }
+      if (ql <= l && r <= qr) { apply(id, x); c[id] = 'g'; S(nm(id) + ' cabe entero: su suma crece ' + x + ' × ' + len(id) + ' = ' + x * len(id) + (len(id) > 1 ? ' y se anota +' + x + ' para sus hijos, sin bajar.' : ' (es una hoja, no hay nada que anotar).'), c); return; }
+      c[id] = 'b'; pushDown(id, c); u(2 * id); u(2 * id + 1); sum[id] = sum[2 * id] + sum[2 * id + 1];
+      S('Al volver, ' + nm(id) + ' se recalcula: ' + sum[2 * id] + ' + ' + sum[2 * id + 1] + ' = ' + sum[id] + '.', c); })(1);
   }
   const ql = R(0, 3), qr = R(ql + 1, n - 1), c = {}; let res = 0;
-  (function q(id, l, r) { if (r < ql || l > qr) return; if (ql <= l && r <= qr) { c[id] = 'g'; res += sum[id]; return; } c[id] = 'b'; push2(id); const m = (l + r) >> 1; q(2 * id, l, m); q(2 * id + 1, m + 1, r); })(1, 0, n - 1);
-  push('Consulta [' + (ql + 1) + ', ' + (qr + 1) + ']: al bajar, las notas pendientes pasan a los hijos (azul). Suma = ' + res, st(c));
-}, s => graph({ W: 540, H: 260, nodes: s.L.nodes.map(nd => ({ x: nd.x, y: nd.y, l: s.sum[nd.id], c: s.c[nd.id] || '', s: s.lz[nd.id] ? '+' + s.lz[nd.id] : '' })), edges: s.L.edges.map(([u, v]) => ({ a: s.L.idx[u], b: s.L.idx[v] })) }));
-
+  S('query: suma de [' + (ql + 1) + ', ' + (qr + 1) + ']. Al bajar por el árbol, las etiquetas que se encuentran se empujan.', c);
+  (function q(id) { const [l, r] = rg[id];
+    if (r < ql || l > qr) { c[id] = 'k'; return; }
+    if (ql <= l && r <= qr) { c[id] = 'g'; res += sum[id]; S(nm(id) + ' está entero dentro: aporta ' + sum[id] + ' (su suma ya incluye lo pendiente). Total = ' + res + '.', c); return; }
+    c[id] = 'b'; pushDown(id, c); q(2 * id); q(2 * id + 1); })(1);
+  S('Respuesta: ' + res + '. Cada modificación y cada consulta tocó O(log n) nodos.', c);
+}, s => graph({ W: 540, H: 275, nodes: s.L.nodes.map(nd => ({ x: nd.x, y: nd.y + 14, l: s.sum[nd.id], c: s.c[nd.id] || '', ring: !!s.lz[nd.id], s: (nd.l === nd.r ? '[' + (nd.l + 1) + ']' : (nd.l + 1) + '–' + (nd.r + 1)) + (s.lz[nd.id] ? ' +' + s.lz[nd.id] : '') })), edges: s.L.edges.map(([u, v]) => ({ a: s.L.idx[u], b: s.L.idx[v] })) }));
 V('Data-Structures-Algorithms-MoAlgorithm', 'Algoritmo de Mo', 'Las consultas se reordenan por bloques; la ventana (azul) se mueve poco entre una y otra.', push => {
   const n = 12, a = Array.from({ length: n }, () => R(1, 5)), qs = Array.from({ length: 6 }, (_, i) => { const l = R(0, n - 3); return { l, r: R(l + 1, n - 1), i }; });
   const B = 3, ord = qs.slice().sort((x, y) => Math.floor(x.l / B) - Math.floor(y.l / B) || x.r - y.r), ans = Array(qs.length).fill(null);

@@ -9,7 +9,7 @@ import json, os, re
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Versiones en Python correctas pero que no pasan el límite de tiempo de CSES
-PY_LENTOS = {"LIS-I", "MoAlgorithm", "SegmentTree", "SegmentIntersection", "EdmonsKarp", "FloydWarshall", "CentroidDecomposition"}
+PY_LENTOS = {"LIS-I", "MoAlgorithm", "LazySegmentTree", "SegmentIntersection", "EdmonsKarp", "FloydWarshall", "CentroidDecomposition"}
 CARPETAS = ["DP", "Data Structures", "Graphs", "Strings", "Geometry", "FunctionalTools"]
 NOMBRES = {"DP": "Programación dinámica", "Data Structures": "Estructuras de datos",
            "Graphs": "Grafos", "Strings": "Cadenas", "Geometry": "Geometría",

@@ -16,103 +16,39 @@ const ll INF = numeric_limits<ll>::max();
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
 /*
- * Algoritmo : Segment Tree con propagación perezosa (suma de rango, asignación y suma de rango)
- * Problema  : CSES 1735 - Range Updates and Sums (https://cses.fi/problemset/task/1735)
- * Entrada   : n q, n enteros, luego q consultas: "1 a b x" (suma x), "2 a b x" (asigna x) o "3 a b" (consulta suma)
- * Salida    : la suma de cada consulta de tipo 3
+ * Algoritmo : Segment Tree (cualquier operación asociativa; aquí: mínimo de rango y actualización puntual)
+ * Problema  : CSES 1649 - Dynamic Range Minimum Queries (https://cses.fi/problemset/task/1649)
+ * Entrada   : n q, n enteros, luego q consultas: "1 k u" (a[k] = u) o "2 a b" (mínimo en [a, b])
+ * Salida    : el mínimo de cada consulta de tipo 2
  * Complejidad: tiempo O((n + q) log n), memoria O(n)
  */
 
-// Data: información que guarda cada nodo (suma del rango y su tamaño)
-struct Data {
-    ll suma, size;
-    Data(): suma(0), size(0) {}
-    Data(ll s): suma(s), size(1) {}
-
-    Data(const Data &left, const Data &right) {
-        suma = left.suma + right.suma;
-        size = left.size + right.size;
-    }
-};
-
-// Primero se asigna "value" (si set) y luego se suma "add"
-// Lazy: actualización pendiente que se aplica a los hijos cuando hace falta
-struct Lazy {
-    bool set;
-    ll value, add;
-    Lazy(): set(false), value(0), add(0) {}
-
-    static Lazy Add(ll v) { Lazy l; l.add = v; return l; }
-    static Lazy Set(ll v) { Lazy l; l.set = true; l.value = v; return l; }
-
-    bool empty() const { return !set && add == 0; }
-
-    void updateData(Data &data) const {
-        if (set) data.suma = value * data.size;
-        data.suma += add * data.size;
-    }
-
-    // compone: aplica "other" después de this
-    void updateLazy(const Lazy &other) {
-        if (other.set) *this = other;
-        else add += other.add;
-    }
-};
-
-// Segment Tree con propagación perezosa
+// árbol iterativo: las hojas están en t[n..2n) y cada padre guarda el mínimo de sus hijos
 struct SegmentTree {
     int n;
-    vector<Data> data;
-    vector<Lazy> lazy;
+    vector<ll> t;
 
-    SegmentTree(const vector<ll> &A) {
-        n = A.size();
-        data.assign(4 * n, Data());
-        lazy.assign(4 * n, Lazy());
-        build(A, 1, 0, n - 1);
+    SegmentTree(const vector<ll> &a) {
+        n = a.size();
+        t.assign(2 * n, INF);
+        for (int i = 0; i < n; i++) t[n + i] = a[i];
+        for (int i = n - 1; i > 0; i--) t[i] = min(t[2 * i], t[2 * i + 1]);
     }
 
-    // construye el árbol recursivamente
-    void build(const vector<ll> &A, int index, int left, int right) {
-        if (left == right) { data[index] = Data(A[left]); return; }
-        int mid = (left + right) / 2;
-        build(A, 2 * index, left, mid);
-        build(A, 2 * index + 1, mid + 1, right);
-        data[index] = Data(data[2 * index], data[2 * index + 1]);
+    // se cambia la hoja y se recalcula hacia la raíz
+    void update(int p, ll value) {
+        for (t[p += n] = value; p > 1; p >>= 1) t[p >> 1] = min(t[p], t[p ^ 1]);
     }
 
-    // aplica una actualización a un nodo y la deja pendiente para sus hijos
-    void apply(int index, const Lazy &l) {
-        l.updateData(data[index]);
-        lazy[index].updateLazy(l);
-    }
-
-    // empuja la actualización pendiente a los hijos
-    void propagate(int index) {
-        if (lazy[index].empty()) return;
-        apply(2 * index, lazy[index]);
-        apply(2 * index + 1, lazy[index]);
-        lazy[index] = Lazy();
-    }
-
-    // actualiza el rango [lower, upper]
-    void update(int index, int left, int right, int lower, int upper, const Lazy &value) {
-        if (left > upper || right < lower) return;
-        if (lower <= left && right <= upper) { apply(index, value); return; }
-        propagate(index);
-        int mid = (left + right) / 2;
-        update(2 * index, left, mid, lower, upper, value);
-        update(2 * index + 1, mid + 1, right, lower, upper, value);
-        data[index] = Data(data[2 * index], data[2 * index + 1]);
-    }
-
-    // suma en el rango [lower, upper]
-    ll query(int index, int left, int right, int lower, int upper) {
-        if (left > upper || right < lower) return 0;
-        if (lower <= left && right <= upper) return data[index].suma;
-        propagate(index);
-        int mid = (left + right) / 2;
-        return query(2 * index, left, mid, lower, upper) + query(2 * index + 1, mid + 1, right, lower, upper);
+    // mínimo en [l, r)
+    // mínimo en [l, r): se sube juntando los nodos que cubren el rango
+    ll query(int l, int r) {
+        ll res = INF;
+        for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) res = min(res, t[l++]);
+            if (r & 1) res = min(res, t[--r]);
+        }
+        return res;
     }
 };
 
@@ -122,15 +58,21 @@ int main() {
     cin >> n >> q;
     vector<ll> a(n);
     for (auto &x : a) cin >> x;
-
     SegmentTree Tree(a);
     while (q--) {
-        int type, l, r;
-        cin >> type >> l >> r;
-        l--, r--;
-        if (type == 1) { ll x; cin >> x; Tree.update(1, 0, n - 1, l, r, Lazy::Add(x)); }
-        else if (type == 2) { ll x; cin >> x; Tree.update(1, 0, n - 1, l, r, Lazy::Set(x)); }
-        else cout << Tree.query(1, 0, n - 1, l, r) << "\n";
+        int type;
+        cin >> type;
+        if (type == 1) {
+            int k;
+            ll u;
+            cin >> k >> u;
+            Tree.update(k - 1, u);
+        }
+        else {
+            int l, r;
+            cin >> l >> r;
+            cout << Tree.query(l - 1, r) << "\n";
+        }
     }
     return 0;
 }

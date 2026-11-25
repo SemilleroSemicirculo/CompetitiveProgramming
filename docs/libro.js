@@ -185,7 +185,7 @@ window.LIBRO = [
 { parte: 'III. Consultas en rangos', caps: [
 
 { t: 'Consultas en rangos',
-  obj: ['Responder mínimos de rangos en O(1) con Sparse Table.', 'Sumas con actualizaciones usando Fenwick.', 'Dominar el Segment Tree, incluida la propagación perezosa.', 'Reordenar consultas con el algoritmo de Mo.'],
+  obj: ['Responder mínimos de rangos en O(1) con Sparse Table.', 'Sumas con actualizaciones usando Fenwick.', 'Usar el Segment Tree con cualquier operación asociativa.', 'Modificar rangos enteros con Lazy Segment Tree.', 'Reordenar consultas con el algoritmo de Mo.'],
   clase: [
     'Muchos problemas se reducen a "dame la suma (o el mínimo) entre las posiciones l y r", repetido cientos de miles de veces. Recorrer el rango cada vez cuesta O(n) por consulta: demasiado. Este capítulo es una escalera de estructuras, cada una más general que la anterior.',
     { h: 'Sumas de prefijos' },
@@ -193,12 +193,16 @@ window.LIBRO = [
     { py: 'p = [0]\nfor x in a:\n    p.append(p[-1] + x)\n# suma de a[l..r] inclusive\nprint(p[r + 1] - p[l])' },
     { h: 'Sparse Table' },
     'Para mínimos no puedes "restar". Pero el mínimo es **idempotente**: tomar un elemento dos veces no cambia el resultado. Así que basta guardar los mínimos de los bloques de largo 2^k y cubrir cualquier rango con dos bloques que se solapan. O(n log n) de preparación y O(1) por consulta.',
-    { h: 'Fenwick y Segment Tree' },
-    'Cuando hay actualizaciones, se necesita un árbol. El Fenwick es compacto y rapidísimo para sumas; el Segment Tree es la navaja suiza: cualquier operación asociativa, búsquedas dentro del árbol y, con **propagación perezosa**, actualizaciones de rangos enteros en O(log n). Todo rango se descompone en a lo sumo unos 2 log n nodos: ese es el teorema que hace funcionar todo.',
+    { h: 'Fenwick' },
+    'Cuando hay actualizaciones, se necesita un árbol. El Fenwick es compacto y rapidísimo para sumas, pero necesita poder "restar" para sacar un rango de dos prefijos.',
+    { h: 'Segment Tree' },
+    'El Segment Tree es la navaja suiza: cada nodo guarda el resultado de una operación sobre su tramo, y funciona con **cualquier operación asociativa que tenga neutro** (suma con 0, mínimo con +∞, máximo con −∞, gcd con 0, xor con 0…). No necesita restar ni que la operación sea idempotente. Todo rango se descompone en a lo sumo unos 2 log n nodos: ese es el teorema que hace funcionar todo.',
+    { h: 'Lazy Segment Tree' },
+    'Si además hay que modificar rangos enteros (sumar x o asignar x a [l, r]), se agrega **propagación perezosa**: la modificación se anota en los nodos que cubren el rango y se baja a los hijos solo cuando hace falta. Así las modificaciones de rango también cuestan O(log n).',
     { h: 'Mo: cuando ninguna estructura sirve' },
     'Si la operación es difícil de combinar (por ejemplo, contar valores distintos), Mo ordena las consultas por bloques de tamaño √n para que los extremos se muevan poco en total: O((n + q)√n). Es un algoritmo **offline**: necesita conocer todas las consultas de antemano.'
   ],
-  algs: ['Data-Structures-Algorithms-SparseTable', 'Data-Structures-Algorithms-FenwickTree', 'Data-Structures-Algorithms-SegmentTreeMin', 'Data-Structures-Algorithms-SegmentTree', 'Data-Structures-Algorithms-MoAlgorithm'],
+  algs: ['Data-Structures-Algorithms-SparseTable', 'Data-Structures-Algorithms-FenwickTree', 'Data-Structures-Algorithms-SegmentTree', 'Data-Structures-Algorithms-LazySegmentTree', 'Data-Structures-Algorithms-MoAlgorithm'],
   teo: [['Data Structures', 'Operaciones idempotentes en Sparse Table'], ['Data Structures', 'Cota de Fenwick'], ['Data Structures', 'Descomposición canónica del Segment Tree'], ['Data Structures', 'Algoritmo de Mo'], ['Data Structures', 'Estructuras persistentes']],
   preguntas: [
     { q: '¿Por qué la Sparse Table no sirve para sumas con dos bloques solapados?', a: 'Porque la suma no es idempotente: los elementos de la zona común se contarían dos veces.' },
