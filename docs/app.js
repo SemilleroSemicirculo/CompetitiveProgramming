@@ -249,13 +249,16 @@ try { resueltos = new Set(JSON.parse(localStorage.getItem('practica') || '[]'));
 const guardarResueltos = () => { try { localStorage.setItem('practica', JSON.stringify([...resueltos])); } catch (_) {} };
 function practicar(){
   const R = window.RECOMENDADOS || {}, T = R[pracCarpeta] || {};
-  const BANDAS = [['facil', 'Sencillos', 1], ['medio', 'Medios', 2], ['dificil', 'Difíciles', 3]];
+  const BANDAS = [['facil', 'Sencillos', 1], ['medio', 'Medios', 2], ['dificil', 'Difíciles', 3], ['finales', 'Hacia las finales (2400–3000)', 4]];
   const key = x => x.j + ':' + x.id;
-  let h = '<h1>Practicar</h1><p class="note">30 problemas recomendados por tema para resolver por tu cuenta: 10 sencillos, 10 medios y 10 difíciles, de CSES y Codeforces. Ninguno está resuelto en esta guía. Marca los que vayas resolviendo; la marca se guarda en este navegador. En Codeforces se muestra la dificultad oficial (rating).</p>';
+  let h = '<h1>Practicar</h1><p class="note">40 problemas recomendados por tema para resolver por tu cuenta: 10 sencillos, 10 medios, 10 difíciles y 10 de nivel finales (rating 2400–3000), de CSES y Codeforces. En «Regionales LatAm» están los regionales latinoamericanos completos. Ninguno está resuelto en esta guía. Marca los que vayas resolviendo; la marca se guarda en este navegador. En Codeforces se muestra la dificultad oficial (rating).</p>';
   h += '<div class="row">' + ORDEN.map(c => { const all = Object.values(R[c] || {}).flat(), n = all.filter(x => resueltos.has(key(x))).length;
-    return '<button class="btn lang'+(c===pracCarpeta?' on':'')+'" data-p="'+c+'">'+esc(teoNombre(c))+' <small>'+n+'/'+all.length+'</small></button>'; }).join('') + '</div>';
-  h += '<div class="lvlcol">' + BANDAS.map(([b, t, n]) => '<div class="box"><h3>'+lvl(n).replace(NIV[n], t)+'</h3>' + (T[b] || []).map(x =>
-      '<label class="prac"><input type="checkbox" data-k="'+esc(key(x))+'"'+(resueltos.has(key(x)) ? ' checked' : '')+'> <a href="'+esc(x.u)+'" target="_blank" rel="noopener">'+esc(x.n)+'</a> <small>'+(x.j === 'CSES' ? 'CSES '+esc(x.id) : 'CF '+esc(x.id)+' · '+x.r)+'</small></label>').join('') + '</div>').join('') + '</div>';
+    return '<button class="btn lang'+(c===pracCarpeta?' on':'')+'" data-p="'+c+'">'+esc(teoNombre(c))+' <small>'+n+'/'+all.length+'</small></button>'; }).join('') + (function () { const all = (window.REGIONALES || []).flatMap(r => r.probs), n = all.filter(x => resueltos.has(key(x))).length; return '<button class="btn lang'+(pracCarpeta==='REG'?' on':'')+'" data-p="REG">Regionales LatAm <small>'+n+'/'+all.length+'</small></button>'; })() + '</div>';
+  const fila = x => '<label class="prac"><input type="checkbox" data-k="'+esc(key(x))+'"'+(resueltos.has(key(x)) ? ' checked' : '')+'> <a href="'+esc(x.u)+'" target="_blank" rel="noopener">'+esc(x.n)+'</a> <small>'+(x.j === 'CSES' ? 'CSES '+esc(x.id) : x.j === 'Gym' ? esc(x.id.slice(-1))+' · '+x.x+' equipos' : 'CF '+esc(x.id)+' · '+x.r)+'</small></label>';
+  if (pracCarpeta === 'REG') {
+    h += '<p class="note">Regionales latinoamericanos del ICPC en el gym de Codeforces. Cada lista está ordenada de más a menos resuelto en el gym, que es una buena guía de dificultad. Lo ideal es hacerlos como contest virtual de 5 horas, en equipo y con el notebook.</p><div class="lvlcol">' + (window.REGIONALES || []).map(r => '<div class="box"><h3><a href="https://codeforces.com/gym/'+r.id+'" target="_blank" rel="noopener">'+esc(r.t)+'</a></h3>'+r.probs.map(fila).join('')+'</div>').join('') + '</div>';
+  } else
+  h += '<div class="lvlcol c4">' + BANDAS.map(([b, t, n]) => '<div class="box"><h3>'+lvl(n).replace(NIV[n], t)+'</h3>' + (T[b] || []).map(fila).join('') + '</div>').join('') + '</div>';
   h += '<p class="note" style="margin-top:16px">Antes de los difíciles, repasa los problemas clásicos resueltos de esta carpeta en <a href="#/elegir" onclick="window.__reset&&window.__reset()">Elegir algoritmo</a>.</p>';
   main.innerHTML = h;
   main.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { pracCarpeta = b.dataset.p; practicar(); });

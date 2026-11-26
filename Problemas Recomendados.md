@@ -1,18 +1,19 @@
 # Problemas recomendados
 
-30 problemas por tema para practicar por tu cuenta: 10 sencillos, 10 medios y 10 difíciles. **Ninguno está resuelto en este repositorio.** Son de [CSES](https://cses.fi/problemset/) y [Codeforces](https://codeforces.com/problemset); en Codeforces se indica la dificultad oficial (*rating*).
+40 problemas por tema para practicar por tu cuenta: 10 sencillos, 10 medios, 10 difíciles y 10 de nivel finales (rating 2400–3000). **Ninguno está resuelto en este repositorio.** Son de [CSES](https://cses.fi/problemset/) y [Codeforces](https://codeforces.com/problemset); en Codeforces se indica la dificultad oficial (*rating*). Al final están los regionales latinoamericanos del ICPC en el gym de Codeforces.
 
 También están en la guía web, en la sección **Practicar**, donde puedes marcar los que vayas resolviendo.
 
-| Tema | Sencillos | Medios | Difíciles |
-|---|---|---|---|
-| [Herramientas: matemáticas, búsqueda binaria y bits (FunctionalTools)](#herramientas-matemáticas-búsqueda-binaria-y-bits-functionaltools) | 10 | 10 | 10 |
-| [Estructuras de datos](#estructuras-de-datos) | 10 | 10 | 10 |
-| [Programación dinámica (DP)](#programación-dinámica-dp) | 10 | 10 | 10 |
-| [Probabilidad](#probabilidad) | 10 | 10 | 10 |
-| [Grafos](#grafos) | 10 | 10 | 10 |
-| [Cadenas (Strings)](#cadenas-strings) | 10 | 10 | 10 |
-| [Geometría](#geometría) | 10 | 10 | 10 |
+| Tema | Sencillos | Medios | Difíciles | Finales |
+|---|---|---|---|---|
+| [Herramientas: matemáticas, búsqueda binaria y bits (FunctionalTools)](#herramientas-matemáticas-búsqueda-binaria-y-bits-functionaltools) | 10 | 10 | 10 | 10 |
+| [Estructuras de datos](#estructuras-de-datos) | 10 | 10 | 10 | 10 |
+| [Programación dinámica (DP)](#programación-dinámica-dp) | 10 | 10 | 10 | 10 |
+| [Grafos](#grafos) | 10 | 10 | 10 | 10 |
+| [Probabilidad](#probabilidad) | 10 | 10 | 10 | 10 |
+| [Cadenas (Strings)](#cadenas-strings) | 10 | 10 | 10 | 10 |
+| [Geometría](#geometría) | 10 | 10 | 10 | 10 |
+| [Regionales latinoamericanos](#regionales-latinoamericanos) | | | | |
 
 ## Herramientas: matemáticas, búsqueda binaria y bits (FunctionalTools)
 
@@ -61,6 +62,21 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | 9 | [Maximum Value](https://codeforces.com/problemset/problem/484/B) | Codeforces 484B | 2100 |
 | 10 | [Modular Stability](https://codeforces.com/problemset/problem/1359/E) | Codeforces 1359E | 2000 |
 
+### Hacia las finales (rating 2400–3000)
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [DZY Loves Fibonacci Numbers](https://codeforces.com/problemset/problem/446/C) | Codeforces 446C | 2400 |
+| 2 | [Thief in a Shop](https://codeforces.com/problemset/problem/632/E) | Codeforces 632E | 2400 |
+| 3 | [Team Work](https://codeforces.com/problemset/problem/932/E) | Codeforces 932E | 2400 |
+| 4 | [Permutation Blackhole](https://codeforces.com/problemset/problem/2129/D) | Codeforces 2129D | 2600 |
+| 5 | [Power Tower](https://codeforces.com/problemset/problem/906/D) | Codeforces 906D | 2700 |
+| 6 | [Gellyfish and Eternal Violet](https://codeforces.com/problemset/problem/2115/C) | Codeforces 2115C | 2700 |
+| 7 | [Hamed and AghaBalaSar](https://codeforces.com/problemset/problem/2127/F) | Codeforces 2127F | 2800 |
+| 8 | [Beautiful Bracket Sequence (hard version)](https://codeforces.com/problemset/problem/1264/D2) | Codeforces 1264D2 | 2900 |
+| 9 | [GCD Table](https://codeforces.com/problemset/problem/338/D) | Codeforces 338D | 2900 |
+| 10 | [Keep XOR Low](https://codeforces.com/problemset/problem/1616/H) | Codeforces 1616H | 3000 |
+
 ## Estructuras de datos
 
 ### Sencillos
@@ -107,6 +123,21 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | 8 | [The Child and Sequence](https://codeforces.com/problemset/problem/438/D) | Codeforces 438D | 2300 |
 | 9 | [Ant colony](https://codeforces.com/problemset/problem/474/F) | Codeforces 474F | 2100 |
 | 10 | [Enemy is weak](https://codeforces.com/problemset/problem/61/E) | Codeforces 61E | 1900 |
+
+### Hacia las finales (rating 2400–3000)
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Xenia and Tree](https://codeforces.com/problemset/problem/342/E) | Codeforces 342E | 2400 |
+| 2 | [Tree and Queries](https://codeforces.com/problemset/problem/375/D) | Codeforces 375D | 2400 |
+| 3 | [Buy Low Sell High](https://codeforces.com/problemset/problem/865/D) | Codeforces 865D | 2400 |
+| 4 | [One Occurrence](https://codeforces.com/problemset/problem/1000/F) | Codeforces 1000F | 2400 |
+| 5 | [Serega and Fun](https://codeforces.com/problemset/problem/455/D) | Codeforces 455D | 2700 |
+| 6 | [Sum](https://codeforces.com/problemset/problem/1442/D) | Codeforces 1442D | 2800 |
+| 7 | [Kazaee](https://codeforces.com/problemset/problem/1746/F) | Codeforces 1746F | 2800 |
+| 8 | [Query Jungle](https://codeforces.com/problemset/problem/2152/G) | Codeforces 2152G | 2900 |
+| 9 | [Arpa’s letter-marked tree and Mehrdad’s Dokhtar-kosh paths](https://codeforces.com/problemset/problem/741/D) | Codeforces 741D | 2900 |
+| 10 | [Pudding Monsters](https://codeforces.com/problemset/problem/526/F) | Codeforces 526F | 3000 |
 
 ## Programación dinámica (DP)
 
@@ -155,54 +186,20 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | 9 | [Clear the String](https://codeforces.com/problemset/problem/1132/F) | Codeforces 1132F | 2000 |
 | 10 | [Modulo Sum](https://codeforces.com/problemset/problem/577/B) | Codeforces 577B | 1900 |
 
-## Probabilidad
-
-CSES solo tiene cuatro problemas de probabilidad y ya están resueltos en la carpeta Probability; aquí todos son de Codeforces. En este tema los ratings son más altos en cada nivel.
-
-### Sencillos
+### Hacia las finales (rating 2400–3000)
 
 | # | Problema | Juez | Dificultad |
 |---|---|---|---|
-| 1 | [Die Roll](https://codeforces.com/problemset/problem/9/A) | Codeforces 9A | 800 |
-| 2 | [Red-Blue Shuffle](https://codeforces.com/problemset/problem/1459/A) | Codeforces 1459A | 800 |
-| 3 | [Dreamoon and WiFi](https://codeforces.com/problemset/problem/476/B) | Codeforces 476B | 1300 |
-| 4 | [Archer](https://codeforces.com/problemset/problem/312/B) | Codeforces 312B | 1300 |
-| 5 | [Random Events](https://codeforces.com/problemset/problem/1461/C) | Codeforces 1461C | 1500 |
-| 6 | [Little Pony and Expected Maximum](https://codeforces.com/problemset/problem/453/A) | Codeforces 453A | 1600 |
-| 7 | [Basketball Team](https://codeforces.com/problemset/problem/107/B) | Codeforces 107B | 1600 |
-| 8 | [Game with String](https://codeforces.com/problemset/problem/930/B) | Codeforces 930B | 1600 |
-| 9 | [Wet Shark and Flowers](https://codeforces.com/problemset/problem/621/C) | Codeforces 621C | 1700 |
-| 10 | [Puzzles](https://codeforces.com/problemset/problem/696/B) | Codeforces 696B | 1700 |
-
-### Medios
-
-| # | Problema | Juez | Dificultad |
-|---|---|---|---|
-| 1 | [Santa's Bot](https://codeforces.com/problemset/problem/1279/D) | Codeforces 1279D | 1700 |
-| 2 | [Andrey and Problem](https://codeforces.com/problemset/problem/442/B) | Codeforces 442B | 1800 |
-| 3 | [Falling Anvils](https://codeforces.com/problemset/problem/77/B) | Codeforces 77B | 1800 |
-| 4 | [Jerry's Protest](https://codeforces.com/problemset/problem/626/D) | Codeforces 626D | 1800 |
-| 5 | [LuoTianyi and the Floating Islands (Easy Version)](https://codeforces.com/problemset/problem/1824/B1) | Codeforces 1824B1 | 1800 |
-| 6 | [Bad Luck Island](https://codeforces.com/problemset/problem/540/D) | Codeforces 540D | 1900 |
-| 7 | [Need for Pink Slips](https://codeforces.com/problemset/problem/1543/C) | Codeforces 1543C | 1900 |
-| 8 | [Good Trip](https://codeforces.com/problemset/problem/1925/D) | Codeforces 1925D | 1900 |
-| 9 | [Score of a Tree](https://codeforces.com/problemset/problem/1777/D) | Codeforces 1777D | 1900 |
-| 10 | [Checkpoints](https://codeforces.com/problemset/problem/1453/D) | Codeforces 1453D | 1900 |
-
-### Difíciles
-
-| # | Problema | Juez | Dificultad |
-|---|---|---|---|
-| 1 | [Wish I Knew How to Sort](https://codeforces.com/problemset/problem/1753/C) | Codeforces 1753C | 2000 |
-| 2 | [Intercity Travelling](https://codeforces.com/problemset/problem/1009/E) | Codeforces 1009E | 2000 |
-| 3 | [Expected Power](https://codeforces.com/problemset/problem/2020/E) | Codeforces 2020E | 2000 |
-| 4 | [Jon and Orbs](https://codeforces.com/problemset/problem/768/D) | Codeforces 768D | 2200 |
-| 5 | [Makoto and a Blackboard](https://codeforces.com/problemset/problem/1097/D) | Codeforces 1097D | 2200 |
-| 6 | [Another Sith Tournament](https://codeforces.com/problemset/problem/678/E) | Codeforces 678E | 2200 |
-| 7 | [New Year and Arbitrary Arrangement](https://codeforces.com/problemset/problem/908/D) | Codeforces 908D | 2200 |
-| 8 | [Tree Array](https://codeforces.com/problemset/problem/1540/B) | Codeforces 1540B | 2300 |
-| 9 | [Steps to One](https://codeforces.com/problemset/problem/1139/D) | Codeforces 1139D | 2300 |
-| 10 | [Broken robot](https://codeforces.com/problemset/problem/24/D) | Codeforces 24D | 2400 |
+| 1 | [Jzzhu and Numbers](https://codeforces.com/problemset/problem/449/D) | Codeforces 449D | 2400 |
+| 2 | [The Fair Nut and Rectangles](https://codeforces.com/problemset/problem/1083/E) | Codeforces 1083E | 2400 |
+| 3 | [Yet Another Minimization Problem](https://codeforces.com/problemset/problem/868/F) | Codeforces 868F | 2500 |
+| 4 | [Ciel and Gondolas](https://codeforces.com/problemset/problem/321/E) | Codeforces 321E | 2600 |
+| 5 | [Vowels](https://codeforces.com/problemset/problem/383/E) | Codeforces 383E | 2700 |
+| 6 | [Escape Through Leaf](https://codeforces.com/problemset/problem/932/F) | Codeforces 932F | 2700 |
+| 7 | [Kingdom and its Cities](https://codeforces.com/problemset/problem/613/D) | Codeforces 613D | 2800 |
+| 8 | [Gellyfish and Forget-Me-Not](https://codeforces.com/problemset/problem/2115/D) | Codeforces 2115D | 2900 |
+| 9 | [Victorious Coloring (Easy Version)](https://codeforces.com/problemset/problem/2152/H1) | Codeforces 2152H1 | 2900 |
+| 10 | [Gosha is hunting](https://codeforces.com/problemset/problem/739/E) | Codeforces 739E | 3000 |
 
 ## Grafos
 
@@ -251,6 +248,83 @@ CSES solo tiene cuatro problemas de probabilidad y ya están resueltos en la car
 | 9 | [Jzzhu and Cities](https://codeforces.com/problemset/problem/449/B) | Codeforces 449B | 2000 |
 | 10 | [0-1 MST](https://codeforces.com/problemset/problem/1242/B) | Codeforces 1242B | 1900 |
 
+### Hacia las finales (rating 2400–3000)
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Minimum Path](https://codeforces.com/problemset/problem/1473/E) | Codeforces 1473E | 2400 |
+| 2 | [XOR Tree](https://codeforces.com/problemset/problem/1709/E) | Codeforces 1709E | 2400 |
+| 3 | [The Shortest Statement](https://codeforces.com/problemset/problem/1051/F) | Codeforces 1051F | 2400 |
+| 4 | [Tanya and Password](https://codeforces.com/problemset/problem/508/D) | Codeforces 508D | 2500 |
+| 5 | [Subset with Zero Sum](https://codeforces.com/problemset/problem/1270/G) | Codeforces 1270G | 2700 |
+| 6 | [Digit Tree](https://codeforces.com/problemset/problem/715/C) | Codeforces 715C | 2700 |
+| 7 | [Case of Computer Network](https://codeforces.com/problemset/problem/555/E) | Codeforces 555E | 2800 |
+| 8 | [Goods transportation](https://codeforces.com/problemset/problem/724/E) | Codeforces 724E | 2900 |
+| 9 | [The Classic Problem](https://codeforces.com/problemset/problem/464/E) | Codeforces 464E | 3000 |
+| 10 | [Pastoral Oddities](https://codeforces.com/problemset/problem/603/E) | Codeforces 603E | 3000 |
+
+## Probabilidad
+
+### Sencillos
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Die Roll](https://codeforces.com/problemset/problem/9/A) | Codeforces 9A | 800 |
+| 2 | [Red-Blue Shuffle](https://codeforces.com/problemset/problem/1459/A) | Codeforces 1459A | 800 |
+| 3 | [Dreamoon and WiFi](https://codeforces.com/problemset/problem/476/B) | Codeforces 476B | 1300 |
+| 4 | [Archer](https://codeforces.com/problemset/problem/312/B) | Codeforces 312B | 1300 |
+| 5 | [Random Events](https://codeforces.com/problemset/problem/1461/C) | Codeforces 1461C | 1500 |
+| 6 | [Little Pony and Expected Maximum](https://codeforces.com/problemset/problem/453/A) | Codeforces 453A | 1600 |
+| 7 | [Basketball Team](https://codeforces.com/problemset/problem/107/B) | Codeforces 107B | 1600 |
+| 8 | [Game with String](https://codeforces.com/problemset/problem/930/B) | Codeforces 930B | 1600 |
+| 9 | [Wet Shark and Flowers](https://codeforces.com/problemset/problem/621/C) | Codeforces 621C | 1700 |
+| 10 | [Puzzles](https://codeforces.com/problemset/problem/696/B) | Codeforces 696B | 1700 |
+
+### Medios
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Santa's Bot](https://codeforces.com/problemset/problem/1279/D) | Codeforces 1279D | 1700 |
+| 2 | [Andrey and Problem](https://codeforces.com/problemset/problem/442/B) | Codeforces 442B | 1800 |
+| 3 | [Falling Anvils](https://codeforces.com/problemset/problem/77/B) | Codeforces 77B | 1800 |
+| 4 | [Jerry's Protest](https://codeforces.com/problemset/problem/626/D) | Codeforces 626D | 1800 |
+| 5 | [LuoTianyi and the Floating Islands (Easy Version)](https://codeforces.com/problemset/problem/1824/B1) | Codeforces 1824B1 | 1800 |
+| 6 | [Bad Luck Island](https://codeforces.com/problemset/problem/540/D) | Codeforces 540D | 1900 |
+| 7 | [Need for Pink Slips](https://codeforces.com/problemset/problem/1543/C) | Codeforces 1543C | 1900 |
+| 8 | [Good Trip](https://codeforces.com/problemset/problem/1925/D) | Codeforces 1925D | 1900 |
+| 9 | [Score of a Tree](https://codeforces.com/problemset/problem/1777/D) | Codeforces 1777D | 1900 |
+| 10 | [Checkpoints](https://codeforces.com/problemset/problem/1453/D) | Codeforces 1453D | 1900 |
+
+### Difíciles
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Wish I Knew How to Sort](https://codeforces.com/problemset/problem/1753/C) | Codeforces 1753C | 2000 |
+| 2 | [Intercity Travelling](https://codeforces.com/problemset/problem/1009/E) | Codeforces 1009E | 2000 |
+| 3 | [Expected Power](https://codeforces.com/problemset/problem/2020/E) | Codeforces 2020E | 2000 |
+| 4 | [Jon and Orbs](https://codeforces.com/problemset/problem/768/D) | Codeforces 768D | 2200 |
+| 5 | [Makoto and a Blackboard](https://codeforces.com/problemset/problem/1097/D) | Codeforces 1097D | 2200 |
+| 6 | [Another Sith Tournament](https://codeforces.com/problemset/problem/678/E) | Codeforces 678E | 2200 |
+| 7 | [New Year and Arbitrary Arrangement](https://codeforces.com/problemset/problem/908/D) | Codeforces 908D | 2200 |
+| 8 | [Tree Array](https://codeforces.com/problemset/problem/1540/B) | Codeforces 1540B | 2300 |
+| 9 | [Steps to One](https://codeforces.com/problemset/problem/1139/D) | Codeforces 1139D | 2300 |
+| 10 | [Broken robot](https://codeforces.com/problemset/problem/24/D) | Codeforces 24D | 2400 |
+
+### Hacia las finales (rating 2400–3000)
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Destiny](https://codeforces.com/problemset/problem/840/D) | Codeforces 840D | 2500 |
+| 2 | [Kuroni and the Punishment](https://codeforces.com/problemset/problem/1305/F) | Codeforces 1305F | 2500 |
+| 3 | [Willem, Chtholly and Seniorious](https://codeforces.com/problemset/problem/896/C) | Codeforces 896C | 2600 |
+| 4 | [Cards](https://codeforces.com/problemset/problem/1278/F) | Codeforces 1278F | 2600 |
+| 5 | [X-OR](https://codeforces.com/problemset/problem/1364/E) | Codeforces 1364E | 2700 |
+| 6 | [Tree Queries](https://codeforces.com/problemset/problem/1254/D) | Codeforces 1254D | 2700 |
+| 7 | [Tenzing and Random Operations](https://codeforces.com/problemset/problem/1842/G) | Codeforces 1842G | 2800 |
+| 8 | [Ghd](https://codeforces.com/problemset/problem/364/D) | Codeforces 364D | 2900 |
+| 9 | [Odd Mineral Resource](https://codeforces.com/problemset/problem/1479/D) | Codeforces 1479D | 2900 |
+| 10 | [ZS Shuffles Cards](https://codeforces.com/problemset/problem/1392/H) | Codeforces 1392H | 3000 |
+
 ## Cadenas (Strings)
 
 ### Sencillos
@@ -298,6 +372,21 @@ CSES solo tiene cuatro problemas de probabilidad y ya están resueltos en la car
 | 9 | [Dasha and Nightmares](https://codeforces.com/problemset/problem/1800/F) | Codeforces 1800F | 1900 |
 | 10 | [Test](https://codeforces.com/problemset/problem/25/E) | Codeforces 25E | 2200 |
 
+### Hacia las finales (rating 2400–3000)
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [You Are Given Some Strings...](https://codeforces.com/problemset/problem/1202/E) | Codeforces 1202E | 2400 |
+| 2 | [Three Occurrences](https://codeforces.com/problemset/problem/1418/G) | Codeforces 1418G | 2500 |
+| 3 | [The Number of Subpermutations](https://codeforces.com/problemset/problem/1175/F) | Codeforces 1175F | 2500 |
+| 4 | [Frequency of String](https://codeforces.com/problemset/problem/963/D) | Codeforces 963D | 2500 |
+| 5 | [Fibonacci Additions](https://codeforces.com/problemset/problem/1634/F) | Codeforces 1634F | 2700 |
+| 6 | [Permutation](https://codeforces.com/problemset/problem/452/F) | Codeforces 452F | 2700 |
+| 7 | [Mike and Friends](https://codeforces.com/problemset/problem/547/E) | Codeforces 547E | 2800 |
+| 8 | [Palindrome Partition](https://codeforces.com/problemset/problem/932/G) | Codeforces 932G | 2900 |
+| 9 | [Substrings in a String](https://codeforces.com/problemset/problem/914/F) | Codeforces 914F | 3000 |
+| 10 | [Duff is Mad](https://codeforces.com/problemset/problem/587/F) | Codeforces 587F | 3000 |
+
 ## Geometría
 
 ### Sencillos
@@ -344,3 +433,146 @@ CSES solo tiene cuatro problemas de probabilidad y ya están resueltos en la car
 | 8 | [Number of Parallelograms](https://codeforces.com/problemset/problem/660/D) | Codeforces 660D | 1900 |
 | 9 | [Power Transmission (Hard Edition)](https://codeforces.com/problemset/problem/1163/C2) | Codeforces 1163C2 | 1900 |
 | 10 | [Kalila and Dimna in the Logging Industry](https://codeforces.com/problemset/problem/319/C) | Codeforces 319C | 2100 |
+
+### Hacia las finales (rating 2400–3000)
+
+| # | Problema | Juez | Dificultad |
+|---|---|---|---|
+| 1 | [Divide Square](https://codeforces.com/problemset/problem/1401/E) | Codeforces 1401E | 2400 |
+| 2 | [Long Way Home](https://codeforces.com/problemset/problem/1715/E) | Codeforces 1715E | 2400 |
+| 3 | [Bear and Bowling 4](https://codeforces.com/problemset/problem/660/F) | Codeforces 660F | 2500 |
+| 4 | [Product Sum](https://codeforces.com/problemset/problem/631/E) | Codeforces 631E | 2600 |
+| 5 | [Sum of Prefix Sums](https://codeforces.com/problemset/problem/1303/G) | Codeforces 1303G | 2700 |
+| 6 | [Off by One](https://codeforces.com/problemset/problem/1519/E) | Codeforces 1519E | 2700 |
+| 7 | [Disjoint Triangles](https://codeforces.com/problemset/problem/1025/F) | Codeforces 1025F | 2700 |
+| 8 | [Satanic Panic](https://codeforces.com/problemset/problem/1146/H) | Codeforces 1146H | 2900 |
+| 9 | [Yet Another Partiton Problem](https://codeforces.com/problemset/problem/1175/G) | Codeforces 1175G | 3000 |
+| 10 | [Swap Pass](https://codeforces.com/problemset/problem/1508/D) | Codeforces 1508D | 3000 |
+
+## Regionales latinoamericanos
+
+Ordenados de más a menos resuelto en el gym (equipos que lo resolvieron), que sirve como guía de dificultad. Lo ideal es hacerlos como contest virtual de 5 horas, en equipo.
+
+### [ICPC Latin American Regional 2025-2026](https://codeforces.com/gym/106178)
+
+| Problema | Nombre | Equipos que lo resolvieron |
+|---|---|---|
+| J | [Judgmental Crowd](https://codeforces.com/gym/106178/problem/J) | 883 |
+| H | [Harder Horizons](https://codeforces.com/gym/106178/problem/H) | 861 |
+| F | [Fuzzy Factorization](https://codeforces.com/gym/106178/problem/F) | 411 |
+| K | [Kings Conquest](https://codeforces.com/gym/106178/problem/K) | 276 |
+| E | [Emergency Rations](https://codeforces.com/gym/106178/problem/E) | 255 |
+| B | [Balanced Balloons](https://codeforces.com/gym/106178/problem/B) | 241 |
+| A | [Apple Pie](https://codeforces.com/gym/106178/problem/A) | 129 |
+| C | [Clean Streets](https://codeforces.com/gym/106178/problem/C) | 57 |
+| L | [Lonely Creatures](https://codeforces.com/gym/106178/problem/L) | 51 |
+| I | [Infiltration Route](https://codeforces.com/gym/106178/problem/I) | 41 |
+| D | [Displaying Decimals](https://codeforces.com/gym/106178/problem/D) | 16 |
+| G | [Gridoland Power Gauge](https://codeforces.com/gym/106178/problem/G) | 4 |
+
+### [ICPC Latin American Regional 2024-2025](https://codeforces.com/gym/105505)
+
+| Problema | Nombre | Equipos que lo resolvieron |
+|---|---|---|
+| A | [Append and Panic!](https://codeforces.com/gym/105505/problem/A) | 1556 |
+| F | [Finding Privacy](https://codeforces.com/gym/105505/problem/F) | 1028 |
+| J | [Jigsaw of Shadows](https://codeforces.com/gym/105505/problem/J) | 960 |
+| K | [Kool Strings](https://codeforces.com/gym/105505/problem/K) | 808 |
+| E | [Evereth Expedition](https://codeforces.com/gym/105505/problem/E) | 402 |
+| G | [Grand Glory Race](https://codeforces.com/gym/105505/problem/G) | 299 |
+| L | [Latin Squares](https://codeforces.com/gym/105505/problem/L) | 203 |
+| D | [Diverse T-Shirts](https://codeforces.com/gym/105505/problem/D) | 196 |
+| H | [Heraclosures](https://codeforces.com/gym/105505/problem/H) | 147 |
+| B | [Biketopia's Cyclic Track](https://codeforces.com/gym/105505/problem/B) | 135 |
+| I | [Inversion Insight](https://codeforces.com/gym/105505/problem/I) | 112 |
+| C | [Cindy's Christmas Challenge](https://codeforces.com/gym/105505/problem/C) | 35 |
+
+### [ICPC Latin American Regional 2023-2024](https://codeforces.com/gym/104736)
+
+| Problema | Nombre | Equipos que lo resolvieron |
+|---|---|---|
+| D | [Deciphering WordWhiz](https://codeforces.com/gym/104736/problem/D) | 1288 |
+| B | [Blackboard Game](https://codeforces.com/gym/104736/problem/B) | 1147 |
+| I | [Inversions](https://codeforces.com/gym/104736/problem/I) | 964 |
+| M | [Meeting Point](https://codeforces.com/gym/104736/problem/M) | 885 |
+| F | [Forward and Backward](https://codeforces.com/gym/104736/problem/F) | 772 |
+| C | [Candy Rush](https://codeforces.com/gym/104736/problem/C) | 579 |
+| J | [Journey of the Robber](https://codeforces.com/gym/104736/problem/J) | 468 |
+| G | [GPS on a Flat Earth](https://codeforces.com/gym/104736/problem/G) | 343 |
+| H | [Health in Hazard](https://codeforces.com/gym/104736/problem/H) | 298 |
+| K | [Keen on Order](https://codeforces.com/gym/104736/problem/K) | 235 |
+| L | [Latam++](https://codeforces.com/gym/104736/problem/L) | 158 |
+| E | [Elevated Profits](https://codeforces.com/gym/104736/problem/E) | 74 |
+| A | [Analyzing Contracts](https://codeforces.com/gym/104736/problem/A) | 50 |
+
+### [ICPC Latin American Regional 2022-2023](https://codeforces.com/gym/104252)
+
+| Problema | Nombre | Equipos que lo resolvieron |
+|---|---|---|
+| D | [Daily Trips](https://codeforces.com/gym/104252/problem/D) | 1424 |
+| I | [Italian Calzone & Pasta Corner](https://codeforces.com/gym/104252/problem/I) | 1019 |
+| E | [Empty Squares](https://codeforces.com/gym/104252/problem/E) | 956 |
+| M | [Maze in Bolt](https://codeforces.com/gym/104252/problem/M) | 715 |
+| A | [Asking for Money](https://codeforces.com/gym/104252/problem/A) | 647 |
+| C | [City Folding](https://codeforces.com/gym/104252/problem/C) | 562 |
+| H | [Horse Race](https://codeforces.com/gym/104252/problem/H) | 484 |
+| L | [Lazy Printing](https://codeforces.com/gym/104252/problem/L) | 463 |
+| B | [Board Game](https://codeforces.com/gym/104252/problem/B) | 278 |
+| K | [Kind Baker](https://codeforces.com/gym/104252/problem/K) | 263 |
+| F | [Favorite Tree](https://codeforces.com/gym/104252/problem/F) | 219 |
+| G | [Gravitational Wave Detector](https://codeforces.com/gym/104252/problem/G) | 175 |
+| J | [Joining a Marathon](https://codeforces.com/gym/104252/problem/J) | 47 |
+
+### [ICPC Latin American Regional 2021-2022](https://codeforces.com/gym/103640)
+
+| Problema | Nombre | Equipos que lo resolvieron |
+|---|---|---|
+| K | [KIARA is a Recursive Acronym](https://codeforces.com/gym/103640/problem/K) | 1424 |
+| F | [Fields Division](https://codeforces.com/gym/103640/problem/F) | 1236 |
+| I | [Invested Money](https://codeforces.com/gym/103640/problem/I) | 880 |
+| J | [Joining Pairs](https://codeforces.com/gym/103640/problem/J) | 864 |
+| M | [Most Ordered Way](https://codeforces.com/gym/103640/problem/M) | 663 |
+| H | [Hamilton - The Musical](https://codeforces.com/gym/103640/problem/H) | 638 |
+| B | [Because, Art!](https://codeforces.com/gym/103640/problem/B) | 361 |
+| L | [Leaving Yharnam](https://codeforces.com/gym/103640/problem/L) | 229 |
+| G | [Generator Tree](https://codeforces.com/gym/103640/problem/G) | 97 |
+| A | [Ancient Towers](https://codeforces.com/gym/103640/problem/A) | 83 |
+| E | [Expedition Plans](https://codeforces.com/gym/103640/problem/E) | 67 |
+| D | [Daily Turnovers](https://codeforces.com/gym/103640/problem/D) | 55 |
+| C | [Cyclists versus Clouds](https://codeforces.com/gym/103640/problem/C) | 27 |
+
+### [ICPC Latin American Regional 2019-2020](https://codeforces.com/gym/102428)
+
+| Problema | Nombre | Equipos que lo resolvieron |
+|---|---|---|
+| M | [Mountain Ranges](https://codeforces.com/gym/102428/problem/M) | 1412 |
+| E | [Eggfruit Cake](https://codeforces.com/gym/102428/problem/E) | 1133 |
+| I | [Improve SPAM](https://codeforces.com/gym/102428/problem/I) | 1100 |
+| L | [Leverage MDT](https://codeforces.com/gym/102428/problem/L) | 933 |
+| K | [Know your Aliens](https://codeforces.com/gym/102428/problem/K) | 891 |
+| G | [Gluing Pictures](https://codeforces.com/gym/102428/problem/G) | 799 |
+| F | [Fabricating Sculptures](https://codeforces.com/gym/102428/problem/F) | 761 |
+| D | [Dazzling stars](https://codeforces.com/gym/102428/problem/D) | 395 |
+| C | [Cut Inequality Down](https://codeforces.com/gym/102428/problem/C) | 293 |
+| J | [Jumping Grasshoper](https://codeforces.com/gym/102428/problem/J) | 229 |
+| A | [Algorithm Teaching](https://codeforces.com/gym/102428/problem/A) | 208 |
+| B | [Build the Perfect House](https://codeforces.com/gym/102428/problem/B) | 113 |
+| H | [Hold or Continue?](https://codeforces.com/gym/102428/problem/H) | 77 |
+
+### [ICPC Latin American Regional 2017-2018](https://codeforces.com/gym/101889)
+
+| Problema | Nombre | Equipos que lo resolvieron |
+|---|---|---|
+| H | [Hard choice](https://codeforces.com/gym/101889/problem/H) | 1141 |
+| C | [Complete Naebbirac's sequence](https://codeforces.com/gym/101889/problem/C) | 940 |
+| E | [Enigma](https://codeforces.com/gym/101889/problem/E) | 553 |
+| I | [Imperial roads](https://codeforces.com/gym/101889/problem/I) | 472 |
+| F | [Fundraising](https://codeforces.com/gym/101889/problem/F) | 463 |
+| J | [Jumping frog](https://codeforces.com/gym/101889/problem/J) | 441 |
+| B | [Buggy ICPC](https://codeforces.com/gym/101889/problem/B) | 358 |
+| G | [Gates of uncertainty](https://codeforces.com/gym/101889/problem/G) | 268 |
+| D | [Daunting device](https://codeforces.com/gym/101889/problem/D) | 155 |
+| M | [Marblecoin](https://codeforces.com/gym/101889/problem/M) | 89 |
+| K | [Keep it covered](https://codeforces.com/gym/101889/problem/K) | 55 |
+| A | [Arranging tiles](https://codeforces.com/gym/101889/problem/A) | 41 |
+| L | [Linearville](https://codeforces.com/gym/101889/problem/L) | 28 |

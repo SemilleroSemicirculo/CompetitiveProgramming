@@ -50,15 +50,18 @@ D['FunctionalTools-Codes-Sieve']=function(box){
 };
 
 D['DP-Algorithms-Kadane1D']=function(box){
-  let a,i,cur,best,ini,bi,bj;
-  const w=el('<div class="demo"><h3>Kadane paso a paso</h3><div class="row"><button class="btn" id="n">Nuevo arreglo</button><button class="btn" id="p">Paso ▶</button></div><div class="cells" id="c"></div><div class="msg" id="m"></div></div>');
+  let a,i,cur,best,ini,bi,bj,timer=null;
+  const w=el('<div class="demo"><h3>Kadane paso a paso</h3><div class="row"><button class="btn" id="p">Paso ▶</button><button class="btn" id="a">Reproducir</button><button class="btn" id="r">Reiniciar</button><button class="btn" id="n">Ejemplo nuevo</button></div><div class="cells" id="c"></div><div class="msg" id="m"></div><p class="note">Azul = subarreglo actual (el mejor que termina en i); verde = el mejor encontrado hasta ahora. curr se reinicia cuando extender sería peor que empezar de nuevo.</p></div>');
   box.appendChild(w);const $=s=>w.querySelector(s);
-  function draw(){ $('#c').innerHTML=a.map((v,k)=>'<div class="cell '+(k>=bi&&k<=bj?'g':(k>=ini&&k<=i)?'b':'')+'">'+v+'</div>').join(''); }
-  function nuevo(){a=rnd(12,-9,9);cur=best=a[0];ini=bi=bj=0;i=0;$('#m').textContent='curr = best = '+a[0];draw();}
-  $('#n').onclick=nuevo;
-  $('#p').onclick=()=>{ if(i>=a.length-1){$('#m').textContent='Fin: la mejor suma es '+best+' (verde).';return;} i++;
-    if(a[i]>cur+a[i]){cur=a[i];ini=i;$('#m').textContent='a[i] solo vale más que extender: se empieza aquí. curr = '+cur;} else {cur+=a[i];$('#m').textContent='Se extiende el subarreglo. curr = '+cur;}
-    if(cur>best){best=cur;bi=ini;bj=i;} draw(); };
+  function draw(){ $('#c').innerHTML=a.map((v,k)=>'<div class="cell '+(k>=bi&&k<=bj?'g':(k>=ini&&k<=i)?'b':'')+'"><small>'+k+'</small><br>'+v+'</div>').join(''); }
+  function reset(){cur=best=a[0];ini=bi=bj=0;i=0;$('#m').textContent='i = 0: curr = best = '+a[0]+'.';draw();}
+  function nuevo(){a=rnd(12,-9,9);reset();}
+  function stop(){if(timer){clearInterval(timer);timer=null;$('#a').textContent='Reproducir';}}
+  function paso(){ if(i>=a.length-1){$('#m').textContent='Fin: la mejor suma es '+best+' (verde, posiciones '+bi+' a '+bj+').';stop();return;} i++;
+    if(a[i]>cur+a[i]){cur=a[i];ini=i;$('#m').textContent='i = '+i+': '+a[i]+' solo vale más que extender (curr era negativo): se empieza aquí. curr = '+cur+'.';} else {cur+=a[i];$('#m').textContent='i = '+i+': se extiende el subarreglo. curr = '+cur+'.';}
+    if(cur>best){best=cur;bi=ini;bj=i;$('#m').textContent+=' Nuevo mejor: '+best+'.';} draw(); }
+  $('#p').onclick=()=>{stop();paso();}; $('#r').onclick=()=>{stop();reset();}; $('#n').onclick=()=>{stop();nuevo();};
+  $('#a').onclick=()=>{ if(timer){stop();return;} if(i>=a.length-1)reset(); $('#a').textContent='Pausa'; timer=setInterval(()=>{ if(!document.body.contains(w)){stop();return;} paso(); },850); };
   nuevo();
 };
 
