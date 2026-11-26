@@ -12,7 +12,7 @@ const fmt = x => typeof x !== 'number' ? x : (x === Infinity || x >= 1e15) ? '�
 
 // ---------- reproductor común ----------
 function player(box, title, note, gen, render) {
-  const w = el('<div class="demo"><h3>' + title + '</h3><div class="row"><button class="btn" data-k="p">Paso ▶</button><button class="btn" data-k="a">Reproducir</button><button class="btn" data-k="r">Reiniciar</button><button class="btn" data-k="n">Ejemplo nuevo</button></div><div class="vis"></div><div class="msg"></div>' + (note ? '<p class="note">' + note + '</p>' : '') + '</div>');
+  const w = el('<div class="demo"><h3>' + title + '</h3><div class="row"><button class="btn" data-k="b" title="Paso anterior">◀ Atrás</button><button class="btn" data-k="p">Paso ▶</button><button class="btn" data-k="a">Reproducir</button><button class="btn" data-k="r">Reiniciar</button><button class="btn" data-k="n">Ejemplo nuevo</button></div><div class="vis"></div><div class="msg"></div>' + (note ? '<p class="note">' + note + '</p>' : '') + '</div>');
   box.appendChild(w);
   const vis = w.querySelector('.vis'), msg = w.querySelector('.msg'), play = w.querySelector('[data-k=a]');
   let steps = [], k = 0, timer = null;
@@ -20,6 +20,7 @@ function player(box, title, note, gen, render) {
   const stop = () => { if (timer) { clearInterval(timer); timer = null; play.textContent = 'Reproducir'; } };
   const nuevo = () => { stop(); steps = gen(); k = 0; show(); };
   w.querySelector('[data-k=p]').onclick = () => { stop(); if (k < steps.length - 1) { k++; show(); } };
+  w.querySelector('[data-k=b]').onclick = () => { stop(); if (k > 0) { k--; show(); } };
   play.onclick = () => {
     if (timer) { stop(); return; }
     if (k >= steps.length - 1) { k = 0; show(); }
