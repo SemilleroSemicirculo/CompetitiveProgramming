@@ -19,7 +19,24 @@ function bs(box){
     else{ if(a[mid]<t){$('#m').textContent=a[mid]+' < '+t+': se descarta la izquierda.';lo=mid+1;} else {$('#m').textContent=a[mid]+' > '+t+': se descarta la derecha.';hi=mid-1;} draw(mid); } };
   nuevo();
 }
-D['FunctionalTools-Codes-BS']=bs; D['FunctionalTools-Codes-BS-library']=bs;
+D['FunctionalTools-Codes-BS']=bs;
+// lower_bound: primera posición con a[i] ≥ t, en el intervalo semiabierto [lo, hi)
+D['FunctionalTools-Codes-BS-library']=function(box){
+  let a, lo, hi, t, fin;
+  const w = el('<div class="demo"><h3>lower_bound / binary_search paso a paso</h3><div class="row"><label>Buscar <input id="t" type="number" style="width:70px"></label><button class="btn" id="n">Nuevo arreglo</button><button class="btn" id="p">Paso ▶</button><button class="btn" id="r">Reiniciar</button></div><div class="cells" id="c"></div><div class="msg" id="m"></div><p class="note">lower_bound(t) devuelve la primera posición con valor ≥ t (o n si no hay). binary_search(t) solo dice si t está: es lower_bound + comparar esa casilla. Azul = intervalo [lo, hi) que aún puede contener la respuesta.</p></div>');
+  box.appendChild(w); const $ = s => w.querySelector(s);
+  function draw(mid){ $('#c').innerHTML = a.map((v,i)=>'<div class="cell '+(fin&&i===lo?'g':i===mid?'a':(i<lo||i>=hi)?'r':'b')+'"><small>'+i+'</small><br>'+v+'</div>').join(''); }
+  function reset(){ lo=0; hi=a.length; fin=false; t=+$('#t').value; $('#m').textContent='lo = 0, hi = '+a.length+'. Pulsa «Paso».'; draw(-1); }
+  function nuevo(){ a=rnd(12,1,30).sort((x,y)=>x-y); $('#t').value=Math.random()<0.7?a[Math.floor(Math.random()*a.length)]:1+Math.floor(Math.random()*30); reset(); }
+  $('#n').onclick=nuevo; $('#r').onclick=reset;
+  $('#p').onclick=()=>{ if(fin) return;
+    if(lo>=hi){ fin=true; const ok=lo<a.length&&a[lo]===t; $('#m').textContent='lower_bound = '+lo+(lo<a.length?' (a['+lo+'] = '+a[lo]+')':' (= n: todos son menores)')+'. binary_search = '+(ok?'true':'false')+'.'; draw(-1); return; }
+    const mid=(lo+hi)>>1;
+    if(a[mid]<t){ $('#m').textContent='a['+mid+'] = '+a[mid]+' < '+t+': la respuesta está a la derecha, lo = '+(mid+1)+'.'; lo=mid+1; }
+    else { $('#m').textContent='a['+mid+'] = '+a[mid]+' ≥ '+t+': mid podría ser la respuesta, hi = '+mid+'.'; hi=mid; }
+    draw(mid); };
+  nuevo();
+};
 
 D['FunctionalTools-Codes-Sieve']=function(box){
   const w=el('<div class="demo"><h3>Criba de Eratóstenes</h3><div class="row"><label>N <input id="n" type="number" value="60" min="10" max="150" style="width:70px"></label><button class="btn" id="p">Siguiente primo ▶</button><button class="btn" id="r">Reiniciar</button></div><div class="cells" id="c"></div><div class="msg" id="m"></div></div>');
@@ -49,8 +66,8 @@ D['Graphs-Algorithms-Graph-Traversal-BFS']=function(box){
   const R=10,C=16; let wall,s,e,dist,q,fin,mode='w';
   const w=el('<div class="demo"><h3>BFS en una cuadrícula</h3><div class="row"><button class="btn" id="w">Dibujar muros</button><button class="btn" id="a">Mover inicio</button><button class="btn" id="b">Mover meta</button><button class="btn" id="p">Paso ▶</button><button class="btn" id="g">Ejecutar todo</button><button class="btn" id="r">Reiniciar</button></div><div class="grid" id="g1" style="grid-template-columns:repeat('+C+',1fr);max-width:640px"></div><div class="msg" id="m"></div><p class="note">Haz clic en las celdas para poner muros, o mover inicio/meta según el modo.</p></div>');
   box.appendChild(w);const $=x=>w.querySelector(x);
-  function reset(keep){ if(!keep){wall=Array.from({length:R},()=>Array(C).fill(false));s=[1,1];e=[R-2,C-2];}
-    dist=Array.from({length:R},()=>Array(C).fill(-1));dist[s[0]][s[1]]=0;q=[s];fin=false;$('#m').textContent='';draw();}
+  function reset(keep){ if(!keep){wall=Array.from({length:R},()=>Array.from({length:C},()=>Math.random()<0.24));s=[1,1];e=[R-2,C-2];wall[1][1]=wall[R-2][C-2]=false;}
+    dist=Array.from({length:R},()=>Array(C).fill(-1));dist[s[0]][s[1]]=0;q=[s];fin=false;$('#m').textContent='S = inicio, E = meta, gris = muro. Cada número es la distancia desde S; el BFS visita por capas (azul).';draw();}
   function draw(path){ let h='';for(let i=0;i<R;i++)for(let j=0;j<C;j++){let c='gc',t='';
       if(wall[i][j])c+=' w';else if(path&&path.has(i+','+j))c+=' p';else if(dist[i][j]>=0){c+=' v';t=dist[i][j];}
       if(i===s[0]&&j===s[1]){c='gc s';t='S';} if(i===e[0]&&j===e[1]){c='gc e';t='E';}
@@ -76,12 +93,12 @@ D['Graphs-Algorithms-Graph-Traversal-DSU']=function(box){
   const w=el('<div class="demo"><h3>Union-Find</h3><div class="row"><label>unir <input id="a" type="number" min="0" max="9" value="0" style="width:56px"> y <input id="b" type="number" min="0" max="9" value="1" style="width:56px"></label><button class="btn" id="u">Unir</button><button class="btn" id="r">Reiniciar</button></div><div class="cells" id="c"></div><div class="msg" id="m"></div><p class="note">Cada casilla muestra su padre. Los que tienen el mismo color pertenecen al mismo conjunto (la raíz es su propio padre).</p></div>');
   box.appendChild(w);const $=s=>w.querySelector(s);
   const find=x=>par[x]===x?x:(par[x]=find(par[x]));
-  const col=r=>'hsl('+(r*47%360)+',70%,70%)';
-  function draw(){$('#c').innerHTML=par.map((p,i)=>'<div class="cell" style="background:'+col(find(i))+'55"><small>'+i+'</small><br>→ '+p+'</div>').join('');}
-  function reset(){par=Array.from({length:n},(_,i)=>i);sz=Array(n).fill(1);$('#m').textContent='';draw();}
+  const col=r=>'hsla('+(r*47%360)+',75%,55%,0.45)';  // mismo color = misma raíz = mismo conjunto
+  function draw(){$('#c').innerHTML=par.map((p,i)=>'<div class="cell" style="background:'+col(find(i))+';border-color:'+col(find(i))+'"><small>'+i+'</small><br>→ '+p+'</div>').join('');}
+  function reset(){par=Array.from({length:n},(_,i)=>i);sz=Array(n).fill(1);$('#m').textContent='Cada casilla muestra su nodo y su padre (→). Al inicio cada uno es su propio conjunto.';draw();}
   $('#r').onclick=reset;
   $('#u').onclick=()=>{let a=find(+$('#a').value),b=find(+$('#b').value);if(a===b){$('#m').textContent='Ya estaban en el mismo conjunto.';return;}
-    if(sz[a]<sz[b])[a,b]=[b,a];par[b]=a;sz[a]+=sz[b];$('#m').textContent='Unidos: la raíz es '+a+' (tamaño '+sz[a]+').';draw();};
+    if(sz[a]<sz[b])[a,b]=[b,a];par[b]=a;sz[a]+=sz[b];const k=new Set(par.map((_,i)=>find(i))).size;$('#m').textContent='Unidos: la raíz es '+a+' (tamaño '+sz[a]+'). Quedan '+k+(k===1?' conjunto.':' conjuntos.')+' Las búsquedas comprimen el camino: los nodos quedan apuntando directo a la raíz.';draw();};
   reset();
 };
 })();
@@ -113,7 +130,7 @@ D['DP-Algorithms-EditDistance']=function(box){
     $('#t').innerHTML=h+'</table>'; $('#m').textContent='Distancia = '+dp[n][m];
     $('#t').onmouseover=e=>{const c=e.target.closest('td[data-i]');if(!c)return;const i=+c.dataset.i,j=+c.dataset.j;
       $('#m').textContent=(i&&j)?('dp['+i+']['+j+'] = min(borrar '+(dp[i-1][j]+1)+', insertar '+(dp[i][j-1]+1)+', reemplazar/igual '+(dp[i-1][j-1]+(a[i-1]!==b[j-1]?1:0))+') = '+dp[i][j]):'Caso base.';}; };
-  $('#g').click();
+  $('#m').textContent='Pulsa «Reproducir» para llenar la tabla celda por celda, o «Calcular» para verla completa.';
 };
 
 D['Geometry-ConvexHull']=function(box){
@@ -145,7 +162,7 @@ D['Geometry-ConvexHull']=function(box){
       $('#m').textContent='Los últimos dos puntos de la pila y el punto amarillo giran hacia adentro: se saca el punto rojo.';
     }else{
       st.push(p);i++;
-      $('#m').textContent=st.length<3?'Se agrega el punto a la pila.':'Gira hacia afuera (antihorario): el punto entra a la pila.';
+      $('#m').textContent=st.length<3?'Se agrega el punto a la pila.':'Gira hacia afuera (antihorario en este dibujo): el punto entra a la pila. El código del repositorio recorre al revés y conserva los giros horarios (cw); es la misma idea reflejada.';
     }
     draw();return true;
   }
@@ -177,36 +194,36 @@ D['Geometry-ConvexHull']=function(box){
   $('#n').click();
 };
 
-D['Graphs-Algorithms-Graph-Traversal-Djikstra']=function(box){
+D['Graphs-Algorithms-Graph-Traversal-Dijkstra']=function(box){
   const V=[[60,60],[200,40],[340,70],[80,200],[220,170],[360,210],[500,130]];
   const E=[[0,1,4],[0,3,2],[1,2,5],[1,4,10],[3,4,3],[4,2,2],[2,6,6],[4,5,4],[5,6,3],[3,5,12]];
-  const w=el('<div class="demo"><h3>Dijkstra paso a paso</h3><div class="row"><button class="btn" id="p">Paso ▶</button><button class="btn" id="r">Reiniciar</button></div><svg id="v" viewBox="0 0 560 250" width="100%" style="max-width:560px"></svg><div class="msg" id="m"></div><p class="note">Origen = nodo 0. Verde = distancia ya definitiva; amarillo = nodo que se procesa.</p></div>');
+  const w=el('<div class="demo"><h3>Dijkstra paso a paso</h3><div class="row"><button class="btn" id="p">Paso ▶</button><button class="btn" id="r">Reiniciar</button></div><svg id="v" viewBox="0 0 560 250" width="100%" style="max-width:560px"></svg><div class="msg" id="m"></div><p class="note">Origen = nodo 1. Verde = distancia ya definitiva; amarillo = nodo que se procesa.</p></div>');
   box.appendChild(w);const $=x=>w.querySelector(x);let dist,done,cur;
   function draw(){let s='';for(const [a,b,c] of E){const [x1,y1]=V[a],[x2,y2]=V[b];s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#999"/><text x="'+(x1+x2)/2+'" y="'+((y1+y2)/2-4)+'" font-size="12" fill="currentColor">'+c+'</text>';}
-    V.forEach(([x,y],i)=>{s+='<circle cx="'+x+'" cy="'+y+'" r="17" fill="'+(i===cur?'#d4a72c':done[i]?'#2da44e':'#eee')+'" stroke="#555"/><text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-size="12" fill="#000">'+i+'</text><text x="'+x+'" y="'+(y-24)+'" text-anchor="middle" font-size="12" fill="currentColor">'+(dist[i]===Infinity?'∞':dist[i])+'</text>';});
+    V.forEach(([x,y],i)=>{s+='<circle cx="'+x+'" cy="'+y+'" r="17" fill="'+(i===cur?'#d4a72c':done[i]?'#2da44e':'#eee')+'" stroke="#555"/><text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-size="12" fill="#000">'+(i+1)+'</text><text x="'+x+'" y="'+(y-24)+'" text-anchor="middle" font-size="12" fill="currentColor">'+(dist[i]===Infinity?'∞':dist[i])+'</text>';});
     $('#v').innerHTML=s;}
   function reset(){dist=V.map(()=>Infinity);dist[0]=0;done=V.map(()=>false);cur=-1;$('#m').textContent='';draw();}
   $('#r').onclick=reset;
   $('#p').onclick=()=>{let u=-1;for(let i=0;i<V.length;i++)if(!done[i]&&dist[i]<Infinity&&(u<0||dist[i]<dist[u]))u=i;
-    if(u<0){cur=-1;$('#m').textContent='Listo: distancias mínimas desde 0.';draw();return;}
-    done[u]=true;cur=u;const log=[];for(const [a,b,c] of E){const v=a===u?b:b===u?a:-1;if(v>=0&&!done[v]&&dist[u]+c<dist[v]){dist[v]=dist[u]+c;log.push(v+' → '+dist[v]);}}
-    $('#m').textContent='Se procesa el nodo '+u+' (dist '+dist[u]+'). '+(log.length?'Mejora: '+log.join(', '):'Sin mejoras.');draw();};
+    if(u<0){cur=-1;$('#m').textContent='Listo: distancias mínimas desde el nodo 1 (verde = definitiva).';draw();return;}
+    done[u]=true;cur=u;const log=[];for(const [a,b,c] of E){const v=a===u?b:b===u?a:-1;if(v>=0&&!done[v]&&dist[u]+c<dist[v]){dist[v]=dist[u]+c;log.push((v+1)+' → '+dist[v]);}}
+    $('#m').textContent='Se saca de la cola de prioridad el nodo '+(u+1)+', el de menor distancia tentativa ('+dist[u]+'): ya es definitiva. '+(log.length?'Mejora: '+log.join(', '):'Sin mejoras.');draw();};
   reset();
 };
 
 D['Graphs-Algorithms-MST-Kruskal']=function(box){
   const V=[[60,60],[200,40],[340,70],[80,200],[220,170],[360,210]];
   const E=[[0,1,4],[0,3,2],[1,2,5],[1,4,7],[3,4,3],[4,2,2],[4,5,4],[2,5,6]].sort((a,b)=>a[2]-b[2]);
-  const w=el('<div class="demo"><h3>Kruskal paso a paso</h3><div class="row"><button class="btn" id="p">Siguiente arista ▶</button><button class="btn" id="r">Reiniciar</button></div><svg id="v" viewBox="0 0 420 250" width="100%" style="max-width:420px"></svg><div class="msg" id="m"></div></div>');
+  const w=el('<div class="demo"><h3>Kruskal paso a paso</h3><div class="row"><button class="btn" id="p">Paso ▶</button><button class="btn" id="r">Reiniciar</button></div><svg id="v" viewBox="0 0 420 250" width="100%" style="max-width:420px"></svg><div class="msg" id="m"></div></div>');
   box.appendChild(w);const $=x=>w.querySelector(x);let k,par,st,total;
   const f=x=>par[x]===x?x:(par[x]=f(par[x]));
   function draw(){let s='';E.forEach(([a,b,c],i)=>{const [x1,y1]=V[a],[x2,y2]=V[b];const t=st[i];s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+(t===1?'#2da44e':t===2?'#cf222e':'#999')+'" stroke-width="'+(t===1?4:1.5)+'" stroke-dasharray="'+(t===2?'4':'')+'"/><text x="'+(x1+x2)/2+'" y="'+((y1+y2)/2-5)+'" font-size="12" fill="currentColor">'+c+'</text>';});
-    V.forEach(([x,y],i)=>s+='<circle cx="'+x+'" cy="'+y+'" r="14" fill="#eee" stroke="#555"/><text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-size="12" fill="#000">'+i+'</text>');$('#v').innerHTML=s;}
-  function reset(){k=0;par=V.map((_,i)=>i);st=E.map(()=>0);total=0;$('#m').textContent='Aristas ordenadas por peso.';draw();}
+    V.forEach(([x,y],i)=>s+='<circle cx="'+x+'" cy="'+y+'" r="14" fill="#eee" stroke="#555"/><text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-size="12" fill="#000">'+(i+1)+'</text>');$('#v').innerHTML=s;}
+  function reset(){k=0;par=V.map((_,i)=>i);st=E.map(()=>0);total=0;$('#m').textContent='Las aristas se revisan de la más barata a la más cara.';draw();}
   $('#r').onclick=reset;
   $('#p').onclick=()=>{if(k>=E.length){$('#m').textContent='Listo: costo total = '+total+'.';return;}const [a,b,c]=E[k];
-    if(f(a)===f(b)){st[k]=2;$('#m').textContent='Arista '+a+'-'+b+' ('+c+') forma ciclo: se descarta.';}
-    else{par[f(a)]=f(b);st[k]=1;total+=c;$('#m').textContent='Arista '+a+'-'+b+' ('+c+') une dos componentes: se usa. Total = '+total+'.';}k++;draw();};
+    if(f(a)===f(b)){st[k]=2;$('#m').textContent='Arista '+(a+1)+'-'+(b+1)+' ('+c+'): sus extremos ya están en el mismo conjunto del DSU, formaría un ciclo. Se descarta (rojo punteado).';}
+    else{par[f(a)]=f(b);st[k]=1;total+=c;$('#m').textContent='Arista '+(a+1)+'-'+(b+1)+' ('+c+'): une dos conjuntos distintos del DSU, se usa (verde). Total = '+total+'.';}k++;draw();};
   reset();
 };
 })();

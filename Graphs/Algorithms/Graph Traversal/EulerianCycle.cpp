@@ -47,15 +47,15 @@ int main(){
     vector<ll> cycle;
     vector<bool> vis(n, false);
     // primero se verifica que todos los nodos con aristas sean alcanzables desde 0
-    stack<ll> ss; ss.push(0);
+    // se marca al apilar: así cada nodo entra una sola vez y el recorrido es O(n + m)
+    stack<ll> ss; ss.push(0); vis[0] = true;
 
     while (!ss.empty())
     {
         ll v = ss.top(); ss.pop();
         for(auto [u, i]: ady[v]){
-            if(!vis[u]) ss.push(u);
+            if(!vis[u]) { vis[u] = true; ss.push(u); }
         }
-        vis[v] = true;
     }
 
     // condición de Euler: todos los grados pares y un solo componente conexo

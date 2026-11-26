@@ -22,7 +22,7 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(1), memoria O(1)
  */
 
-// área del triángulo x + y ≤ s, x, y ≥ 0 que queda a la derecha de x = c (si c ≥ s es 0)
+// área del triángulo {x + y ≤ c, x ≥ 0, y ≥ 0} (0 si c < 0)
 double tri(double c) { return c >= 0 ? c * c / 2 : 0; }
 
 int main() {

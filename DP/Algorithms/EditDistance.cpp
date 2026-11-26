@@ -30,7 +30,6 @@ int main() {
     int n = a.size(), m = b.size();
 
     // dp[i][j] = distancia entre a[0..i) y b[0..j)
-    // dp[i][j] = distancia entre a[0..i) y b[0..j)
     vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
     // convertir un prefijo en vacío cuesta borrar todo (y al revés insertar)
     for (int i = 0; i <= n; i++) dp[i][0] = i;

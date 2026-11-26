@@ -44,10 +44,11 @@ struct MinCostFlow {
     // try to send exactly K flow from s to t; returns {flow_sent, total_cost}
     pair<ll,ll> min_cost_flow_k(ll s, ll t, ll K){
         ll flow = 0, cost = 0;
-        vector<ll> potential(n, 0), dist(n);
+        vector<ll> potential(n, INF), dist(n);
         vector<ll> parent_vertex(n), parent_edge(n);
 
-        // init potentials with Bellman-Ford if negative edges exist (safe)
+        // potenciales iniciales = distancias desde s con Bellman-Ford (admite costos negativos)
+        potential[s] = 0;
         for(int it = 0; it < n; ++it){
             bool any = false;
             for(int v = 0; v < n; ++v){
@@ -61,6 +62,8 @@ struct MinCostFlow {
             }
             if(!any) break;
         }
+        // los nodos que s no alcanza nunca se usan; su potencial no importa
+        for(auto &p : potential) if(p == INF) p = 0;
 
         // cada vuelta envía flujo por el camino más barato del grafo residual (Dijkstra con potenciales)
         while(flow < K){
@@ -106,9 +109,9 @@ struct MinCostFlow {
                 v = parent_vertex[v];
             }
 
-            // potential[t] es el costo real del camino más corto
+            // potential[t] − potential[s] es el costo real del camino más corto (potential[s] sigue en 0)
             flow += add;
-            cost += add * potential[t]; // potential[t] equals actual shortest path cost
+            cost += add * (potential[t] - potential[s]);
         }
 
         return {flow, cost};

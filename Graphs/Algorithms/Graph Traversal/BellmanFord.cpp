@@ -32,7 +32,6 @@ int main() {
     for (auto &e : edges) cin >> e[0] >> e[1] >> e[2];
 
     // dist = 0 para todos: equivale a un nodo fuente virtual conectado a todos
-    // dist = 0 para todos: equivale a un nodo fuente virtual conectado a todos
     vector<ll> dist(n + 1, 0);
     vector<int> parent(n + 1, 0);
     int last = -1;
@@ -53,7 +52,6 @@ int main() {
         cout << "NO\n";
         return 0;
     }
-    // retroceder n veces para asegurar estar dentro del ciclo
     // retroceder n veces para asegurar estar dentro del ciclo
     for (int i = 0; i < n; i++) last = parent[last];
     // se recorre el ciclo siguiendo parent[] hasta volver a last

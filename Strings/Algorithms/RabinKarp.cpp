@@ -23,10 +23,12 @@ const ll INF = numeric_limits<ll>::max();
  * Complejidad: tiempo O(|s| + |t|) esperado, memoria O(|s|)
  */
 
-// dos módulos y una base para reducir colisiones
+// dos módulos primos y bases ALEATORIAS: con una base fija alguien puede construir un caso con
+// colisiones a propósito (anti-hash); con base al azar eso es imposible de preparar de antemano
 ll P1 = 1000000007;
 ll P2 = 998244353;
-ll base = 60;
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+ll base1 = 256 + rng() % (P1 - 512), base2 = 256 + rng() % (P2 - 512);
 
 // Pot[i] = base^i mod P
 vector<ll> Pot1(1000003, 1);
@@ -71,8 +73,8 @@ int main() {
     fastio;
     // potencias precalculadas
     for (int i = 1; i < (int)Pot1.size(); i++) {
-        Pot1[i] = (base * Pot1[i - 1]) % P1;
-        Pot2[i] = (base * Pot2[i - 1]) % P2;
+        Pot1[i] = (base1 * Pot1[i - 1]) % P1;
+        Pot2[i] = (base2 * Pot2[i - 1]) % P2;
     }
 
     string s1, s2;
@@ -82,7 +84,6 @@ int main() {
         return 0;
     }
 
-    // text[i] = hash del prefijo s1[0..i]
     // text[i] = hash del prefijo s1[0..i]
     vector<Hash> text;
     text.push_back(Hash(s1.front()));

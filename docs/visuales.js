@@ -39,7 +39,8 @@ function V(id, title, note, gen, render) {
 // ---------- dibujos ----------
 const cellsRow = (t, v, c) => '<div class="vrow">' + (t !== undefined ? '<span class="vlab">' + t + '</span>' : '') + '<div class="cells" style="margin:3px 0">' + v.map((x, i) => '<div class="cell ' + ((c && c[i]) || '') + '">' + (x === null || x === undefined ? '·' : fmt(x)) + '</div>').join('') + '</div></div>';
 const rows = rs => rs.map(r => cellsRow(r.t, r.v, r.c)).join('');
-const table = (g, cls, rl, cl) => '<div style="overflow:auto"><table style="border-collapse:separate;border-spacing:3px">' + (cl ? '<tr><td></td>' + cl.map(x => '<td class="cell" style="font-weight:700">' + x + '</td>').join('') + '</tr>' : '') + g.map((row, i) => '<tr>' + (rl ? '<td class="cell" style="font-weight:700">' + rl[i] + '</td>' : '') + row.map((x, j) => '<td class="cell ' + ((cls && cls[i] && cls[i][j]) || '') + '">' + (x === null || x === undefined ? '·' : fmt(x)) + '</td>').join('') + '</tr>').join('') + '</table></div>';
+const table = (g, cls, rl, cl) => '<div style="overflow:auto"><table style="border-collapse:separate;border-spacing:3px">' + (cl ? '<tr>' + (rl ? '<td></td>' : '') + cl.map(x => '<td class="cell" style="font-weight:700">' + x + '</td>').join('') + '</tr>' : '') + g.map((row, i) => '<tr>' + (rl ? '<td class="cell" style="font-weight:700">' + rl[i] + '</td>' : '') + row.map((x, j) => '<td class="cell ' + ((cls && cls[i] && cls[i][j]) || '') + '">' + (x === null || x === undefined ? '·' : fmt(x)) + '</td>').join('') + '</tr>').join('') + '</table></div>';
+const pl = (k, uno, varios) => k + ' ' + (k === 1 ? uno : varios);
 const COL = { g: '#2da44e', a: '#d4a72c', b: '#1f6feb', r: '#cf222e', p: '#8250df', o: '#fb8f44', k: '#57606a' };
 function graph(G) {
   const W = G.W || 540, rad = 15;
@@ -52,13 +53,13 @@ function graph(G) {
     const x1 = A.x + dx / L * rad, y1 = A.y + dy / L * rad, x2 = B.x - dx / L * rad, y2 = B.y - dy / L * rad;
     const col = COL[e.c] || '#999', mx = (x1 + x2) / 2 - dy / L * off, my = (y1 + y2) / 2 + dx / L * off;
     s += '<path d="M' + x1 + ' ' + y1 + ' Q' + mx + ' ' + my + ' ' + x2 + ' ' + y2 + '" fill="none" stroke="' + col + '" stroke-width="' + (e.c && e.c !== 'x' ? 3.5 : 1.5) + '"' + (e.dash ? ' stroke-dasharray="4 4"' : '') + (e.d ? ' marker-end="url(#ar)"' : '') + ' opacity="' + (e.c === 'x' ? 0.25 : 1) + '"/>';
-    if (e.l !== undefined && e.l !== '') s += '<text x="' + (mx + 9 * dy / L) + '" y="' + (my - 9 * dx / L + 4) + '" font-size="12" text-anchor="middle" fill="currentColor">' + e.l + '</text>';
+    if (e.l !== undefined && e.l !== '') s += '<text x="' + (mx + 9 * dy / L) + '" y="' + (my - 9 * dx / L + 4) + '" font-size="12" text-anchor="middle" fill="currentColor" stroke="var(--card)" stroke-width="4" paint-order="stroke">' + e.l + '</text>';
   }
   for (const v of G.nodes) {
     if (v.hide) continue;
     s += '<circle cx="' + v.x + '" cy="' + v.y + '" r="' + rad + '" fill="' + (COL[v.c] || 'var(--card)') + '" stroke="' + (v.ring ? '#d4a72c' : '#666') + '" stroke-width="' + (v.ring ? 4 : 1.5) + '"/>';
     s += '<text x="' + v.x + '" y="' + (v.y + 4) + '" text-anchor="middle" font-size="12" font-weight="600" fill="' + (v.c ? '#fff' : 'currentColor') + '">' + v.l + '</text>';
-    if (v.s !== undefined && v.s !== '') s += '<text x="' + v.x + '" y="' + (v.y - 21) + '" text-anchor="middle" font-size="11" fill="currentColor">' + v.s + '</text>';
+    if (v.s !== undefined && v.s !== '') s += '<text x="' + v.x + '" y="' + (v.y - 21) + '" text-anchor="middle" font-size="11" fill="currentColor" stroke="var(--card)" stroke-width="4" paint-order="stroke">' + v.s + '</text>';
   }
   return s + '</svg>';
 }
@@ -124,7 +125,7 @@ V('DP-Algorithms-Knapsack', 'Mochila 0/1 paso a paso', 'Cada libro se revisa una
     push('Libro ' + (i + 1) + ', presupuesto ' + w + ': no comprar = ' + old + ', comprar = dp[' + (w - price[i]) + '] + ' + pages[i] + ' = ' + take + ' → ' + dp[w], { dp, cur: w, from: w - price[i], item: i, price, pages });
   }
   push('Máximo de páginas con presupuesto ' + x + ': ' + dp[x], { dp, cur: x, from: -1, item: -1, price, pages });
-}, s => rows([{ t: 'libro', v: s.price.map((p, i) => 'p' + p + ' · ' + s.pages[i] + 'pág'), c: s.price.map((_, i) => i === s.item ? 'a' : '') }, { t: 'presupuesto', v: s.dp.map((_, i) => i) }, { t: 'páginas', v: s.dp, c: s.dp.map((v, i) => i === s.cur ? 'a' : i === s.from ? 'b' : v ? 'g' : '') }]));
+}, s => rows([{ t: 'libro', v: s.price.map((p, i) => '$' + p + ' · ' + s.pages[i] + ' pág'), c: s.price.map((_, i) => i === s.item ? 'a' : '') }, { t: 'presupuesto', v: s.dp.map((_, i) => i) }, { t: 'páginas', v: s.dp, c: s.dp.map((v, i) => i === s.cur ? 'a' : i === s.from ? 'b' : v ? 'g' : '') }]));
 
 V('DP-Algorithms-Kadane2D', 'Submatriz de suma máxima', 'Se fijan las filas de arriba y abajo, se suman las columnas y se aplica Kadane a esa fila.', push => {
   const r = 4, c = 5, M = Array.from({ length: r }, () => Array.from({ length: c }, () => R(-6, 6)));
@@ -159,26 +160,26 @@ V('DP-Algorithms-LIS-II', 'LIS con búsqueda binaria', 'R guarda el menor final 
 V('DP-Algorithms-LCS', 'Tabla de la LCS', 'Verde = las letras coinciden (viene de la diagonal); amarillo = casilla actual.', push => {
   const al = 'ABCD', a = Array.from({ length: 5 }, () => pick(al)), b = Array.from({ length: 6 }, () => pick(al));
   const T = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0)), cls = T.map(r => r.map(() => ''));
-  push('Se compara ' + a.join('') + ' con ' + b.join('') + '.', { T, cls });
+  push('Se compara ' + a.join('') + ' (filas) con ' + b.join('') + ' (columnas).', { T, cls, a, b });
   for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) {
     const eq = a[i - 1] === b[j - 1]; T[i][j] = eq ? T[i - 1][j - 1] + 1 : Math.max(T[i - 1][j], T[i][j - 1]);
     const c2 = cls.map(r => r.slice()); c2[i][j] = 'a';
-    push((eq ? a[i - 1] + ' = ' + b[j - 1] + ': diagonal + 1 = ' : a[i - 1] + ' ≠ ' + b[j - 1] + ': máximo de arriba e izquierda = ') + T[i][j], { T, cls: c2 }); if (eq) cls[i][j] = 'g';
+    push((eq ? a[i - 1] + ' = ' + b[j - 1] + ': diagonal + 1 = ' : a[i - 1] + ' ≠ ' + b[j - 1] + ': máximo de arriba e izquierda = ') + T[i][j], { T, cls: c2, a, b }); if (eq) cls[i][j] = 'g';
   }
   let i = a.length, j = b.length; const res = [];
   while (i && j) { if (a[i - 1] === b[j - 1]) { res.push(a[i - 1]); cls[i][j] = 'p'; i--; j--; } else if (T[i - 1][j] >= T[i][j - 1]) i--; else j--; }
-  push('Recorriendo hacia atrás (morado) sale la LCS: ' + (res.reverse().join('') || '(vacía)') + ', de largo ' + T[a.length][b.length] + '.', { T, cls });
-}, s => table(s.T, s.cls));
+  push('Recorriendo hacia atrás (morado) sale la LCS: ' + (res.reverse().join('') || '(vacía)') + ', de largo ' + T[a.length][b.length] + '.', { T, cls, a, b });
+}, s => table(s.T, s.cls, ['∅'].concat(s.a), ['∅'].concat(s.b)));
 
 V('DP-Algorithms-BitmaskDP', 'DP sobre subconjuntos (ascensor)', 'Cada fila es un grupo: los bits encendidos son las personas que ya subieron.', push => {
-  const n = 4, x = R(8, 12), w = Array.from({ length: n }, () => R(2, 7)), full = 1 << n;
+  const n = 4, x = R(10, 14), w = Array.from({ length: n }, () => R(2, 7)), full = 1 << n;
   const ri = Array(full).fill(null), la = Array(full).fill(null); ri[0] = 1; la[0] = 0;
   const st = cur => ({ w, x, ri, la, cur, n });
-  push('Pesos ' + w.join(', ') + ', capacidad ' + x + '. El grupo vacío: 1 viaje con 0 kg.', st(0));
+  push('Pesos ' + w.join(', ') + ', capacidad ' + x + '. El grupo vacío: 1 viaje (todavía vacío) con 0 kg.', st(0));
   for (let m = 1; m < full; m++) { let br = 99, bl = 0;
     for (let i = 0; i < n; i++) if (m >> i & 1) { let r = ri[m ^ (1 << i)], l = la[m ^ (1 << i)]; if (l + w[i] <= x) l += w[i]; else { r++; l = w[i]; } if (r < br || (r === br && l < bl)) { br = r; bl = l; } }
-    ri[m] = br; la[m] = bl; push('Grupo ' + m.toString(2).padStart(n, '0') + ': ' + br + ' viajes, ' + bl + ' kg en el último.', st(m)); }
-  push('Todos juntos necesitan ' + ri[full - 1] + ' viajes.', st(full - 1));
+    ri[m] = br; la[m] = bl; push('Grupo ' + m.toString(2).padStart(n, '0') + ' (se prueba cada persona del grupo como la última en subir): ' + pl(br, 'viaje', 'viajes') + ', ' + bl + ' kg en el último.', st(m)); }
+  push('Todos juntos necesitan ' + pl(ri[full - 1], 'viaje', 'viajes') + '.', st(full - 1));
 }, s => { const ms = [...Array(1 << s.n).keys()]; return table(ms.map(m => [m.toString(2).padStart(s.n, '0'), s.ri[m], s.la[m]]), ms.map(m => m === s.cur ? ['a', 'a', 'a'] : s.ri[m] !== null ? ['', 'g', 'g'] : ['', '', '']), null, ['grupo', 'viajes', 'último kg']); });
 
 V('DP-Classic-Problems-Campeonato', 'Probabilidad de ganar la serie', 'P[i][j] = probabilidad de que A gane si le faltan i victorias y a B le faltan j.', push => {
@@ -324,7 +325,7 @@ V('Data-Structures-Algorithms-SparseTable', 'Sparse Table: mínimos por potencia
   const n = 8, a = Array.from({ length: n }, () => R(1, 20)), st = [a.slice()];
   push('Nivel 0: el propio arreglo.', { st, hl: [], q: null });
   for (let j = 1; (1 << j) <= n; j++) { st.push([]); for (let i = 0; i + (1 << j) <= n; i++) st[j].push(Math.min(st[j - 1][i], st[j - 1][i + (1 << (j - 1))])); push('Nivel ' + j + ': cada casilla es el mínimo de dos casillas del nivel ' + (j - 1) + ' (tramos de largo ' + (1 << j) + ').', { st, hl: [j], q: null }); }
-  const l = R(0, 3), r = R(l + 2, n - 1), k = 31 - Math.clz32(r - l + 1);
+  const l = R(0, 2), r = l + pick([2, 4, 5]), k = 31 - Math.clz32(r - l + 1);  // largo 3, 5 o 6: los dos bloques sí se solapan
   push('Consulta [' + (l + 1) + ', ' + (r + 1) + ']: dos tramos de largo ' + (1 << k) + ' que se solapan. Mínimo = ' + Math.min(st[k][l], st[k][r - (1 << k) + 1]), { st, hl: [], q: [k, l, r - (1 << k) + 1, l, r] });
 }, s => { const n = s.st[0].length; return s.st.map((row, j) => cellsRow('nivel ' + j, row.concat(Array(n - row.length).fill(null)), row.map((_, i) => s.q ? (j === 0 && i >= s.q[3] && i <= s.q[4] ? 'b' : j === s.q[0] && (i === s.q[1] || i === s.q[2]) ? 'g' : '') : s.hl.includes(j) ? 'a' : ''))).join(''); });
 
@@ -412,10 +413,10 @@ V('Data-Structures-Algorithms-MoAlgorithm', 'Algoritmo de Mo', 'Las consultas se
   const n = 12, a = Array.from({ length: n }, () => R(1, 5)), qs = Array.from({ length: 6 }, (_, i) => { const l = R(0, n - 3); return { l, r: R(l + 1, n - 1), i }; });
   const B = 3, ord = qs.slice().sort((x, y) => Math.floor(x.l / B) - Math.floor(y.l / B) || x.r - y.r), ans = Array(qs.length).fill(null);
   push('Bloques de tamaño ' + B + '. Orden de respuesta: ' + ord.map(q => '[' + (q.l + 1) + ',' + (q.r + 1) + ']').join(' '), { a, L: 0, R: -1, d: 0, ans, cur: -1, qs });
-  const cnt = {}; let L = 0, Rr = -1, d = 0, moves = 0;
+  const cnt = Array(6).fill(0); let L = 0, Rr = -1, d = 0, moves = 0;  // cnt[v] = veces que v está en la ventana
   for (const q of ord) { while (Rr < q.r) { Rr++; if (!cnt[a[Rr]]++) d++; moves++; } while (L > q.l) { L--; if (!cnt[a[L]]++) d++; moves++; } while (Rr > q.r) { if (!--cnt[a[Rr]]) d--; Rr--; moves++; } while (L < q.l) { if (!--cnt[a[L]]) d--; L++; moves++; }
-    ans[q.i] = d; push('Consulta [' + (q.l + 1) + ', ' + (q.r + 1) + ']: ' + d + ' valores distintos. Movimientos acumulados: ' + moves, { a, L, R: Rr, d, ans: ans.slice(), cur: q.i, qs }); }
-}, s => rows([{ t: 'arreglo', v: s.a, c: s.a.map((_, j) => j >= s.L && j <= s.R ? 'b' : '') }, { t: 'consulta', v: s.qs.map(q => (q.l + 1) + '–' + (q.r + 1)), c: s.qs.map(q => q.i === s.cur ? 'a' : '') }, { t: 'respuesta', v: s.ans, c: s.ans.map(v => v === null ? '' : 'g') }]));
+    ans[q.i] = d; push('Consulta [' + (q.l + 1) + ', ' + (q.r + 1) + '] (bloque ' + (Math.floor(q.l / B) + 1) + '): la ventana se movió hasta ahí; ' + d + ' valores distintos. Movimientos acumulados: ' + moves + ' (sin reordenar podrían ser muchos más).', { a, L, R: Rr, d, ans: ans.slice(), cur: q.i, qs }); }
+}, s => rows([{ t: 'bloque', v: s.a.map((_, j) => j % 3 === 0 ? 'B' + (j / 3 + 1) : '') }, { t: 'arreglo', v: s.a, c: s.a.map((_, j) => j >= s.L && j <= s.R ? 'b' : '') }, { t: 'punteros', v: s.a.map((_, j) => (j === s.L ? 'L' : '') + (j === s.R ? 'R' : '')), c: s.a.map((_, j) => j === s.L || j === s.R ? 'a' : '') }, { t: 'consulta', v: s.qs.map(q => (q.l + 1) + '–' + (q.r + 1)), c: s.qs.map(q => q.i === s.cur ? 'a' : '') }, { t: 'respuesta', v: s.ans, c: s.ans.map(v => v === null ? '' : 'g') }]));
 
 V('Data-Structures-Algorithms-SweepLine', 'Barrido de eventos', 'Cada cliente aporta +1 al llegar y −1 al salir; el contador más alto es la respuesta.', push => {
   const n = 5, cl = Array.from({ length: n }, () => { const a = R(1, 14); return [a, a + R(1, 6)]; });
@@ -534,7 +535,8 @@ V('Geometry-Shoelace', 'Área con la fórmula del Shoelace', 'Cada arista aporta
   s.P.forEach(p => g += dot(p, '#1f6feb')); g += dot([0, 0], '#666', 3, 'O'); return svgBox(g, G0.W, G0.H); });
 
 V('Geometry-PointInPolygon', 'Punto en polígono con un rayo', 'Se lanza un rayo hacia la derecha y se cuentan los cruces con el borde.', push => {
-  const P = randPoly(7), p = [R(-3, 3) + 0.5, R(-3, 3) + 0.5]; let cnt = 0; const hits = [];
+  const P = randPoly(7); let p = [R(-3, 3) + 0.5, R(-3, 3) + 0.5]; let cnt = 0; const hits = [];
+  if (Math.random() < 0.3) { const a = P[0], b = P[1]; p = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; push('El punto está justo sobre un lado: el código revisa eso primero y responde BOUNDARY sin contar cruces.', { P, p, i: 0, hits: [], cnt: 0 }); return; }
   push('¿El punto amarillo está dentro?', { P, p, i: -1, hits: [], cnt });
   for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; let hit = false;
     if ((a[1] > p[1]) !== (b[1] > p[1])) { const x = a[0] + (p[1] - a[1]) * (b[0] - a[0]) / (b[1] - a[1]); if (x > p[0]) { hit = true; cnt++; hits.push([x, p[1]]); } }
@@ -571,7 +573,7 @@ V('Geometry-PolygonLatticePoints', 'Teorema de Pick', 'Puntos del borde (naranja
   s.ipts.forEach(p => g += dot(p, '#2da44e', 4)); s.bpts.forEach(p => g += dot(p, '#fb8f44', 5)); return svgBox(g, G0.W, G0.H); });
 
 V('Geometry-ClosestPair', 'Par de puntos más cercano (barrido)', 'La franja azul contiene los puntos a menos de d en x; solo esos se comparan.', push => {
-  const n = 12, P = Array.from({ length: n }, () => [R(-11, 11), R(-6, 6)]).sort((a, b) => a[0] - b[0]); let best = Infinity, bp = null, left = 0;
+  const n = 12, seenP = new Set(), P = []; while (P.length < n) { const q = [R(-11, 11), R(-6, 6)]; if (!seenP.has(q + '')) { seenP.add(q + ''); P.push(q); } } P.sort((a, b) => a[0] - b[0]); let best = Infinity, bp = null, left = 0;
   push('Puntos ordenados por x.', { P, i: -1, left: 0, best, bp: null, cmp: [] });
   for (let i = 0; i < n; i++) { const d = Math.sqrt(best); while (left < i && P[i][0] - P[left][0] >= d) left++;
     const cmp = []; for (let j = left; j < i; j++) if (Math.abs(P[j][1] - P[i][1]) < d) { cmp.push(j); const dd = (P[i][0] - P[j][0]) ** 2 + (P[i][1] - P[j][1]) ** 2; if (dd < best) { best = dd; bp = [i, j]; } }
@@ -604,8 +606,8 @@ V('Graphs-Algorithms-Graph-Traversal-BellmanFord', 'Bellman-Ford por rondas', 'E
   s.ns = d.map(fmt); s.nc[0] = 'g'; push('Distancias iniciales: 0 en el nodo 1 y ∞ en el resto.', s);
   for (let r = 1; r < n; r++) { let ch = false; s.ec = E.map(() => '');
     E.forEach((e, k) => { if (d[e.a] + e.w < d[e.b]) { d[e.b] = d[e.a] + e.w; ch = true; s.ec[k] = 'g'; } });
-    s.ns = d.map(fmt); s.nc = d.map(x => x < Infinity ? 'g' : ''); push('Ronda ' + r + ': ' + (ch ? 'las aristas verdes mejoraron alguna distancia.' : 'nada cambió, ya terminó.'), s); if (!ch) break; }
-  const neg = E.some(e => d[e.a] + e.w < d[e.b]); push(neg ? 'Una ronda más todavía mejora algo: hay un ciclo negativo.' : 'Una ronda extra no mejora nada: no hay ciclo negativo alcanzable.', s);
+    s.ns = d.map(fmt); s.nc = d.map(x => x < Infinity ? 'g' : ''); push('Ronda ' + r + ': ' + (ch ? 'las aristas verdes mejoraron alguna distancia.' : 'ninguna distancia mejoró, así que ya son definitivas y se puede parar antes.'), s); if (!ch) break; }
+  const neg = E.some(e => d[e.a] + e.w < d[e.b]); push(neg ? 'Comprobación: una ronda más todavía mejora algo, así que hay un ciclo negativo alcanzable desde 1.' : 'Comprobación final: relajar otra vez no mejora nada, así que no hay ciclo negativo alcanzable desde 1.', s);
 }, GR);
 
 V('Graphs-Algorithms-Graph-Traversal-FloydWarshall', 'Floyd-Warshall', 'En cada paso se permite pasar por el nodo k (amarillo); verde = distancias que mejoraron.', push => {
@@ -646,7 +648,9 @@ V('Graphs-Algorithms-Graph-Traversal-Tarjan', 'Tarjan: componentes fuertemente c
 }, GR);
 
 V('Graphs-Algorithms-Graph-Traversal-Kosaraju', 'Kosaraju: dos recorridos', 'Primera pasada: orden de salida. Segunda: sobre el grafo invertido, cada recorrido es una componente.', push => {
-  const n = 7, xy = circleLayout(n), E = randGraph(n, 5, { dir: true }); E.forEach(e => e.w = undefined);
+  const n = 7, xy = circleLayout(n), E = randGraph(n, 3, { dir: true }); E.forEach(e => e.w = undefined);
+  // se agrega un ciclo para que haya al menos una componente grande
+  const cyc = shuffle([...Array(n).keys()]).slice(0, R(3, 4)); cyc.forEach((v, i) => { const u = cyc[(i + 1) % cyc.length]; if (!E.some(e => e.a === v && e.b === u)) E.push({ a: v, b: u }); });
   const s = GS(xy, E, true), G = adjOf(n, E, true), seen = Array(n).fill(false), order = [];
   push('Grafo dirigido original.', s);
   for (let r = 0; r < n; r++) { if (seen[r]) continue; const call = [[r, 0]]; seen[r] = true;
@@ -655,11 +659,14 @@ V('Graphs-Algorithms-Graph-Traversal-Kosaraju', 'Kosaraju: dos recorridos', 'Pri
   const GT = adjOf(n, RE, true), comp = Array(n).fill(-1); let c = 0;
   for (const v of order.reverse()) { if (comp[v] >= 0) continue; const col = SCC_COLORS[c % 6], st = [v]; comp[v] = c; const mem = [];
     while (st.length) { const u = st.pop(); mem.push(u + 1); s2.nc[u] = col; for (const [w] of GT[u]) if (comp[w] < 0) { comp[w] = c; st.push(w); } }
-    c++; push('Desde ' + (v + 1) + ' (el que salió más tarde): componente {' + mem.join(', ') + '}.', s2); }
+    c++; push('Desde ' + (v + 1) + ' (el que salió más tarde entre los que aún no tienen componente): componente {' + mem.join(', ') + '}.', s2); }
+  push('Hay ' + pl(c, 'componente fuertemente conexa', 'componentes fuertemente conexas') + ' (cada color es una).', s2);
 }, GR);
 
 V('Graphs-Algorithms-Graph-Traversal-Bipartite', 'Colorear con dos colores', 'Cada vecino recibe el color contrario; dos vecinos iguales = ciclo impar.', push => {
-  const n = 8, xy = circleLayout(n), E = randGraph(n, R(1, 3)); E.forEach(e => e.w = undefined);
+  const n = 8, xy = circleLayout(n); let E;
+  if (Math.random() < 0.6) { const side = [...Array(n).keys()].map(() => R(0, 1)); E = []; for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) if (side[a] !== side[b] && Math.random() < 0.35) E.push({ a, b }); }
+  else { E = randGraph(n, R(1, 3)); E.forEach(e => e.w = undefined); }
   const s = GS(xy, E), G = adjOf(n, E), col = Array(n).fill(0);
   push('¿Se puede dividir en dos equipos?', s);
   for (let st = 0; st < n; st++) { if (col[st]) continue; col[st] = 1; s.nc[st] = 'b'; const q = [st]; push('Se pinta ' + (st + 1) + ' de azul.', s);
@@ -719,7 +726,7 @@ V('Graphs-Algorithms-Miscellaneous-CycleFindingUndirected', 'Encontrar un ciclo 
     while (call.length) { const top = call[call.length - 1], [v, i] = top;
       if (i < G[v].length) { top[1]++; const [u, k] = G[v][i]; if (k === pe[v]) continue;
         if (!vis[u]) { vis[u] = on[u] = true; par[u] = v; pe[u] = k; s.nc[u] = 'b'; s.ec[k] = 'b'; call.push([u, 0]); push('Se baja de ' + (v + 1) + ' a ' + (u + 1) + '.', s); }
-        else if (on[u]) { s.ec[k] = 'g'; s.nc[u] = 'g'; const cyc = [u + 1]; for (let x = v; x !== u; x = par[x]) { s.nc[x] = 'g'; s.ec[pe[x]] = 'g'; cyc.push(x + 1); } push('La arista ' + (v + 1) + '–' + (u + 1) + ' vuelve a un ancestro: ciclo ' + cyc.reverse().join(' → ') + ' → ' + (u + 1), s); return; } }
+        else if (on[u]) { s.ec[k] = 'g'; s.nc[u] = 'g'; const path = []; for (let x = v; x !== u; x = par[x]) { s.nc[x] = 'g'; s.ec[pe[x]] = 'g'; path.push(x + 1); } push('La arista ' + (v + 1) + '–' + (u + 1) + ' vuelve a un ancestro: ciclo ' + [u + 1, ...path.reverse(), u + 1].join(' → '), s); return; } }
       else { call.pop(); on[v] = false; s.nc[v] = 'k'; push((v + 1) + ' no tiene más vecinos: se sale del camino.', s); } } }
   push('No hay ciclos: el grafo es un bosque.', s);
 }, GR);
@@ -741,7 +748,9 @@ V('Graphs-Algorithms-Miscellaneous-CycleFindingDirected', 'Encontrar un ciclo di
 V('Graphs-Algorithms-Miscellaneous-2-SAT', '2-SAT con el grafo de implicaciones', 'Cada cláusula (a ∨ b) agrega ¬a → b y ¬b → a. Si x y ¬x quedan en la misma componente, no hay solución.', push => {
   const m = 3, nodes = [], xy = []; for (let i = 0; i < m; i++) { xy.push({ x: 90 + i * 180, y: 60 }); xy.push({ x: 90 + i * 180, y: 220 }); }
   const lab = []; for (let i = 0; i < m; i++) { lab.push('x' + (i + 1)); lab.push('¬x' + (i + 1)); }
-  const lit = () => 2 * R(0, m - 1) + R(0, 1), cls = Array.from({ length: 4 }, () => [lit(), lit()]).filter(([a, b]) => a !== b);
+  const lit = () => 2 * R(0, m - 1) + R(0, 1);
+  // 40%: cláusulas que obligan a x1 y a ¬x1 a la vez (caso IMPOSSIBLE); si no, cláusulas al azar
+  const cls = Math.random() < 0.4 ? [[0, 2], [0, 3], [1, 4], [1, 5]] : Array.from({ length: 4 }, () => [lit(), lit()]).filter(([a, b]) => a !== b);
   const E = [], s = GS(xy, E, true); s.lab = lab;
   push('Variables x1..x3: arriba verdadero, abajo falso.', s);
   for (const [a, b] of cls) { E.push({ a: a ^ 1, b, bend: 18 }); E.push({ a: b ^ 1, b: a, bend: 18 }); const t = GS(xy, E, true); t.lab = lab; t.ec = E.map((_, k) => k >= E.length - 2 ? 'a' : ''); push('Cláusula (' + lab[a] + ' ∨ ' + lab[b] + '): ' + lab[a ^ 1] + ' → ' + lab[b] + ' y ' + lab[b ^ 1] + ' → ' + lab[a], t); }
@@ -752,22 +761,24 @@ V('Graphs-Algorithms-Miscellaneous-2-SAT', '2-SAT con el grafo de implicaciones'
   const bad = [...Array(m).keys()].some(i => comp[2 * i] === comp[2 * i + 1]);
   if (bad) { push('Una variable y su negación están en la misma componente: IMPOSSIBLE.', f); return; }
   const g = GS(xy, E, true); g.lab = lab; for (let i = 0; i < m; i++) { const tv = comp[2 * i] > comp[2 * i + 1]; g.nc[2 * i] = tv ? 'g' : 'r'; g.nc[2 * i + 1] = tv ? 'r' : 'g'; }
-  push('Se elige el literal cuya componente va después en el orden topológico: ' + [...Array(m).keys()].map(i => 'x' + (i + 1) + ' = ' + (comp[2 * i] > comp[2 * i + 1] ? 'V' : 'F')).join(', '), g);
+  push('Verde = literal verdadero, rojo = falso. Se elige el literal cuya componente va después en el orden topológico: ' + [...Array(m).keys()].map(i => 'x' + (i + 1) + ' = ' + (comp[2 * i] > comp[2 * i + 1] ? 'V' : 'F')).join(', '), g);
 }, GR);
 
 // ---- árboles ----
 const treeState = (n, W, H) => { const T = randTree(n, W, H); const E = T.par.slice(1).map((p, i) => ({ a: p, b: i + 1 })); return { T, E, s: GS(T.xy, E) }; };
 
 V('Graphs-Algorithms-Trees-LCA', 'Ancestro común más cercano', 'Primero se igualan las alturas y luego ambos suben con saltos de potencias de 2.', push => {
-  const n = 12, { T, s } = treeState(n), up = [T.par.map(p => p < 0 ? 0 : p)];
+  const n = 14, { T, s } = treeState(n), up = [T.par.map(p => p < 0 ? 0 : p)];
   for (let j = 1; j < 4; j++) up.push(up[j - 1].map(v => up[j - 1][v]));
-  let a = R(4, n - 1), b = R(1, n - 1); while (b === a) b = R(1, n - 1);
+  // se eligen dos nodos profundos para que haya saltos que mostrar
+  const byDepth = [...Array(n).keys()].sort((x, y) => T.depth[y] - T.depth[x]); let a = byDepth[0], b = byDepth.find(v => v !== a && !T.kids[a].includes(v) && T.par[a] !== v) ?? byDepth[1];
+  push('Tabla de saltos: up[j][v] = ancestro 2^j niveles arriba. Para ' + (a + 1) + ': ' + [0, 1, 2, 3].map(j => 'up[' + j + '] = ' + (up[j][a] + 1)).join(', ') + '.', s);
   s.ns = T.depth.map(d => 'prof ' + d); s.nc[a] = 'b'; s.nc[b] = 'o'; push('Buscar el ancestro común de ' + (a + 1) + ' y ' + (b + 1) + '.', s);
   if (T.depth[a] < T.depth[b]) [a, b] = [b, a];
   let diff = T.depth[a] - T.depth[b];
-  for (let j = 3; j >= 0; j--) if (diff >> j & 1) { s.nc[a] = ''; a = up[j][a]; s.nc[a] = s.nc[a] === 'o' ? 'g' : 'b'; push('Se sube ' + (1 << j) + ' nivel(es): ahora en ' + (a + 1) + '.', s); }
+  for (let j = 3; j >= 0; j--) if (diff >> j & 1) { s.nc[a] = ''; a = up[j][a]; s.nc[a] = s.nc[a] === 'o' ? 'g' : 'b'; push('Faltan ' + (diff) + ' niveles; el bit ' + j + ' está encendido: se usa up[' + j + '] y se sube ' + pl(1 << j, 'nivel', 'niveles') + ' de golpe → ' + (a + 1) + '.', s); diff -= 1 << j; }
   if (a === b) { s.nc[a] = 'g'; push('Quedaron en el mismo nodo: el ancestro común es ' + (a + 1) + '.', s); return; }
-  for (let j = 3; j >= 0; j--) if (up[j][a] !== up[j][b]) { s.nc[a] = ''; s.nc[b] = ''; a = up[j][a]; b = up[j][b]; s.nc[a] = 'b'; s.nc[b] = 'o'; push('Ambos suben ' + (1 << j) + ' nivel(es) sin juntarse.', s); }
+  for (let j = 3; j >= 0; j--) if (up[j][a] !== up[j][b]) { s.nc[a] = ''; s.nc[b] = ''; a = up[j][a]; b = up[j][b]; s.nc[a] = 'b'; s.nc[b] = 'o'; push('up[' + j + '] de ambos son distintos: los dos suben ' + pl(1 << j, 'nivel', 'niveles') + ' (si fueran iguales, se pasarían del ancestro común).', s); }
   const l = up[0][a]; s.nc[l] = 'g'; push('El padre de ambos es el ancestro común: ' + (l + 1) + '.', s);
 }, GR);
 
@@ -796,7 +807,7 @@ V('Graphs-Algorithms-Trees-CentroidDecomposition', 'Descomposición por centroid
     const sz = {}; for (const u of comp.slice().reverse()) { sz[u] = 1; for (const [v] of G[u]) if (!rem[v] && v !== par[u]) sz[u] += sz[v]; }
     let c = r; while (true) { const nx = G[c].map(x => x[0]).find(v => !rem[v] && v !== par[c] && 2 * sz[v] > comp.length); if (nx === undefined) break; c = nx; }
     rem[c] = true; lvl[c] = d; s.nc[c] = cols[d % 6]; s.ns[c] = 'nivel ' + d; G[c].forEach(([v, k]) => { if (!rem[v]) s.ec[k] = 'x'; });
-    push('Pedazo de ' + comp.length + ' nodos: su centroide es ' + (c + 1) + ' (nivel ' + d + ').', s);
+    push('Pedazo de ' + pl(comp.length, 'nodo', 'nodos') + ': su centroide es ' + (c + 1) + ' (nivel ' + d + ').', s);
     for (const [v] of G[c]) if (!rem[v]) st.push([v, d + 1]); }
   push('Cada nodo es centroide de un solo nivel; hay ' + (Math.max(...lvl) + 1) + ' niveles (≈ log₂ n).', s);
 }, GR);
@@ -836,12 +847,12 @@ function canonSteps(push, s, T, off, ids, tag) {
   for (const u of order.reverse()) { const key = T.kids[u].map(v => id[v]).sort((a, b) => a - b).join(','); if (!(key in ids)) ids[key] = Object.keys(ids).length; id[u] = ids[key]; s.ns[u + off] = 'id ' + id[u]; s.nc[u + off] = 'b'; push(tag + ': hijos con ids [' + key + '] → id ' + id[u] + '.', s); }
   return id[0];
 }
-V('Graphs-Algorithms-Trees-TreeIsomorfismRooted', 'Isomorfismo de árboles con raíz', 'Cada lista ordenada de ids de hijos recibe un id; formas iguales reciben el mismo id.', push => {
+V('Graphs-Algorithms-Trees-TreeIsomorphismRooted', 'Isomorfismo de árboles con raíz', 'Cada lista ordenada de ids de hijos recibe un id; formas iguales reciben el mismo id.', push => {
   const iso = R(0, 1) === 1, { n, T1, T2, xy, E } = twoTrees(iso), s = GS(xy, E); push('Dos árboles con raíz (la raíz es el nodo de arriba).', s);
   const ids = {}, a = canonSteps(push, s, T1, 0, ids, 'Árbol 1'), b = canonSteps(push, s, T2, n, ids, 'Árbol 2');
   s.nc[0] = s.nc[n] = a === b ? 'g' : 'r'; push(a === b ? 'Las raíces tienen el mismo id (' + a + '): son isomorfos, YES.' : 'Las raíces tienen ids distintos (' + a + ' y ' + b + '): NO son isomorfos.', s);
 }, GR);
-V('Graphs-Algorithms-Trees-TreeIsomorfism', 'Isomorfismo de árboles sin raíz', 'Se usa como raíz el centroide de cada árbol y se comparan los ids canónicos.', push => {
+V('Graphs-Algorithms-Trees-TreeIsomorphism', 'Isomorfismo de árboles sin raíz', 'Se usa como raíz el centroide de cada árbol y se comparan los ids canónicos.', push => {
   const iso = R(0, 1) === 1, { n, T1, T2, xy, E } = twoTrees(iso), s = GS(xy, E); push('Dos árboles sin raíz.', s);
   const reroot = T => { const G = Array.from({ length: n }, () => []); T.par.forEach((p, i) => { if (p >= 0) { G[p].push(i); G[i].push(p); } });
     const sz = Array(n).fill(1), ord = [0], par = Array(n).fill(-1); for (const u of ord) for (const v of G[u]) if (v !== par[u]) { par[v] = u; ord.push(v); } for (const u of ord.slice().reverse()) if (par[u] >= 0) sz[par[u]] += sz[u];
@@ -880,11 +891,12 @@ function augmentSteps(push, n, xy, E, useBfs, title) {
     push('Se envían ' + b + '. Flujo total: ' + total + ' (rojo = arista llena).', s);
   }
   const seen = Array(n).fill(false); seen[0] = true; const q = [0]; for (const u of q) E.forEach((e, k) => { if (e.a === u && !seen[e.b] && f[k] < e.w) { seen[e.b] = true; q.push(e.b); } if (e.b === u && !seen[e.a] && f[k] > 0) { seen[e.a] = true; q.push(e.a); } });
-  s.nc = seen.map(x => x ? 'g' : 'o'); push(title + ': flujo máximo = ' + total + '. Verde = lado de S en el corte mínimo; las aristas rojas que cruzan suman ' + total + '.', s);
+  s.nc = seen.map(x => x ? 'g' : 'o'); s.ec = E.map(e => seen[e.a] && !seen[e.b] ? 'r' : 'x');
+  push(title + ': flujo máximo = ' + total + '. Corte mínimo: verde = nodos que S todavía alcanza; las aristas rojas van de verde a naranja, están llenas y sus capacidades suman ' + total + '.', s);
 }
-V('Graphs-Algorithms-Flow-Algoritms-EdmonsKarp', 'Edmonds-Karp', 'Cada vez se usa el camino aumentante más corto (BFS).', push => { const { n, xy, E } = flowNet(); augmentSteps(push, n, xy, E, true, 'No quedan caminos'); }, GR);
+V('Graphs-Algorithms-Flow-Algorithms-EdmondsKarp', 'Edmonds-Karp', 'Cada vez se usa el camino aumentante más corto (BFS).', push => { const { n, xy, E } = flowNet(); augmentSteps(push, n, xy, E, true, 'No quedan caminos'); }, GR);
 
-V('Graphs-Algorithms-Flow-Algoritms-Dinic', 'Dinic: niveles y flujo bloqueante', 'Etiqueta del nodo = nivel BFS. Solo se usan aristas que suben exactamente un nivel.', push => {
+V('Graphs-Algorithms-Flow-Algorithms-Dinic', 'Dinic: niveles y flujo bloqueante', 'Etiqueta del nodo = nivel BFS. Solo se usan aristas que suben exactamente un nivel.', push => {
   const { n, xy, E } = flowNet(), f = E.map(() => 0); let total = 0; const s = GS(xy, E, true); s.lab = ['S', 2, 3, 4, 5, 'T']; s.el = flowLab(E, f);
   push('Red de flujo: flujo/capacidad.', s);
   for (let phase = 1; phase < 8; phase++) {
@@ -901,7 +913,7 @@ V('Graphs-Algorithms-Flow-Algoritms-Dinic', 'Dinic: niveles y flujo bloqueante',
   }
 }, GR);
 
-V('Graphs-Algorithms-Flow-Algoritms-BipartiteMatching', 'Emparejamiento bipartito (Kuhn)', 'Cada niño de la izquierda busca pareja; si está ocupada, se intenta reacomodar al otro.', push => {
+V('Graphs-Algorithms-Flow-Algorithms-BipartiteMatching', 'Emparejamiento bipartito (Kuhn)', 'Cada niño de la izquierda busca pareja; si está ocupada, se intenta reacomodar al otro.', push => {
   const L = 4, Rr = 4, xy = []; for (let i = 0; i < L; i++) xy.push({ x: 140, y: 40 + i * 70 }); for (let j = 0; j < Rr; j++) xy.push({ x: 400, y: 40 + j * 70 });
   const E = []; for (let i = 0; i < L; i++) { const cs = shuffle([...Array(Rr).keys()]).slice(0, R(1, 3)); cs.forEach(j => E.push({ a: i, b: L + j })); }
   const s = GS(xy, E); s.lab = [...Array(L).keys()].map(i => 'N' + (i + 1)).concat([...Array(Rr).keys()].map(j => 'C' + (j + 1)));
@@ -914,25 +926,23 @@ V('Graphs-Algorithms-Flow-Algoritms-BipartiteMatching', 'Emparejamiento bipartit
   push('Parejas máximas: ' + mR.filter(x => x >= 0).length + '.', s);
 }, GR);
 
-function mcmfSteps(push, stopWhenPositive) {
+function mcmfSteps(push, K) {
   const { n, xy, E } = flowNet(); E.forEach(e => { e.c = R(1, 6); e.w = R(1, 4); }); const f = E.map(() => 0); let flow = 0, cost = 0;
   const s = GS(xy, E, true); s.lab = ['S', 2, 3, 4, 5, 'T']; const lab = () => { s.el = E.map((e, k) => f[k] + '/' + e.w + ' $' + e.c); }; lab();
-  push('Etiqueta = flujo/capacidad $costo por unidad.', s);
-  for (let it = 0; it < 10; it++) {
+  push('Etiqueta = flujo/capacidad $costo por unidad.' + (K ? ' Se deben enviar exactamente ' + K + ' unidades.' : ' Se envía todo el flujo posible.') + ' Amarillo = camino elegido, azul = arista con flujo, rojo = llena.', s);
+  for (let it = 0; it < 10 && (!K || flow < K); it++) {
     const d = Array(n).fill(Infinity), prev = Array(n).fill(null); d[0] = 0;
     for (let r = 0; r < n; r++) E.forEach((e, k) => { if (f[k] < e.w && d[e.a] + e.c < d[e.b]) { d[e.b] = d[e.a] + e.c; prev[e.b] = [k, 1]; } if (f[k] > 0 && d[e.b] - e.c < d[e.a]) { d[e.a] = d[e.b] - e.c; prev[e.a] = [k, -1]; } });
     if (d[n - 1] === Infinity) break;
-    if (stopWhenPositive && d[n - 1] >= 0) { s.ns = d.map(fmt); push('El camino más barato ahora cuesta ' + d[n - 1] + ' ≥ 0: enviar más ya no ahorra. Se detiene.', s); break; }
-    let b = Infinity, path = []; for (let v = n - 1; v !== 0;) { const [k, dd] = prev[v]; path.push([k, dd]); b = Math.min(b, dd > 0 ? E[k].w - f[k] : f[k]); v = dd > 0 ? E[k].a : E[k].b; }
-    s.ns = d.map(fmt); s.ec = E.map((e, k) => f[k] === e.w ? 'r' : f[k] ? 'b' : ''); path.forEach(([k]) => s.ec[k] = 'a'); push('Camino más barato (Bellman-Ford): $' + d[n - 1] + ' por unidad, capacidad ' + b + '.', s);
+    let b = K ? K - flow : Infinity, path = []; for (let v = n - 1; v !== 0;) { const [k, dd] = prev[v]; path.push([k, dd]); b = Math.min(b, dd > 0 ? E[k].w - f[k] : f[k]); v = dd > 0 ? E[k].a : E[k].b; }
+    s.ns = d.map(fmt); s.ec = E.map((e, k) => f[k] === e.w ? 'r' : f[k] ? 'b' : ''); path.forEach(([k]) => s.ec[k] = 'a'); push('Camino más barato del grafo residual (etiqueta del nodo = su distancia en costo; el código la calcula con Dijkstra y potenciales): $' + d[n - 1] + ' por unidad, se mandan ' + b + '.', s);
     path.forEach(([k, dd]) => f[k] += dd * b); flow += b; cost += b * d[n - 1]; lab(); s.ec = E.map((e, k) => f[k] === e.w ? 'r' : f[k] ? 'b' : ''); push('Flujo ' + flow + ', costo total $' + cost + '.', s);
   }
-  push('Resultado: flujo ' + flow + ' con costo mínimo $' + cost + '.', s);
+  if (K && flow < K) push('Solo se pudieron enviar ' + flow + ' de ' + K + ' unidades: IMPOSSIBLE.', s);
+  else push('Resultado: flujo ' + flow + ' con costo mínimo $' + cost + '.', s);
 }
-V('Graphs-Algorithms-Flow-Algoritms-MinCostMaxFlow', 'Flujo máximo de costo mínimo', 'Siempre se aumenta por el camino más barato; la etiqueta del nodo es su distancia en costo.', push => mcmfSteps(push, false), GR);
-V('Graphs-Algorithms-Flow-Algoritms-MinCostAnyFlow', 'Flujo de costo mínimo (cualquier cantidad)', 'Como el anterior, pero se para cuando el siguiente camino ya no tiene costo negativo.', push => {
-  const old = R; mcmfSteps(push, true);
-}, GR);
+V('Graphs-Algorithms-Flow-Algorithms-MinCostMaxFlow', 'Flujo máximo de costo mínimo', 'Siempre se aumenta por el camino más barato; la etiqueta del nodo es su distancia en costo.', push => mcmfSteps(push, 0), GR);
+V('Graphs-Algorithms-Flow-Algorithms-MinCostAnyFlow', 'Flujo de costo mínimo con exactamente K unidades', 'Igual que el anterior, pero el último camino solo manda lo que falta para llegar a K; si no se alcanza K, la respuesta es IMPOSSIBLE.', push => mcmfSteps(push, R(2, 6)), GR);
 
 // =================== Strings ===================
 const STRS = ['abacaba', 'aabxaab', 'banana', 'abcabcab', 'aaabaaa', 'mississippi', 'abracadabra'];
@@ -966,11 +976,11 @@ V('Strings-Algorithms-PrefixTrie', 'Trie de palabras', 'Cada camino desde la ra�
 V('Strings-Algorithms-Manacher', 'Manacher: palíndromos en O(n)', 'Se usa la cadena con separadores (#). Azul = palíndromo más a la derecha que se reutiliza por simetría.', push => {
   const s0 = pick(['abacabad', 'forgeeksskeegfor', 'babcbabcbaccba', 'aabbaacc']), t = '#' + [...s0].join('#') + '#', n = t.length, d = Array(n).fill(null); let l = 0, r = -1, best = 0;
   for (let i = 0; i < n; i++) { let k = i > r ? 1 : Math.min(d[l + r - i], r - i + 1); const mir = k > 1; while (i - k >= 0 && i + k < n && t[i - k] === t[i + k]) k++; d[i] = k; if (i + k - 1 > r) { l = i - k + 1; r = i + k - 1; } if (d[i] > d[best]) best = i;
-    if (t[i] !== '#' || d[i] > 1) push('Centro ' + i + ': radio ' + d[i] + (mir ? ' (empezó copiando el espejo)' : '') + '. Palíndromo de longitud ' + (d[i] - 1) + '.', { t, d: d.slice(), i, l, r, best }); }
+    if (t[i] !== '#' || d[i] > 1) push('Centro ' + i + ' de la cadena con #: radio ' + d[i] + (mir ? ' (empezó copiando el radio de su espejo)' : '') + '. Sin los #, el palíndromo mide radio − 1 = ' + (d[i] - 1) + '.', { t, d: d.slice(), i, l, r, best }); }
   push('Palíndromo más largo: "' + t.substr(best - d[best] + 1, 2 * d[best] - 1).replace(/#/g, '') + '".', { t, d, i: -1, l: best - d[best] + 1, r: best + d[best] - 1, best, fin: true });
 }, st => rows([{ t: 't', v: [...st.t], c: [...st.t].map((_, j) => st.fin ? (j >= st.l && j <= st.r ? 'g' : '') : j === st.i ? 'a' : j >= st.l && j <= st.r ? 'b' : '') }, { t: 'radio', v: st.d, c: st.d.map((_, j) => j === st.i ? 'a' : '') }]));
 
-V('Strings-Algorithms-MinimalRotation', 'Rotación mínima (Booth)', 'Se comparan dos candidatos i y j; el que pierde salta más allá de la parte comparada.', push => {
+V('Strings-Algorithms-MinimalRotation', 'Rotación mínima (dos candidatos)', 'Se comparan dos candidatos i y j; el que pierde salta más allá de la parte comparada.', push => {
   const s = pick(['bbaaccaadd', 'cabbage', 'dcbaabcd', 'baca', 'zxyzxa']), n = s.length, ss = s + s; let i = 0, j = 1, k = 0;
   push('Candidatos i = 0 (azul) y j = 1 (naranja).', { s: ss, i, j, k });
   while (i < n && j < n && k < n) { const a = ss[i + k], b = ss[j + k]; if (a === b) { k++; continue; }
@@ -1132,7 +1142,7 @@ V('Graphs-Classic-Problems-Labyrinth', 'BFS en un laberinto y reconstrucción de
   push('Desde B se retrocede siempre a una celda con distancia una menos: YES, ' + D + ' pasos: ' + dirs.reverse().join(''), { wall, d: show(99), front: -1, path });
 }, s => gridHtml(s.wall.map((r, i) => r.map((w, j) => { const k = i + ',' + j, v = s.d[i][j];
   if (w) return { bg: '#57606a' }; const t = i === 0 && j === 0 ? 'A' : i === s.wall.length - 1 && j === r.length - 1 ? 'B' : v >= 0 ? v : '';
-  return { t, c: s.path.includes(k) ? 'g' : v === s.front ? 'a' : v >= 0 ? 'b' : '' }; }))));
+  return { t, c: s.path.includes(k) ? 'g' : v >= 0 && v === s.front ? 'a' : v >= 0 ? 'b' : '' }; }))));
 
 V('Graphs-Classic-Problems-Flight-Discount', 'Un cupón: Dijkstra desde el inicio y desde el final', 'Etiqueta arriba de cada ciudad: distancia desde 1 / distancia hasta n. Amarillo = vuelo donde conviene usar el cupón.', push => {
   const n = 6, xy = circleLayout(n), E = []; const has = new Set();
@@ -1222,7 +1232,7 @@ V('Strings-Classic-Problems-Required-Substring', 'Contar cadenas que contienen e
 V('Geometry-Classic-Problems-Point-Location-Test', 'Izquierda, derecha o sobre la recta', 'Se mira desde p1 hacia p2. Verde = LEFT (cruz > 0), rojo = RIGHT (cruz < 0), amarillo = TOUCH.', push => {
   const p1 = [-8, -4], p2 = [8, 3], pts = Array.from({ length: 6 }, () => [R(-10, 10), R(-6, 6)]); pts.push([0, -0.5]); const done = [];
   push('Recta de p1 a p2.', { p1, p2, pts, done: [] });
-  pts.forEach(q => { const c = cross(p1, p2, q); done.push(c); push('(' + q.join(', ') + '): cruz = ' + c + ' → ' + (c > 0 ? 'LEFT' : c < 0 ? 'RIGHT' : 'TOUCH'), { p1, p2, pts, done: done.slice() }); });
+  pts.forEach(q => { const c = cross(p1, p2, q); done.push(c); push('(' + q.join(', ') + '): cruz = ' + c + ' → ' + (c > 0 ? 'LEFT (izquierda)' : c < 0 ? 'RIGHT (derecha)' : 'TOUCH (sobre la recta)'), { p1, p2, pts, done: done.slice() }); });
 }, s => { const d = [s.p2[0] - s.p1[0], s.p2[1] - s.p1[1]]; let g = gridBg() + seg([s.p1[0] - d[0], s.p1[1] - d[1]], [s.p2[0] + d[0], s.p2[1] + d[1]], '#999', 1, 1) + seg(s.p1, s.p2, '#1f6feb', 3) + dot(s.p1, '#1f6feb', 5, 'p1') + dot(s.p2, '#1f6feb', 5, 'p2');
   s.pts.forEach((q, i) => { const c = s.done[i]; g += dot(q, c === undefined ? '#999' : c > 0 ? '#2da44e' : c < 0 ? '#cf222e' : '#d4a72c', i === s.done.length - 1 ? 7 : 5); }); return svgBox(g, G0.W, G0.H); });
 
@@ -1265,11 +1275,10 @@ V('Geometry-Classic-Problems-Area-of-Rectangles', 'Área de la unión con barrid
   s.Rs.forEach(r => g += poly([[r[0], r[1]], [r[2], r[1]], [r[2], r[3]], [r[0], r[3]]], 'none', '#1f6feb'));
   if (s.cur) g += seg([s.cur[0], -7], [s.cur[0], 7], '#d4a72c', 1.5, 1) + seg([s.cur[1], -7], [s.cur[1], 7], '#d4a72c', 1.5, 1); return svgBox(g, G0.W, G0.H); });
 
-V('Geometry-Classic-Problems-Lines-and-Queries-I', 'Máximo entre rectas en un punto', 'Cada consulta x busca la recta más alta en ese x (punto verde). El Li Chao Tree lo responde en O(log X) sin revisar todas las rectas.', push => {
-  const L = []; const ops = [];
-  for (let k = 0; k < 7; k++) ops.push(k % 2 === 0 || !L.length ? 'add' : 'q');
+V('Geometry-Classic-Problems-Lines-and-Queries-I', 'Máximo entre rectas en un punto', 'Cada consulta x busca la recta más alta en ese x (punto verde). Aquí se dibujan todas para verlo; el Li Chao Tree guarda en cada nodo la recta que gana en el centro de su tramo y responde mirando solo O(log X) de ellas.', push => {
+  const L = []; const ops = ['add', 'add', 'q', 'add', 'q', 'add', 'q', 'q'];
   for (const o of ops) {
-    if (o === 'add' || !L.length) { const a = R(-4, 4) / 8, b = R(-4, 4); L.push([a, b]); push('Se agrega la recta y = ' + a + 'x ' + (b < 0 ? '− ' + -b : '+ ' + b), { L: L.slice(), q: null }); }
+    if (o === 'add' || !L.length) { const a = R(-4, 4) / 8, b = R(-4, 4); L.push([a, b]); push('Se agrega la recta y = ' + (a ? a + 'x ' : '') + (b < 0 ? '− ' + -b : '+ ' + b), { L: L.slice(), q: null }); }
     else { const x = R(-9, 9), ys = L.map(([a, b]) => a * x + b), m = Math.max(...ys); push('Consulta x = ' + x + ': la recta más alta da ' + m + '.', { L: L.slice(), q: [x, m, ys.indexOf(m)] }); }
   }
 }, s => { let g = gridBg(); s.L.forEach(([a, b], i) => g += seg([-12, a * -12 + b], [12, a * 12 + b], s.q && s.q[2] === i ? '#2da44e' : '#1f6feb', s.q && s.q[2] === i ? 3 : 1.5));
@@ -1287,7 +1296,7 @@ V('FunctionalTools-Classic-Problems-Exponentiation', 'a^b con exponenciación bi
 V('FunctionalTools-Classic-Problems-Counting-Divisors', 'Cantidad de divisores con la criba del menor primo', 'spf[x] = menor primo que divide a x. Se divide por spf repetidamente; si x = p₁^e₁·p₂^e₂…, hay (e₁+1)(e₂+1)… divisores.', push => {
   const x0 = pick([360, 720, 1260, 840, 2520, 504, 1800]); let x = x0; const spf = v => { for (let p = 2; p * p <= v; p++) if (v % p === 0) return p; return v; };
   const fac = []; push('x = ' + x0 + '.', { fac: [], x });
-  while (x > 1) { const p = spf(x); let e = 0; while (x % p === 0) { x /= p; e++; } fac.push([p, e]); push('spf = ' + p + ': aparece ' + e + ' vez(veces). Queda ' + x + '.', { fac: fac.slice(), x }); }
+  while (x > 1) { const p = spf(x); let e = 0; while (x % p === 0) { x /= p; e++; } fac.push([p, e]); push('spf = ' + p + ': aparece ' + pl(e, 'vez', 'veces') + '. Queda ' + x + '.', { fac: fac.slice(), x }); }
   const d = fac.reduce((r, [, e]) => r * (e + 1), 1);
   push(x0 + ' = ' + fac.map(([p, e]) => p + '^' + e).join(' · ') + ' → ' + fac.map(([, e]) => '(' + e + '+1)').join('·') + ' = ' + d + ' divisores.', { fac, x, d });
 }, s => rows([{ t: 'primo', v: s.fac.length ? s.fac.map(f => f[0]) : [null], c: s.fac.map(() => 'g') }, { t: 'exponente', v: s.fac.length ? s.fac.map(f => f[1]) : [null], c: s.fac.map(() => 'b') }, { t: 'resto', v: [s.x] }]));
@@ -1359,7 +1368,7 @@ V('Probability-Algorithms-MarkovChain', 'Un robot como cadena de Markov', 'Table
   const nb = c => { const x = Math.floor(c / N), y = c % N; return [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]].filter(([a, b]) => a >= 0 && b >= 0 && a < N && b < N).map(([a, b]) => a * N + b); };
   push('El robot empieza en la casilla marcada con probabilidad 1.', { p: p.slice(), N, k: 0 });
   for (let k = 1; k <= 6; k++) { const q = Array(N * N).fill(0); p.forEach((v, c) => { if (v) { const L = nb(c); L.forEach(u => q[u] += v / L.length); } }); p = q;
-    push('Paso ' + k + ': cada casilla manda su probabilidad dividida entre sus ' + '2–4 vecinas. La suma sigue siendo 1.', { p: p.slice(), N, k }); }
+    { const mx = Math.max(...p); push('Paso ' + k + ': cada casilla reparte su probabilidad entre sus 2–4 vecinas. La más probable ahora tiene ' + f3(mx) + '; la suma sigue siendo 1.', { p: p.slice(), N, k }); } }
   push('Con la distribución de cada robot: P(casilla vacía) = Π (1 − p_robot), y E[vacías] = Σ P(vacía).', { p, N, k: 6 });
 }, s => { const m = Math.max(...s.p); return gridHtml(Array.from({ length: s.N }, (_, i) => Array.from({ length: s.N }, (_, j) => { const v = s.p[i * s.N + j];
   return { t: v ? f3(v) : '', bg: v ? 'rgba(31,111,235,' + (0.15 + 0.85 * v / m).toFixed(2) + ')' : '' }; })), 52); });
@@ -1402,7 +1411,7 @@ V('Probability-Classic-Problems-Fish', 'Probabilidad de cada conjunto de sobrevi
   S('Matriz a: ' + a.map((r, i) => r.map((x, j) => i < j ? (i + 1) + '→' + (j + 1) + ': ' + x : '').filter(Boolean).join(', ')).filter(Boolean).join(', ') + '. Todos vivos con probabilidad 1.', -1);
   for (let m = (1 << n) - 1; m > 0; m--) { const alive = [...Array(n).keys()].filter(i => m >> i & 1), k = alive.length; if (k < 2 || !P[m]) continue;
     const pares = k * (k - 1) / 2; for (const j of alive) for (const i of alive) if (i !== j) P[m ^ (1 << j)] += P[m] / pares * a[i][j];
-    S(name(m) + ': cada uno de los ' + pares + ' pares se encuentra con probabilidad 1/' + pares + '; se reparte entre los conjuntos con un pez menos.', m); }
+    S(name(m) + ': ' + (pares === 1 ? 'el único par se encuentra seguro' : 'cada uno de los ' + pares + ' pares se encuentra con probabilidad 1/' + pares) + '; la probabilidad se reparte entre los conjuntos con un pez menos.', m); }
   S('Respuesta: ' + [...Array(n).keys()].map(i => 'pez ' + (i + 1) + ' = ' + f3(P[1 << i])).join(', '), 0);
 }, s => table([...Array(1 << s.n).keys()].reverse().filter(m => m).map(m => ['{' + [...Array(s.n).keys()].filter(i => m >> i & 1).map(i => i + 1).join(',') + '}', f3(s.P[m])]),
   [...Array(1 << s.n).keys()].reverse().filter(m => m).map(m => m === s.cur ? ['a', 'a'] : s.P[m] ? ['g', 'g'] : ['', '']), null, ['vivos', 'probabilidad']));
@@ -1489,7 +1498,7 @@ V('Probability-Classic-Problems-Serval-and-Bonus-Problem', 'De lo continuo a con
     let num = f1[0]; for (let i = 1; i <= n; i++) num *= 2 * i; let den = 1; for (let i = 1; i <= 2 * n + 1; i++) den *= i; return num / den; })();
   for (let t = 1; t <= 12; t++) { const segs = Array.from({ length: n }, () => { const u = Math.random(), v = Math.random(); return [Math.min(u, v), Math.max(u, v)]; }), x = Math.random();
     const c = segs.filter(([a, b]) => a < x && x < b).length; tot++; if (c >= k) hits++;
-    push('Prueba ' + t + ': x queda cubierto por ' + c + ' segmento(s). Estimación: ' + hits + '/' + tot + ' = ' + (hits / tot).toFixed(3) + '; valor exacto (DP sobre órdenes): ' + dp.toFixed(4), { segs, x, c }); }
+    push('n = ' + n + ' segmentos, k = ' + k + '. Prueba ' + t + ': x queda cubierto por ' + pl(c, 'segmento', 'segmentos') + '. Estimación: ' + hits + '/' + tot + ' = ' + (hits / tot).toFixed(3) + '; valor exacto (DP sobre órdenes): ' + dp.toFixed(4), { segs, x, c }); }
 }, s => { const X = v => 30 + v * 480; let g = '<line x1="' + X(0) + '" y1="40" x2="' + X(1) + '" y2="40" stroke="#888" stroke-width="2"/>' + txt(X(0), 58, '0') + txt(X(1), 58, 'l');
   s.segs.forEach(([a, b], i) => g += '<line x1="' + X(a) + '" y1="' + (80 + i * 22) + '" x2="' + X(b) + '" y2="' + (80 + i * 22) + '" stroke="' + (a < s.x && s.x < b ? '#2da44e' : '#1f6feb') + '" stroke-width="6" stroke-linecap="round"/>');
   g += '<line x1="' + X(s.x) + '" y1="25" x2="' + X(s.x) + '" y2="140" stroke="#d4a72c" stroke-width="2" stroke-dasharray="4 3"/>' + '<circle cx="' + X(s.x) + '" cy="40" r="6" fill="#d4a72c"/>';

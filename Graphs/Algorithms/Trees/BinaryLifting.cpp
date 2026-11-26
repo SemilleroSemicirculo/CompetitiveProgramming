@@ -31,7 +31,6 @@ int main() {
     int n, q;
     cin >> n >> q;
     // up[j][v] = nodo al que se llega desde v tras 2^j pasos
-    // up[j][v] = nodo al que se llega desde v tras 2^j pasos
     vector<vector<int>> up(LOG, vector<int>(n + 1));
     for (int v = 1; v <= n; v++) cin >> up[0][v];
     // cada nivel sale de duplicar el anterior

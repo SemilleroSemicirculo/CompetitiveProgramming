@@ -17,8 +17,8 @@ window.LIBRO = [
     'Decimos que un algoritmo es `O(f(n))` si, para entradas grandes, la cantidad de pasos crece como mucho como `f(n)` multiplicado por una constante. No nos importan las constantes ni los términos pequeños: `3n² + 5n + 7` es simplemente `O(n²)`. Lo que nos importa es la **forma** del crecimiento.',
     { py: '# O(n): una pasada\ntotal = 0\nfor x in a:\n    total += x\n\n# O(n²): todos los pares\nfor i in range(n):\n    for j in range(i + 1, n):\n        if a[i] + a[j] == x:\n            print(i, j)\n\n# O(log n): cada paso parte el problema a la mitad\nwhile n > 1:\n    n //= 2' },
     { h: 'La regla de oro' },
-    'Un computador hace del orden de `10^8` operaciones simples por segundo en C++. En Python puro la cuenta es mucho menor, más o menos `10^7`, y con PyPy (el intérprete que usa CSES para Python) se acerca a C++ en ciclos sencillos. Con eso puedes leer las restricciones como un mapa:',
-    { nota: 'n ≤ 20 → se vale O(2ⁿ) · n ≤ 500 → O(n³) · n ≤ 5000 → O(n²) · n ≤ 2·10⁵ → O(n log n) · n ≤ 10⁷ → O(n) · n ≤ 10¹⁸ → O(log n) o una fórmula.' },
+    'Un computador hace del orden de `10^8` operaciones simples por segundo en C++. En Python puro la cuenta es mucho menor, más o menos `10^7`, y con PyPy (CSES ofrece tanto CPython como PyPy; elige PyPy al enviar) se acerca a C++ en ciclos sencillos. Con eso puedes leer las restricciones como un mapa:',
+    { nota: 'n ≤ 20 → alcanza O(2ⁿ) · n ≤ 500 → O(n³) · n ≤ 5000 → O(n²) · n ≤ 2·10⁵ → O(n log n) · n ≤ 10⁷ → O(n) · n ≤ 10¹⁸ → O(log n) o una fórmula.' },
     'Esto es lo más útil que vas a aprender en todo el curso: **las restricciones te dicen qué algoritmo buscar**. Si n ≤ 20, el autor del problema te está invitando a probar subconjuntos; si n ≤ 2·10⁵, está pidiendo algo con ordenamiento, búsqueda binaria o un árbol de segmentos.',
     { h: 'Leer rápido en Python' },
     'La función `input()` es lenta cuando hay cientos de miles de números. Por eso todos los códigos en Python de este repositorio leen toda la entrada de una vez con `sys.stdin.buffer.read()` y la parten en números. También juntan la salida en una lista y la imprimen con un solo `write`.',
@@ -291,7 +291,7 @@ window.LIBRO = [
     'En Python, la forma estándar es una lista de listas: `g[u]` contiene los vecinos de u. Ocupa O(n + m) y permite recorrer los vecinos de un nodo en tiempo proporcional a su grado.',
     { py: 'g = [[] for _ in range(n)]\nfor _ in range(m):\n    a, b = siguiente(), siguiente()\n    g[a - 1].append(b - 1)\n    g[b - 1].append(a - 1)' },
     { h: 'DFS y BFS' },
-    'La **DFS** se adentra lo más posible antes de retroceder; es ideal para componentes, ciclos y todo lo que dependa de "terminar" un nodo. La **BFS** avanza por capas, así que el primer momento en que llega a un nodo es por el camino con menos aristas. En Python, evita la DFS recursiva en grafos grandes: el límite de recursión es bajo y es lenta. Todos los códigos del repositorio usan una pila explícita.',
+    'La **DFS** se adentra lo más posible antes de retroceder; es ideal para componentes, ciclos y todo lo que dependa de "terminar" un nodo. La **BFS** avanza por capas, así que el primer momento en que llega a un nodo es por el camino con menos aristas. En Python, evita la DFS recursiva en grafos grandes: el límite de recursión es bajo y es lenta. Todos los códigos del repositorio usan una pila explícita. En C++ la recursión es rápida, pero la pila del programa también se acaba: una DFS recursiva sobre un camino de 10⁶ nodos puede dar *stack overflow* (en Codeforces la pila es grande; en otros jueces y en tu máquina puede ser de 8 MB). Si el grafo puede ser una línea larga, usa pila explícita o sube el límite de pila.',
     { h: 'Lo que un recorrido revela' },
     'Con un solo recorrido puedes saber si el grafo es **bipartito** (dos colores sin conflicto ⇔ no hay ciclos impares), si tiene **ciclos** (una arista que vuelve a un ancestro en el camino actual) o, si es dirigido y sin ciclos, un **orden topológico** que respeta todas las dependencias.'
   ],
@@ -314,7 +314,7 @@ window.LIBRO = [
     'Bellman-Ford relaja todas las aristas n − 1 veces; tolera pesos negativos y una ronda extra que todavía mejore algo delata un ciclo negativo. Floyd-Warshall calcula todos los pares con tres ciclos anidados, O(n³), ideal para n ≤ 500. Su estado es una DP: "distancia de i a j usando solo los primeros k nodos como intermedios".',
     { nota: 'Resumen: pesos ≥ 0 → Dijkstra. Pesos negativos → Bellman-Ford. Todos los pares con n pequeño → Floyd-Warshall. Pesos 0/1 → BFS con deque.' }
   ],
-  algs: ['Graphs-Algorithms-Graph-Traversal-Djikstra', 'Graphs-Classic-Problems-Flight-Discount', 'Graphs-Algorithms-Graph-Traversal-BellmanFord', 'Graphs-Algorithms-Graph-Traversal-FloydWarshall'],
+  algs: ['Graphs-Algorithms-Graph-Traversal-Dijkstra', 'Graphs-Classic-Problems-Flight-Discount', 'Graphs-Algorithms-Graph-Traversal-BellmanFord', 'Graphs-Algorithms-Graph-Traversal-FloydWarshall'],
   teo: [['Graphs', 'Correctitud de Dijkstra']],
   preguntas: [
     { q: '¿Por qué el código de Dijkstra salta las entradas con d > dist[u]?', a: 'Porque heapq no permite bajar prioridades: se insertan duplicados y las entradas viejas se ignoran al salir.' },
@@ -333,7 +333,7 @@ window.LIBRO = [
   algs: ['Graphs-Algorithms-Graph-Traversal-DSU', 'Graphs-Algorithms-MST-Kruskal', 'Graphs-Algorithms-MST-Prim'],
   teo: [['Data Structures', 'Union-Find: α(n)'], ['Graphs', 'Corte y ciclo en árboles de expansión mínima'], ['Graphs', 'Caracterización de árboles']],
   preguntas: [
-    { q: '¿Cuándo preferirías Prim sobre Kruskal?', a: 'En grafos muy densos (m ≈ n²), donde Prim con matriz cuesta O(n²) y no hay que ordenar todas las aristas.' },
+    { q: '¿Cuándo preferirías Prim sobre Kruskal?', a: 'En grafos muy densos (m ≈ n²) dados como matriz: Prim sin heap cuesta O(n²), mejor que O(m log m) de Kruskal. Con heap, como en el código del repositorio, ambos cuestan O(m log n).' },
     { q: '¿Cuántas aristas tiene un árbol de expansión de n nodos?', a: 'n − 1.' }
   ],
   cierre: 'El MST es tu primer ejemplo de un algoritmo avaricioso con demostración. Aprende la propiedad del corte: es el argumento que usarás para justificar muchos otros.' },
@@ -361,15 +361,15 @@ window.LIBRO = [
   clase: [
     'Un árbol es un grafo conexo sin ciclos: entre dos nodos hay exactamente un camino. Esa unicidad lo hace mucho más manejable que un grafo general, y por eso hay tantas técnicas específicas.',
     { h: 'Diámetro' },
-    'Dos BFS bastan: desde cualquier nodo al más lejano A, y desde A al más lejano B. El camino A–B es el diámetro, y además A y B son los nodos más lejanos de **cualquier** nodo.',
+    'Dos BFS bastan: desde cualquier nodo al más lejano A, y desde A al más lejano B. El camino A–B es el diámetro, y además, para **cualquier** nodo, el más lejano de él es A o B (uno de los dos, no necesariamente ambos).',
     { h: 'Binary lifting y LCA' },
     'Guardar el ancestro 2^k de cada nodo permite subir cualquier cantidad de niveles mirando los bits de k. Con eso, el ancestro común más cercano sale igualando alturas y subiendo ambos nodos con saltos que no los junten. Con el LCA calculas distancias: `prof[u] + prof[v] − 2·prof[lca]`.',
     { h: 'Euler tour' },
-    'Si numeras los nodos en el orden en que la DFS los visita, **cada subárbol queda en un tramo contiguo**. Una pregunta sobre subárboles se vuelve una pregunta de rangos, y ahí entran Fenwick y Segment Tree del capítulo III. Es el ejemplo perfecto de combinar técnicas.',
+    'Si numeras los nodos en el orden en que la DFS los visita, **cada subárbol queda en un tramo contiguo**. Una pregunta sobre subárboles se vuelve una pregunta de rangos, y ahí entran Fenwick y Segment Tree del capítulo 12. Es el ejemplo perfecto de combinar técnicas.',
     { h: 'Centroides' },
     'El centroide es el nodo que al quitarlo deja pedazos de tamaño a lo sumo n/2. Quitarlo y repetir en cada pedazo produce una jerarquía de profundidad O(log n): la **descomposición por centroides**, que permite contar caminos con alguna propiedad en O(n log n). El centroide también sirve de raíz canónica para comparar árboles sin raíz (isomorfismo).'
   ],
-  algs: ['Graphs-Classic-Problems-Subordinates', 'Graphs-Algorithms-Graph-Traversal-Diameter', 'Graphs-Algorithms-Trees-TreeDistances', 'Graphs-Algorithms-Trees-BinaryLifting', 'Graphs-Algorithms-Trees-LCA', 'Graphs-Algorithms-Trees-EulerTour', 'Graphs-Algorithms-Trees-Centroid', 'Graphs-Algorithms-Trees-CentroidDecomposition', 'Graphs-Algorithms-Trees-TreeIsomorfismRooted', 'Graphs-Algorithms-Trees-TreeIsomorfism'],
+  algs: ['Graphs-Classic-Problems-Subordinates', 'Graphs-Algorithms-Graph-Traversal-Diameter', 'Graphs-Algorithms-Trees-TreeDistances', 'Graphs-Algorithms-Trees-BinaryLifting', 'Graphs-Algorithms-Trees-LCA', 'Graphs-Algorithms-Trees-EulerTour', 'Graphs-Algorithms-Trees-Centroid', 'Graphs-Algorithms-Trees-CentroidDecomposition', 'Graphs-Algorithms-Trees-TreeIsomorphismRooted', 'Graphs-Algorithms-Trees-TreeIsomorphism'],
   teo: [['Graphs', 'Caracterización de árboles'], ['Data Structures', 'Descomposición heavy-light'], ['Data Structures', 'Técnica de los más pequeños (small to large)']],
   preguntas: [
     { q: '¿Por qué la descomposición por centroides tiene profundidad O(log n)?', a: 'Porque cada pedazo tiene a lo sumo la mitad de los nodos del anterior.' },
@@ -438,8 +438,8 @@ window.LIBRO = [
     { h: 'Costo mínimo' },
     'Si además cada unidad de flujo cuesta, se aumenta siempre por el camino **más barato** (Bellman-Ford o Dijkstra con potenciales). Si no es obligatorio mandar el máximo, se para cuando el siguiente camino ya no tiene costo negativo. Aquí reaparece la dualidad: los potenciales son las variables duales del problema.'
   ],
-  algs: ['Graphs-Algorithms-Flow-Algoritms-EdmonsKarp', 'Graphs-Algorithms-Flow-Algoritms-Dinic', 'Graphs-Algorithms-Flow-Algoritms-BipartiteMatching', 'Graphs-Algorithms-Flow-Algoritms-MinCostMaxFlow', 'Graphs-Algorithms-Flow-Algoritms-MinCostAnyFlow'],
-  teo: [['Graphs', 'Flujo máximo = corte mínimo'], ['Graphs', 'Teorema de Kőnig'], ['Graphs', 'Teorema de Hall'], ['Graphs', 'Teorema de Menger'], ['Graphs', 'Complejidad de Dinic'], ['Graphs', 'Dualidad en flujo de costo mínimo']],
+  algs: ['Graphs-Algorithms-Flow-Algorithms-EdmondsKarp', 'Graphs-Algorithms-Flow-Algorithms-Dinic', 'Graphs-Algorithms-Flow-Algorithms-BipartiteMatching', 'Graphs-Algorithms-Flow-Algorithms-MinCostMaxFlow', 'Graphs-Algorithms-Flow-Algorithms-MinCostAnyFlow'],
+  teo: [['Graphs', 'Flujo máximo = corte mínimo'], ['Graphs', 'Teorema de Kőnig'], ['Graphs', 'Teorema de Hall'], ['Graphs', 'Teorema de Menger'], ['Graphs', 'Complejidad de Dinic'], ['Graphs', 'Criterio de optimalidad en flujo de costo mínimo']],
   preguntas: [
     { q: '¿Para qué sirven las aristas de regreso en la red residual?', a: 'Permiten deshacer flujo enviado antes; sin ellas, el método avaricioso puede quedarse en un flujo que no es máximo.' },
     { q: 'Si el flujo máximo vale 7, ¿qué sabes del corte mínimo?', a: 'Que su capacidad también es 7.' },

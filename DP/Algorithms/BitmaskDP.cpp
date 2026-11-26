@@ -32,7 +32,6 @@ int main() {
     for (auto &v : w) cin >> v;
 
     // dp[mask] = {viajes, peso en el último viaje} mínimo para llevar a las personas de mask
-    // dp[mask] = {viajes, peso en el último viaje} mínimo para llevar a las personas de mask
     vector<pair<int, ll>> dp(1 << n, {n + 1, 0});
     // se parte con un viaje vacío
     dp[0] = {1, 0};

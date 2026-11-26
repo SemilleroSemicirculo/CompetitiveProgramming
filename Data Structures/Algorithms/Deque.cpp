@@ -32,7 +32,6 @@ int main() {
     for (int i = 1; i < n; i++) v[i] = (a * v[i - 1] + b) % c;
 
     // la deque guarda índices con valores crecientes; el frente es el mínimo de la ventana
-    // la deque guarda índices con valores crecientes; el frente es el mínimo de la ventana
     deque<int> d;
     ll res = 0;
     for (int i = 0; i < n; i++) {

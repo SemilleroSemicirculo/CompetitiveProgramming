@@ -137,7 +137,7 @@ function inicio(){
         <input type="range" id="ns" min="1" max="5.3" step="0.01" value="2">
         <div class="bars" id="cmp"></div></div>
     </div>
-    <p class="note">Regla práctica: un computador hace unos <b>100 millones</b> (10⁸) de operaciones sencillas por segundo. La fuerza bruta prueba todos los pares (n² operaciones); <a href="#/DP-Algorithms-Kadane1D">Kadane</a> recorre el arreglo una vez (n operaciones).</p>
+    <p class="note">Regla práctica: un computador hace unos <b>100 millones</b> (10⁸) de operaciones sencillas por segundo. La fuerza bruta prueba todos los pares (unos n²/2 operaciones: orden n²); <a href="#/DP-Algorithms-Kadane1D">Kadane</a> recorre el arreglo una vez (n operaciones).</p>
   </section>
 
   <section class="blk"><h2>¿Qué tan rápido tiene que ser mi algoritmo?</h2>

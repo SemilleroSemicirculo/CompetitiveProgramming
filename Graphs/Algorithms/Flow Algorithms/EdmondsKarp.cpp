@@ -29,7 +29,6 @@ vector<vector<ll>> capacity;
 vector<vector<int>> adj;
 
 // BFS que busca un camino aumentante; devuelve el cuello de botella
-// BFS que busca un camino aumentante; devuelve el cuello de botella
 ll bfs(int s, int t, vector<int> &parent) {
     fill(all(parent), -1);
     parent[s] = -2;

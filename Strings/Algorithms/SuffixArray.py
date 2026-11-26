@@ -21,7 +21,9 @@ def suffix_array(s):
     k = 1
     # duplicación de prefijos: se ordena por los primeros k y luego 2k caracteres
     while True:
-        key = [rnk[i] * (n + 1) + (rnk[i + k] + 1 if i + k < n else 0) for i in range(n)]
+        # la clave codifica el par (rnk[i], rnk[i+k]); la base debe superar a todo rango posible
+        base = max(rnk) + 2
+        key = [rnk[i] * base + (rnk[i + k] + 1 if i + k < n else 0) for i in range(n)]
         sa.sort(key=key.__getitem__)
         tmp = [0] * n
         for idx in range(1, n):

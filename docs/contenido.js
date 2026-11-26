@@ -113,7 +113,7 @@ C(G+"Graph-Traversal-DSU", 1, "Mantiene grupos que se van uniendo y responde rá
   "Cada grupo es un árbol y su raíz lo representa. Para saber el grupo de alguien se sube hasta la raíz (y se acorta el camino para la próxima). Para unir dos grupos se cuelga el pequeño del grande. Ambas operaciones son casi O(1).",
   "Cuando se van agregando conexiones y preguntas si dos cosas quedaron conectadas.",
   ["find: subir a la raíz con compresión de caminos.", "unite: colgar el árbol pequeño del grande.", "Contar componentes restando 1 en cada unión exitosa."]);
-C(G+"Graph-Traversal-Djikstra", 2, "Expande siempre el nodo más cercano todavía no definitivo, como BFS pero con pesos.",
+C(G+"Graph-Traversal-Dijkstra", 2, "Expande siempre el nodo más cercano todavía no definitivo, como BFS pero con pesos.",
   "Si todas las aristas tienen peso positivo, el nodo con menor distancia tentativa ya no puede mejorar. Dijkstra lo fija y relaja sus aristas. Una cola de prioridad da ese nodo rápido. No funciona con pesos negativos.",
   "Camino más corto desde un origen con pesos no negativos (mapas, rutas).",
   ["dist[origen] = 0, el resto ∞.", "Sacar del heap el nodo con menor distancia.", "Relajar: si dist[u] + w < dist[v], actualizar."]);
@@ -130,7 +130,7 @@ C(G+"Graph-Traversal-TopologicalSort", 1, "Ordena tareas con dependencias: siemp
   "Planificar cursos, compilación, cualquier orden con requisitos.",
   ["Contar el grado de entrada.", "Encolar los de grado 0.", "Al sacar uno, restar a sus vecinos y encolar los que lleguen a 0."]);
 C(G+"Graph-Traversal-Tarjan", 3, "Encuentra las componentes fuertemente conexas con una sola DFS usando tiempos de descubrimiento.",
-  "En un grafo dirigido, una componente fuertemente conexa es un grupo donde todos llegan a todos. Tarjan anota cuándo descubre cada nodo y el nodo más antiguo que puede alcanzar (low). Si low[v] es su propio tiempo, v es la cabeza de una componente y se sacan de la pila sus miembros.",
+  "En un grafo dirigido, una componente fuertemente conexa es un grupo donde todos llegan a todos. Tarjan anota cuándo descubre cada nodo (disc) y low[v]: el menor tiempo de descubrimiento que se puede alcanzar desde el subárbol DFS de v usando a lo sumo una arista hacia un nodo que todavía está en la pila. Si low[v] es su propio tiempo, v es la cabeza de una componente y se sacan de la pila sus miembros.",
   "Para saber qué partes de un grafo dirigido están mutuamente conectadas.",
   ["DFS asignando discovered y low.", "Actualizar low con hijos y con nodos en la pila.", "Si low[v] = discovered[v], cerrar una SCC."]);
 C(G+"Graph-Traversal-Kosaraju", 2, "Dos DFS: la primera ordena los nodos, la segunda sobre el grafo invertido descubre las componentes.",
@@ -197,31 +197,31 @@ C(G+"Trees-TreeDistances", 2, "La distancia máxima desde cualquier nodo es haci
   "Se encuentran los extremos A y B del diámetro con dos BFS. Una tercera BFS desde B da todas las distancias a B. Para cada nodo, la respuesta es la mayor entre su distancia a A y a B.",
   "Distancia al nodo más lejano para todos los nodos.",
   ["BFS desde 1 → A.", "BFS desde A → B.", "Respuesta = max(dist a A, dist a B)."]);
-C(G+"Trees-TreeIsomorfismRooted", 2, "Da a cada subárbol un número según la forma de sus hijos; dos árboles son iguales si sus raíces reciben el mismo número.",
+C(G+"Trees-TreeIsomorphismRooted", 2, "Da a cada subárbol un número según la forma de sus hijos; dos árboles son iguales si sus raíces reciben el mismo número.",
   "Una hoja tiene un número; un nodo cuyos hijos tienen ciertos números recibe el número asignado a esa lista ordenada. Así, dos subárboles con la misma forma reciben el mismo número sin importar cómo estén etiquetados.",
   "Comparar la forma de dos árboles con raíz.",
   ["Procesar de las hojas a la raíz.", "Ordenar los números de los hijos.", "Asignar un id a cada lista distinta."]);
-C(G+"Trees-TreeIsomorfism", 3, "Como el isomorfismo con raíz, pero probando como raíz los centroides de cada árbol.",
+C(G+"Trees-TreeIsomorphism", 3, "Como el isomorfismo con raíz, pero probando como raíz los centroides de cada árbol.",
   "Si los árboles no tienen raíz, hay que elegir una de forma canónica. Todo árbol tiene uno o dos centroides, así que basta con probar esas pocas combinaciones y comparar los ids canónicos.",
   "Comparar la forma de dos árboles sin raíz.",
   ["Hallar los centroides de cada árbol.", "Calcular ids canónicos desde cada centroide.", "Iguales para algún par → YES."]);
-C(G+"Flow-Algoritms-EdmonsKarp", 2, "Busca con BFS caminos con capacidad libre y envía flujo por ellos hasta que no quede ninguno.",
+C(G+"Flow-Algorithms-EdmondsKarp", 2, "Busca con BFS caminos con capacidad libre y envía flujo por ellos hasta que no quede ninguno.",
   "Piensa en tuberías: cada una deja pasar una cantidad máxima. Mientras exista un camino de la fuente al destino con espacio, se envía lo que permite su tubería más estrecha. Las aristas inversas permiten «deshacer» decisiones malas.",
   "Flujo máximo en grafos pequeños o medianos.",
   ["BFS para un camino aumentante.", "Enviar el cuello de botella.", "Actualizar capacidades y sus inversas."]);
-C(G+"Flow-Algoritms-Dinic", 3, "Flujo máximo por fases: organiza el grafo en niveles y empuja todo el flujo posible en cada fase.",
-  "Dinic mejora a Edmonds-Karp: con un BFS arma niveles desde la fuente y luego con DFS manda flujo solo hacia adelante en los niveles, hasta bloquear todos los caminos. Pocas fases bastan, por eso es mucho más rápido.",
+C(G+"Flow-Algorithms-Dinic", 3, "Flujo máximo por fases: organiza el grafo en niveles y empuja todo el flujo posible en cada fase.",
+  "Dinic mejora a Edmonds-Karp: con un BFS arma niveles desde la fuente y luego con DFS manda flujo solo hacia adelante en los niveles, hasta bloquear todos los caminos. Cada fase aumenta estrictamente la distancia de s a t, así que hay a lo sumo V fases; en la práctica son muchas menos, y en redes unitarias O(√V).",
   "Flujo máximo en grafos grandes; también emparejamientos.",
   ["BFS de niveles.", "DFS de flujo bloqueante con it[].", "Repetir mientras t sea alcanzable."]);
-C(G+"Flow-Algoritms-BipartiteMatching", 2, "Empareja elementos de dos grupos; si alguien está ocupado, intenta reubicarlo en otra pareja.",
+C(G+"Flow-Algorithms-BipartiteMatching", 2, "Empareja elementos de dos grupos; si alguien está ocupado, intenta reubicarlo en otra pareja.",
   "El algoritmo de Kuhn intenta emparejar a cada chico. Si la chica que le gusta ya tiene pareja, pregunta si esa pareja puede cambiarse a otra chica libre. Esa cadena de cambios es un camino aumentante.",
   "Asignaciones uno a uno: trabajos, parejas, horarios.",
   ["Para cada u, buscar con DFS.", "Si v está libre o su pareja se reubica, emparejar.", "Contar los éxitos."]);
-C(G+"Flow-Algoritms-MinCostMaxFlow", 3, "Envía el máximo flujo posible, eligiendo siempre el camino más barato disponible.",
+C(G+"Flow-Algorithms-MinCostMaxFlow", 3, "Envía el máximo flujo posible, eligiendo siempre el camino más barato disponible.",
   "Cada tubería además tiene un costo por unidad. El algoritmo busca el camino más barato en el grafo residual (Dijkstra con potenciales para manejar costos negativos) y envía todo lo que puede por él, hasta que no haya más caminos.",
   "Transporte, asignaciones con costos.",
   ["Potenciales iniciales con Bellman-Ford.", "Dijkstra para el camino más barato.", "Enviar el cuello de botella y repetir."]);
-C(G+"Flow-Algoritms-MinCostAnyFlow", 3, "Igual que el flujo de costo mínimo, pero se detiene al enviar exactamente K unidades.",
+C(G+"Flow-Algorithms-MinCostAnyFlow", 3, "Igual que el flujo de costo mínimo, pero se detiene al enviar exactamente K unidades.",
   "Usa el mismo motor que el de flujo máximo con costo mínimo, solo que el límite es K. Si el grafo no puede transportar K unidades, se informa que es imposible.",
   "Cuando la cantidad a transportar está fija.",
   ["Mismo algoritmo con límite K.", "Si se envió menos de K → IMPOSSIBLE.", "Si no, imprimir el costo."]);
@@ -229,7 +229,7 @@ C(G+"Flow-Algoritms-MinCostAnyFlow", 3, "Igual que el flujo de costo mínimo, pe
 // ---------- Cadenas ----------
 const S = "Strings-Algorithms-";
 C(S+"KMP-I", 2, "Precalcula cuánto del patrón se puede reutilizar tras un fallo para no volver a empezar de cero.",
-  "LP[i] es el borde más largo de s[0..i]: el mayor prefijo que también es sufijo. Si pegas patrón + # + texto, cada posición con LP igual al largo del patrón marca una aparición.",
+  "Aquí t es el patrón y s el texto. LP[i] es el borde más largo de (t + '#' + s)[0..i]: el mayor prefijo que también es sufijo. Si pegas patrón + # + texto, cada posición con LP igual al largo del patrón marca una aparición.",
   "Buscar un patrón en un texto en tiempo lineal.",
   ["Concatenar t + '#' + s.", "Calcular LP.", "Contar posiciones con LP = |t|."]);
 C(S+"KMP-II", 2, "Recorre el texto una vez usando la tabla del patrón para saber dónde seguir tras cada fallo.",
@@ -245,14 +245,14 @@ C(S+"RabinKarp", 2, "Convierte cada trozo del texto en un número (hash) y compa
   "Comparar subcadenas rápido, búsqueda de patrones, igualdad de trozos.",
   ["Precalcular potencias de la base.", "Hash de cada prefijo.", "Comparar el hash de cada ventana con el patrón."]);
 C(S+"PrefixTrie", 2, "Un árbol donde cada camino desde la raíz deletrea una palabra; las palabras con el mismo inicio comparten camino.",
-  "Insertar y buscar cuesta solo el largo de la palabra. Aquí se combina con DP: desde cada posición del texto se baja por el trie y cada palabra completa encontrada suma las formas de construir el resto.",
+  "Insertar y buscar cuesta solo el largo de la palabra, y el trie tiene a lo sumo (suma de largos + 1) nodos. Aquí se combina con DP: desde cada posición del texto se baja por el trie y cada palabra completa encontrada suma las formas de construir el resto.",
   "Diccionarios, autocompletado, partir un texto en palabras.",
   ["Insertar palabras letra por letra.", "dp[n] = 1.", "Desde i, bajar por el trie y sumar dp[j + 1] en cada palabra."]);
 C(S+"Manacher", 3, "Encuentra el palíndromo más largo reutilizando la simetría de los palíndromos ya encontrados.",
   "Dentro de un palíndromo, lo que pasa a un lado del centro se refleja al otro. Manacher guarda el palíndromo que llega más a la derecha y lo usa para empezar cada nuevo cálculo con ventaja. Se calculan por separado los de largo impar (d1) y par (d2).",
   "Palíndromos más largos o conteo de palíndromos.",
   ["Para cada centro, empezar con el valor reflejado.", "Expandir mientras coincidan.", "Actualizar el intervalo [l, r]."]);
-C(S+"MinimalRotation", 3, "Compara dos candidatos a rotación mínima y descarta de un salto todas las posiciones que no pueden ganar.",
+C(S+"MinimalRotation", 3, "Método de los dos índices (distinto de Booth y de Duval, que también son O(n)): compara dos candidatos a rotación mínima y descarta de un salto todas las posiciones que no pueden ganar.",
   "La rotación mínima es una subcadena de s + s. Con dos índices i y j se comparan carácter a carácter; al encontrar una diferencia, el que pierde puede saltar k + 1 posiciones porque ninguna de ellas puede ser mejor.",
   "Forma canónica de cadenas circulares.",
   ["t = s + s.", "Comparar t[i + k] con t[j + k].", "Saltar el peor; la respuesta es min(i, j)."]);
@@ -271,7 +271,7 @@ C("Geometry-Shoelace", 1, "Calcula el área de un polígono multiplicando coorde
   "Área de cualquier polígono simple.",
   ["Recorrer los vértices en orden.", "Sumar los productos cruzados.", "Valor absoluto: doble del área."]);
 C("Geometry-ConvexHull", 2, "Encuentra el «elástico» que rodea a todos los puntos: el menor polígono convexo que los contiene.",
-  "Graham scan ordena los puntos por ángulo alrededor del más bajo y los recorre con una pila. Si los tres últimos giran hacia el lado equivocado, el del medio queda adentro y se saca. El producto cruz decide el giro.",
+  "Graham scan ordena los puntos por ángulo alrededor del más bajo y los recorre con una pila. Si los tres últimos giran hacia el lado equivocado, el del medio queda adentro y se saca. El producto cruz decide el giro. En el código del repositorio el orden es horario: se conservan los giros horarios (cw) y se saca el punto ante un giro antihorario.",
   "Envolventes, puntos extremos, base de muchos problemas geométricos.",
   ["Elegir el punto más bajo.", "Ordenar por ángulo.", "Pila: sacar mientras el giro sea incorrecto."]);
 C("Geometry-PointInPolygon", 2, "Lanza un rayo desde el punto y cuenta cuántas veces cruza el borde: impar = adentro.",
@@ -279,13 +279,13 @@ C("Geometry-PointInPolygon", 2, "Lanza un rayo desde el punto y cuenta cuántas 
   "Saber si un punto está dentro de un polígono.",
   ["¿Está sobre alguna arista? → BOUNDARY.", "Contar cruces del rayo horizontal.", "Impar → INSIDE."]);
 C("Geometry-SegmentIntersection", 2, "Dos segmentos se cortan si los extremos de cada uno quedan a lados distintos del otro.",
-  "El signo del producto cruz dice de qué lado de una recta está un punto. Si los extremos de cada segmento están en lados opuestos (o sobre la recta) del otro, y sus cajas se solapan, se intersectan.",
+  "El signo del producto cruz dice de qué lado de una recta está un punto. Si los extremos de cada segmento están en lados estrictamente opuestos del otro, se cortan. Si alguna orientación es 0 (un extremo sobre la recta del otro), además hay que revisar que las cajas que encierran a los segmentos se solapen: sin ese chequeo, dos segmentos colineales pero separados parecerían cortarse.",
   "Cruces de caminos, colisiones.",
-  ["Calcular las cuatro orientaciones.", "Revisar que las cajas se solapen.", "Signos opuestos o cero → YES."]);
+  ["Calcular las cuatro orientaciones o1..o4.", "Si o1 ≠ o2 y o3 ≠ o4 con signos estrictos → YES.", "Si hay un cero, el punto debe estar dentro de la caja del otro segmento (colineales)."]);
 C("Geometry-PolygonLatticePoints", 2, "Con el teorema de Pick, el área y los puntos del borde dan los puntos enteros interiores.",
-  "Pick dice que A = I + B/2 − 1. El área sale del Shoelace y los puntos del borde de cada arista son gcd(|dx|, |dy|). Despejando se obtiene I sin contar punto por punto.",
+  "Pick dice que A = I + B/2 − 1. El Shoelace da con enteros el doble del área, S = 2A, y los puntos del borde de cada arista son gcd(|dx|, |dy|). Despejando, 2I = S − B + 2, sin contar punto por punto y sin fracciones.",
   "Contar puntos enteros dentro de polígonos.",
-  ["Área doble con Shoelace.", "B = suma de gcd por arista.", "I = (2A − B + 2) / 2."]);
+  ["Área doble con Shoelace.", "B = suma de gcd por arista.", "I = (S − B + 2) / 2, con S = 2A."]);
 C("Geometry-ClosestPair", 3, "Barre los puntos de izquierda a derecha y solo compara con los que están en una franja cercana.",
   "Comparar todos los pares cuesta n². Si ya conoces una distancia d, solo importan los puntos a menos de d en x, y entre ellos los que están a menos de d en y. Un set ordenado por y los encuentra rápido, y son muy pocos.",
   "Par de puntos más cercano con muchos puntos.",
@@ -306,7 +306,7 @@ C(T+"BinarySearchAnswer", 2, "Si puedes verificar rápido «¿alcanza con t?», 
   "Minimizar tiempos, máximos, capacidades.",
   ["Elegir un rango [lo, hi] seguro.", "Verificar mid.", "Si alcanza, hi = mid; si no, lo = mid + 1."]);
 C(T+"TS", 2, "Para una función que sube y luego baja, compara dos puntos y descarta un tercio del intervalo.",
-  "Si f(m1) < f(m2), el máximo no puede estar a la izquierda de m1. Cada paso deja dos tercios, y al quedar pocos valores se revisan todos.",
+  "Si f(m1) < f(m2), el máximo no puede estar a la izquierda de m1. Ojo: necesita que la función sea estrictamente unimodal; con tramos planos (f(m1) = f(m2) sin estar en el pico) puede descartar el tercio equivocado. Cada paso deja dos tercios, y al quedar pocos valores se revisan todos.",
   "Máximos o mínimos de funciones unimodales.",
   ["Elegir m1 y m2 en los tercios.", "Descartar el tercio peor.", "Revisar los últimos valores a mano."]);
 C(T+"Sieve", 1, "Tacha los múltiplos de cada primo; lo que queda sin tachar son los primos.",
@@ -339,7 +339,7 @@ C("DP-Classic-Problems-Grid-Paths-I", 1, "Los caminos que llegan a una celda son
   "Como solo se puede ir a la derecha o abajo, cada camino que llega a (i, j) pasó justo antes por (i−1, j) o por (i, j−1). Las trampas tienen 0 caminos. Basta recorrer la cuadrícula fila por fila, y como cada fila solo usa la anterior, se puede guardar una sola fila.",
   "Cuadrículas con movimientos que solo avanzan (derecha/abajo) y obstáculos.",
   ["dp[0][0] = 1 si no es trampa.", "dp[i][j] = dp[i−1][j] + dp[i][j−1], o 0 si es trampa.", "La respuesta es dp[n−1][n−1]."]);
-C("DP-Classic-Problems-Money-Sums", 1, "Lleva el conjunto de sumas alcanzables como bits: agregar una moneda x es hacer can |= can << x.",
+C("DP-Classic-Problems-Money-Sums", 2, "Lleva el conjunto de sumas alcanzables como bits: agregar una moneda x es hacer can |= can << x.",
   "Es la mochila de «¿se puede formar s?». Con una tabla de booleanos, cada moneda recorre todas las sumas; con un bitset, la misma operación se hace con un corrimiento y un OR, 64 sumas a la vez. En Python un entero grande sirve como bitset y la operación es igual de corta.",
   "Para saber qué sumas (o pesos) se pueden formar con un subconjunto, cuando la suma total es moderada.",
   ["can = {0}.", "Para cada moneda x: can = can ∪ (can + x), es decir can |= can << x.", "Listar los bits encendidos distintos de 0."]);
@@ -404,7 +404,7 @@ C("Strings-Classic-Problems-Distinct-Subsequences", 2, "Cada caracter duplica la
   "Contar subsecuencias distintas o, en general, conteos donde hay que evitar duplicados.",
   ["T = 1 (la vacía), last[c] = 0.", "Por cada c: T' = 2T − last[c]; last[c] = T; T = T'.", "Respuesta = T − 1."]);
 C("Strings-Classic-Problems-Repeating-Substring", 3, "La subcadena repetida más larga es el mayor LCP entre sufijos vecinos del suffix array.",
-  "Dos apariciones de una subcadena son dos sufijos que empiezan igual. Al ordenar todos los sufijos (suffix array), los que comparten el prefijo más largo quedan juntos, así que basta mirar el prefijo común (LCP) entre vecinos. La versión en Python usa otra idea: si un largo L se repite, cualquier largo menor también, así que se busca el mayor L con búsqueda binaria y se revisa cada L con hashing.",
+  "Dos apariciones de una subcadena son dos sufijos que empiezan igual. Al ordenar todos los sufijos (suffix array), los que comparten el prefijo más largo quedan juntos, así que basta mirar el prefijo común (LCP) entre vecinos. La versión en Python usa otra idea: si un largo L se repite, cualquier largo menor también, así que se busca el mayor L con búsqueda binaria y se revisa cada L con hashing (O(n log n) en total). El suffix array por duplicación con sort cuesta O(n log² n); con counting sort baja a O(n log n).",
   "Repeticiones, subcadenas comunes y conteo de subcadenas distintas.",
   ["Construir el suffix array y el LCP (Kasai).", "Tomar el mayor LCP y su posición.", "Si es 0 imprimir −1."]);
 C("Strings-Classic-Problems-Required-Substring", 3, "Cuenta las cadenas que NO contienen el patrón con una DP sobre el autómata de KMP y réstalas del total 26^n.",
@@ -437,7 +437,7 @@ C("FunctionalTools-Classic-Problems-Exponentiation", 1, "Exponenciación binaria
   ["res = 1.", "Mientras b > 0: si b es impar res = res·a; a = a·a; b = b/2.", "Todo módulo 10^9+7."]);
 C("FunctionalTools-Classic-Problems-Counting-Divisors", 1, "Con la criba del menor factor primo, factorizas cada x rápido y usas d(x) = (e1+1)(e2+1)…",
   "Si x = p1^e1 · p2^e2 · …, cada divisor elige un exponente de 0 a e_i para cada primo, así que hay (e1+1)(e2+1)… divisores. Con una criba que guarda el menor factor primo de cada número hasta 10^6, factorizar cualquier x cuesta O(log x).",
-  "Muchas factorizaciones de números pequeños (hasta ~10^7).",
+  "Muchas factorizaciones de números pequeños (hasta ~10^6 en Python, ~10^7 en C++).",
   ["Criba spf hasta 10^6.", "Factorizar x dividiendo por spf[x] repetidamente.", "Multiplicar (exponente + 1) de cada primo."]);
 C("FunctionalTools-Classic-Problems-Distributing-Apples", 2, "Estrellas y barras: repartir m objetos iguales entre n personas es C(m + n − 1, n − 1).",
   "Pon las m manzanas en fila y n − 1 separadores: cada orden de estrellas y barras corresponde a un reparto (lo que queda entre separadores es para cada niño). Hay m + n − 1 posiciones y se eligen las de los separadores. El coeficiente binomial se calcula módulo primo con factoriales e inversos de Fermat.",
@@ -458,7 +458,7 @@ C("Probability-Algorithms-ProbabilityDP", 1, "Una DP de probabilidades: en vez d
   "Cuando un proceso avanza por pasos aleatorios independientes y se pregunta la probabilidad de terminar en cierto estado.",
   ["p[0][0] = 1.", "p[d][s] = Σ_{c=1..6} p[d−1][s−c] / 6.", "Respuesta = Σ_{s=a..b} p[n][s], impresa con seis decimales."]);
 C("Probability-Algorithms-LinearityOfExpectation", 1, "Linealidad de la esperanza: el número esperado de inversiones es la suma, par por par, de la probabilidad de que ese par sea una inversión.",
-  "La esperanza de una suma es la suma de las esperanzas, incluso si las variables NO son independientes. Se escribe el total como suma de indicadores (1 si el par (i, j) es inversión, 0 si no); la esperanza de un indicador es su probabilidad. Así, un problema sobre todos los arreglos posibles (un número enorme) se vuelve n² problemas pequeños: P(x_i > x_j) contando los casos favorables entre r_i · r_j.",
+  "La esperanza de una suma es la suma de las esperanzas, incluso si las variables NO son independientes (la varianza, en cambio, solo se suma si lo son). Se escribe el total como suma de indicadores (1 si el par (i, j) es inversión, 0 si no); la esperanza de un indicador es su probabilidad. Así, un problema sobre todos los arreglos posibles (un número enorme) se vuelve n² problemas pequeños: P(x_i > x_j) contando los casos favorables entre r_i · r_j.",
   "Cada vez que piden un valor esperado de un conteo (pares, inversiones, casillas, pasos): descomponerlo en indicadores.",
   ["Escribir X = Σ indicadores I_{ij}.", "E[X] = Σ P(I_{ij} = 1) por linealidad.", "P(x_i > x_j) = (Σ_{v=1..r_i} min(v−1, r_j)) / (r_i · r_j)."]);
 C("Probability-Algorithms-ExpectedMaximum", 2, "Para el máximo se usa la función de distribución: P(máx ≤ m) = (m/k)^n porque todos deben ser ≤ m; restando se obtiene P(máx = m).",
@@ -490,7 +490,7 @@ C("Probability-Classic-Problems-Journey", 1, "La probabilidad de pasar por un no
   "Caminatas aleatorias en árboles y esperanzas de profundidad.",
   ["BFS desde 1 calculando profundidad y prob.", "prob[hijo] = prob[u] / hijos(u).", "Respuesta = Σ hojas prob · profundidad."]);
 C("Probability-Classic-Problems-Game-on-Tree", 2, "Con indicadores: un nodo cuenta como paso solo si se elige antes que todos sus ancestros, y eso pasa con probabilidad 1 / profundidad.",
-  "El número de pasos es la cantidad de nodos que se eligen directamente. Un nodo v se elige directamente si, entre él y sus ancestros (depth(v) nodos en total), es el primero en ser escogido; por simetría, cada uno de ellos es el primero con la misma probabilidad. Por linealidad de la esperanza, E[pasos] = Σ_v 1/depth(v). Es el ejemplo clásico de cómo un indicador bien elegido convierte un proceso complicado en una suma simple.",
+  "El número de pasos es la cantidad de nodos que se eligen directamente. Un nodo v se elige directamente si, entre él y sus ancestros (depth(v) nodos en total), es el primero en ser escogido; por simetría, cada uno de ellos es el primero con la misma probabilidad. ¿Por qué hay simetría? Elegir al azar entre los nodos que quedan equivale a fijar desde el inicio una permutación aleatoria de todos los nodos y recorrerla saltando los que ya se borraron: saltar nodos muertos no cambia el orden relativo de los vivos. En esa permutación, v se elige directamente justo cuando aparece antes que todos sus ancestros. Por linealidad de la esperanza, E[pasos] = Σ_v 1/depth(v). Es el ejemplo clásico de cómo un indicador bien elegido convierte un proceso complicado en una suma simple.",
   "Esperanzas de procesos con eliminaciones aleatorias: busca un indicador por elemento.",
   ["Profundidades con BFS (raíz = 1).", "Respuesta = Σ 1 / depth(v)."]);
 C("Probability-Classic-Problems-Lets-Play-Osu", 3, "Para la esperanza de un cuadrado se usa (L+1)² − L² = 2L + 1: basta llevar E[L], el largo esperado del bloque actual.",
@@ -502,7 +502,7 @@ C("Probability-Classic-Problems-Lets-Play-Osu", 3, "Para la esperanza de un cuad
 C("Probability-Distributions-Binomial", 1, "La binomial cuenta los éxitos en n ensayos independientes con probabilidad p: P(X = k) = C(n, k)·pᵏ·(1−p)ⁿ⁻ᵏ, con E = np y Var = np(1−p).",
   "Un ensayo de Bernoulli es un sí/no con probabilidad p. Si se repite n veces de forma independiente, el número de éxitos X tiene distribución binomial. La fórmula sale de elegir cuáles k ensayos son éxitos (C(n, k)) y multiplicar probabilidades. En competencia conviene más armarla con una DP ensayo por ensayo: d[i] = probabilidad de i éxitos, y cada ensayo hace d'[i] = d[i]·(1−p) + d[i−1]·p. Así no hay que calcular binomiales gigantes y funciona igual si cada ensayo tiene su propia probabilidad pᵢ (la «binomial de Poisson», muy común en problemas). E = np sale directo por linealidad: X es la suma de n indicadores. Si en vez de ensayos independientes se sacan objetos sin reponerlos, la distribución es la hipergeométrica: P = C(K, k)·C(N−K, n−k) / C(N, n).",
   "Contar éxitos entre ensayos independientes: aciertos, personas que compran, monedas que salen cara.",
-  ["d[0] = 1.", "Por cada ensayo: d'[i] = d[i]·(1 − p) + d[i − 1]·p.", "P(X = k) = d[k]; P(X ≥ k) = Σ_{i ≥ k} d[i].", "E[X] = np y Var(X) = np(1 − p) (linealidad)."]);
+  ["d[0] = 1.", "Por cada ensayo: d'[i] = d[i]·(1 − p) + d[i − 1]·p.", "P(X = k) = d[k]; P(X ≥ k) = Σ_{i ≥ k} d[i].", "E[X] = np (linealidad) y Var(X) = np(1 − p) (las varianzas se suman porque los ensayos son independientes)."]);
 C("Probability-Distributions-CouponCollector", 2, "Esperar el primer éxito es una geométrica (esperanza 1/p); juntar los n tipos de cupón es una suma de geométricas: E = n·(1 + 1/2 + … + 1/n).",
   "Si cada intento tiene éxito con probabilidad p, el número de intentos hasta el primer éxito sigue una distribución geométrica: P(T = t) = (1−p)^(t−1)·p y E[T] = 1/p. En el coleccionista de cupones, con c tipos ya vistos, cada compra trae uno nuevo con probabilidad (n − c)/n, así que esperar el siguiente nuevo es una geométrica de esperanza n/(n − c). Sumando por linealidad: E = n·H_n ≈ n·ln n. Para la probabilidad de terminar en t compras se usa la cadena de Markov sobre «cuántos tipos llevo», o inclusión-exclusión: Σ (−1)^i·C(n, i)·(1 − i/n)^t.",
   "Tiempos de espera: intentos hasta un éxito, compras hasta completar un álbum, pasos hasta visitar todo.",

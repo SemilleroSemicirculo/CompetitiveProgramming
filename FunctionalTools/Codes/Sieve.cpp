@@ -26,7 +26,7 @@ const ll INF = numeric_limits<ll>::max();
 // Criba de Eratóstenes: marca en `is_prime` los primos ≤ N.
 // is_prime[x] queda en true si x es primo
 vector<bool> sieve(int N) {
-    vector<bool> is_prime(N+1, true);
+    vector<bool> is_prime(max(N, 1) + 1, true);  // al menos 2 casillas: sieve(0) no escribe fuera
     is_prime[0] = is_prime[1] = false;
     // solo hace falta tachar múltiplos de primos hasta sqrt(N)
     for (int p = 2; p*p <= N; ++p) {

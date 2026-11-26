@@ -90,7 +90,7 @@ int main(){
     fastio;
     
     ll n, m; cin >> n >> m;
-    // 2-SAT: n cláusulas y m variables; el nodo x es "x verdadero" y x+m es su negación
+    // 2-SAT: n cláusulas y m variables; el nodo x representa "x falsa" (¬x) y el nodo x+m representa "x verdadera"
     Tarjan tarjan(2*m+1);
  
     // negación de un literal
@@ -103,7 +103,7 @@ int main(){
         // cada cláusula (a ∨ b) agrega las implicaciones ¬a → b y ¬b → a
         char type1, type2; ll u, v; 
         cin >> type1 >> u >> type2  >> v;
-        // se lee "+ x" como literal x; se guarda su negación para armar las implicaciones
+        // el literal "+ x" es el nodo x+m y "- x" es el nodo x
         if(type1 == '+') u = negation(u);
         if(type2 == '+') v = negation(v);
  

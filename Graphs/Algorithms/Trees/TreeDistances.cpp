@@ -26,7 +26,6 @@ const ll INF = numeric_limits<ll>::max();
 vector<vector<int>> G;
 
 // BFS: distancias desde s
-// BFS: distancias desde s
 vector<int> bfs(int s) {
     vector<int> dist(G.size(), -1);
     queue<int> q;
@@ -64,7 +63,6 @@ int main() {
     int B = max_element(dA.begin() + 1, dA.end()) - dA.begin();
     auto dB = bfs(B);
 
-    // la distancia máxima desde v es max(dist a A, dist a B)
     // la distancia máxima desde v es max(dist a A, dist a B)
     for (int v = 1; v <= n; v++) cout << max(dA[v], dB[v]) << ' ';
     cout << "\n";

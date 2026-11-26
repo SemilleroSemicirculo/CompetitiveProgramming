@@ -36,12 +36,12 @@ window.SECCIONES = {
 ],
 "Graphs": [
   {"t": "Recorridos", "d": "BFS, DFS, ciclos y bipartición.", "ids": ["Graphs-Algorithms-Graph-Traversal-DFS", "Graphs-Classic-Problems-Counting-Rooms", "Graphs-Algorithms-Graph-Traversal-BFS", "Graphs-Classic-Problems-Labyrinth", "Graphs-Algorithms-Graph-Traversal-Bipartite", "Graphs-Algorithms-Miscellaneous-CycleFindingUndirected", "Graphs-Algorithms-Miscellaneous-CycleFindingDirected"]},
-  {"t": "Caminos más cortos", "d": "Con y sin pesos negativos, de uno o de todos.", "ids": ["Graphs-Algorithms-Graph-Traversal-Djikstra", "Graphs-Classic-Problems-Flight-Discount", "Graphs-Algorithms-Graph-Traversal-BellmanFord", "Graphs-Algorithms-Graph-Traversal-FloydWarshall"]},
+  {"t": "Caminos más cortos", "d": "Con y sin pesos negativos, de uno o de todos.", "ids": ["Graphs-Algorithms-Graph-Traversal-Dijkstra", "Graphs-Classic-Problems-Flight-Discount", "Graphs-Algorithms-Graph-Traversal-BellmanFord", "Graphs-Algorithms-Graph-Traversal-FloydWarshall"]},
   {"t": "DAGs y componentes", "d": "Orden topológico, componentes y 2-SAT.", "ids": ["Graphs-Algorithms-Graph-Traversal-TopologicalSort", "Graphs-Classic-Problems-Longest-Flight-Route", "Graphs-Algorithms-Graph-Traversal-DSU", "Graphs-Algorithms-Graph-Traversal-Kosaraju", "Graphs-Algorithms-Graph-Traversal-Tarjan", "Graphs-Algorithms-Miscellaneous-2-SAT"]},
   {"t": "Árbol de expansión mínima", "d": "Kruskal y Prim.", "ids": ["Graphs-Algorithms-MST-Kruskal", "Graphs-Algorithms-MST-Prim"]},
   {"t": "Caminos eulerianos", "d": "Usar cada arista una vez.", "ids": ["Graphs-Algorithms-Graph-Traversal-EulerianCycle", "Graphs-Algorithms-Graph-Traversal-HierholzerDirected"]},
-  {"t": "Árboles", "d": "Subárboles, diámetro, LCA, centroides e isomorfismo.", "ids": ["Graphs-Classic-Problems-Subordinates", "Graphs-Algorithms-Graph-Traversal-Diameter", "Graphs-Algorithms-Trees-TreeDistances", "Graphs-Algorithms-Trees-EulerTour", "Graphs-Algorithms-Trees-BinaryLifting", "Graphs-Algorithms-Trees-LCA", "Graphs-Algorithms-Trees-Centroid", "Graphs-Algorithms-Trees-CentroidDecomposition", "Graphs-Algorithms-Trees-TreeIsomorfismRooted", "Graphs-Algorithms-Trees-TreeIsomorfism"]},
-  {"t": "Flujos y emparejamientos", "d": "Flujo máximo, emparejamiento y costo mínimo.", "ids": ["Graphs-Algorithms-Flow-Algoritms-EdmonsKarp", "Graphs-Algorithms-Flow-Algoritms-Dinic", "Graphs-Algorithms-Flow-Algoritms-BipartiteMatching", "Graphs-Algorithms-Flow-Algoritms-MinCostMaxFlow", "Graphs-Algorithms-Flow-Algoritms-MinCostAnyFlow"]}
+  {"t": "Árboles", "d": "Subárboles, diámetro, LCA, centroides e isomorfismo.", "ids": ["Graphs-Classic-Problems-Subordinates", "Graphs-Algorithms-Graph-Traversal-Diameter", "Graphs-Algorithms-Trees-TreeDistances", "Graphs-Algorithms-Trees-EulerTour", "Graphs-Algorithms-Trees-BinaryLifting", "Graphs-Algorithms-Trees-LCA", "Graphs-Algorithms-Trees-Centroid", "Graphs-Algorithms-Trees-CentroidDecomposition", "Graphs-Algorithms-Trees-TreeIsomorphismRooted", "Graphs-Algorithms-Trees-TreeIsomorphism"]},
+  {"t": "Flujos y emparejamientos", "d": "Flujo máximo, emparejamiento y costo mínimo.", "ids": ["Graphs-Algorithms-Flow-Algorithms-EdmondsKarp", "Graphs-Algorithms-Flow-Algorithms-Dinic", "Graphs-Algorithms-Flow-Algorithms-BipartiteMatching", "Graphs-Algorithms-Flow-Algorithms-MinCostMaxFlow", "Graphs-Algorithms-Flow-Algorithms-MinCostAnyFlow"]}
 ],
 "Strings": [
   {"t": "Prefijos, bordes y periodos", "d": "Función de prefijos (KMP) y función Z.", "ids": ["Strings-Algorithms-KMP-I", "Strings-Algorithms-KMP-II", "Strings-Classic-Problems-Finding-Borders", "Strings-Algorithms-ZFunction", "Strings-Classic-Problems-Finding-Periods"]},
@@ -60,10 +60,10 @@ window.NOMBRE_VISTA = {
  "FunctionalTools-Codes-BS": "Búsqueda binaria",
  "FunctionalTools-Codes-BS-library": "Búsqueda binaria (librería)",
  "FunctionalTools-Codes-TS": "Búsqueda ternaria",
- "Graphs-Algorithms-Graph-Traversal-Djikstra": "Dijkstra",
- "Graphs-Algorithms-Flow-Algoritms-EdmonsKarp": "Edmonds-Karp",
- "Graphs-Algorithms-Trees-TreeIsomorfism": "Tree Isomorphism",
- "Graphs-Algorithms-Trees-TreeIsomorfismRooted": "Tree Isomorphism (con raíz)",
+ "Graphs-Algorithms-Graph-Traversal-Dijkstra": "Dijkstra",
+ "Graphs-Algorithms-Flow-Algorithms-EdmondsKarp": "Edmonds-Karp",
+ "Graphs-Algorithms-Trees-TreeIsomorphism": "Tree Isomorphism",
+ "Graphs-Algorithms-Trees-TreeIsomorphismRooted": "Tree Isomorphism (con raíz)",
  "Probability-Classic-Problems-Lets-Play-Osu": "Let's Play Osu!",
  "Probability-Classic-Problems-Game-on-Tree": "Game on Tree",
  "Probability-Algorithms-ProbabilityDP": "DP de probabilidades",

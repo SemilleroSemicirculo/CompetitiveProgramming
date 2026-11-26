@@ -65,27 +65,16 @@ int main() {
     // centroide: ningún subárbol puede tener más de n/2 nodos
     int limit = n / 2;
     int u = 1;
-    // se baja siempre hacia el hijo con subárbol demasiado grande
+    // se baja siempre hacia el hijo con subárbol demasiado grande. Al bajar a v, la parte "de arriba"
+    // queda con n − dp[v] < n/2 nodos, así que nunca hace falta volver a subir.
     while (true) {
-        bool moved = false;
-        for (int v : adj[u]) {
-            if (v != parent[u] && dp[v] > limit) {
-                parent[u] = u;
-                u = v;
-                moved = true;
-                break;
-            }
-        }
-        if (moved) continue;
-
-        // si tampoco la parte "de arriba" es grande, u es el centroide
-        if (n - dp[u] <= limit) {
-            cout << u << '\n';
-            break;
-        }
-
-        u = parent[u];
+        int heavy = -1;
+        for (int v : adj[u])
+            if (v != parent[u] && dp[v] > limit) heavy = v;
+        if (heavy == -1) break;   // ningún hijo pasa de n/2: u es el centroide
+        u = heavy;
     }
+    cout << u << '\n';
 
     return 0;
 }
