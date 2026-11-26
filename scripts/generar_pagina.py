@@ -9,7 +9,7 @@ import json, os, re
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Versiones en Python correctas pero que no pasan el límite de tiempo de CSES
-PY_LENTOS = {"LIS-I", "BitmaskDP", "Serval and Bonus Problem", "MoAlgorithm", "LazySegmentTree", "Removal Game", "Hotel Queries", "Prefix Sum Queries", "Finding Borders", "Finding Periods", "Area of Rectangles", "Array Division", "SegmentIntersection", "EdmondsKarp", "FloydWarshall", "CentroidDecomposition"}
+PY_LENTOS = {"LIS-I", "BitmaskDP", "Serval and Bonus Problem", "MoAlgorithm", "LazySegmentTree", "Removal Game", "Hotel Queries", "Prefix Sum Queries", "Finding Borders", "Finding Periods", "Area of Rectangles", "Array Division", "SegmentIntersection", "EdmondsKarp", "FloydWarshall", "CentroidDecomposition", "FFT", "NTT", "DivideAndConquerDP", "KnuthOptimization", "SOSDP", "PersistentSegmentTree", "Treap"}
 CARPETAS = ["DP", "Data Structures", "Graphs", "Strings", "Geometry", "FunctionalTools", "Probability"]
 NOMBRES = {"DP": "Programación dinámica", "Data Structures": "Estructuras de datos",
            "Graphs": "Grafos", "Strings": "Cadenas", "Geometry": "Geometría",
@@ -39,7 +39,7 @@ def main():
                 codigo, c = leer(ruta)
                 partes = rel.split("/")
                 sub = "/".join(partes[1:-1]) or "-"
-                url = re.search(r"https://(?:cses\.fi/problemset/task/\d+|codeforces\.com/problemset/problem/\d+/\w+)", c.get("Problema", ""))
+                url = re.search(r"https://(?:cses\.fi/problemset/task/\d+|codeforces\.com/(?:problemset/problem/\d+/\w+|gym/\d+/problem/\w+)|judge\.yosupo\.jp/problem/\w+|open\.kattis\.com/problems/\w+|www\.spoj\.com/problems/\w+|atcoder\.jp/contests/\w+/tasks/\w+)", c.get("Problema", ""))
                 items.append({
                     "id": re.sub(r"[^A-Za-z0-9]+", "-", rel[:-4]).strip("-"),
                     "carpeta": carpeta, "area": NOMBRES[carpeta], "sub": sub,

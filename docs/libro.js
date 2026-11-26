@@ -179,7 +179,82 @@ window.LIBRO = [
     { q: '¿Cuántos estados y transiciones tiene una DP de bitmask con n = 20?', a: '2²⁰ ≈ 10⁶ estados con 20 transiciones cada uno: unos 2·10⁷ pasos.' },
     { q: '¿Qué relación tiene el truco de Aliens con la optimización continua?', a: 'Es relajación lagrangiana: se quita la restricción "exactamente k" y se cobra una penalización λ por cada elemento, ajustando λ con búsqueda binaria.' }
   ],
-  cierre: 'Ya tienes las bases de DP. En las finales, la DP se combina con convexidad y dualidad: conceptos de optimización que vale la pena estudiar formalmente.' }
+  cierre: 'Ya tienes las bases de DP. En las finales, la DP se combina con convexidad y dualidad: conceptos de optimización que vale la pena estudiar formalmente.' },
+
+{
+ "t": "Optimizaciones de DP",
+ "obj": [
+  "Contar números en rangos enormes con DP de dígitos genérica.",
+  "Sumar sobre subconjuntos en O(B·2^B).",
+  "Acelerar transiciones lineales con el Convex Hull Trick.",
+  "Bajar un factor n con divide y vencerás y con Knuth."
+ ],
+ "clase": [
+  "Muchas DP de finales tienen una solución O(n²) u O(n³) evidente que no entra en el tiempo. La idea no cambia: se acelera la **transición** aprovechando estructura matemática. Este capítulo reúne las cinco aceleraciones que más aparecen.",
+  {
+   "h": "Dígitos y subconjuntos"
+  },
+  "La **DP de dígitos** cuenta f(N) recorriendo el camino \"pegado\" a N: cada vez que se pone un dígito menor, el resto queda libre y se cuenta con una tabla que no depende de N. La **SOS DP** suma sobre subconjuntos procesando un bit a la vez: O(B·2^B) en vez de O(3^B).",
+  {
+   "h": "Convex Hull Trick"
+  },
+  "Si la transición es `dp[i] = min_j (m_j·x_i + b_j)`, cada j es una recta y la consulta es el punto más bajo en x_i. Con pendientes y consultas monótonas, una deque da O(n) en total; si no, Li Chao o búsqueda binaria en la envolvente.",
+  {
+   "py": "# dp[i] = min_j dp[j] + s[i]*f[j]: la recta de j es y = f[j]*x + dp[j]\n# consultar en x = s[i] el mínimo de todas las rectas ya agregadas"
+  },
+  {
+   "h": "Monotonía del corte óptimo"
+  },
+  "Si el mejor corte `opt(i)` no baja al crecer i, una capa de la DP se calcula con **divide y vencerás** en O(n log n). En DP de intervalos, si `opt[i][j−1] ≤ opt[i][j] ≤ opt[i+1][j]` (**Knuth**), la suma de los rangos probados telescopa y todo baja de O(n³) a O(n²). Ambas monotonías salen de la **desigualdad del cuadrángulo** del costo.",
+  {
+   "nota": "Antes de usar D&C o Knuth, verifica la monotonía con una DP lenta en casos pequeños al azar: es la forma práctica de \"demostrarla\" en competencia."
+  }
+ ],
+ "algs": [
+  "DP-Optimizations-DigitDP",
+  "DP-Optimizations-SOSDP",
+  "DP-Optimizations-ConvexHullTrick",
+  "DP-Optimizations-DivideAndConquerDP",
+  "DP-Optimizations-KnuthOptimization"
+ ],
+ "teo": [
+  [
+   "DP",
+   "DP sobre subconjuntos y SOS (suma sobre subconjuntos)"
+  ],
+  [
+   "DP",
+   "Convex Hull Trick y Li Chao"
+  ],
+  [
+   "DP",
+   "Divide y vencerás para DP"
+  ],
+  [
+   "DP",
+   "Desigualdad del cuadrángulo y optimización de Knuth"
+  ],
+  [
+   "DP",
+   "Truco de Aliens (WQS / relajación lagrangiana)"
+  ]
+ ],
+ "preguntas": [
+  {
+   "q": "¿Por qué en la DP de dígitos no se memorizan los estados \"pegados\"?",
+   "a": "Porque dependen del número límite N; los estados libres solo dependen de cuántos dígitos faltan y del estado, y se reutilizan para todas las consultas."
+  },
+  {
+   "q": "Con pendientes decrecientes y consultas crecientes, ¿por qué una recta que sale por el frente de la deque no vuelve a servir?",
+   "a": "Porque perdió contra la siguiente en un x y, como las consultas solo crecen y la siguiente tiene pendiente menor, seguirá perdiendo para todo x mayor."
+  },
+  {
+   "q": "¿Cuánto cuesta en total una capa con divide y vencerás?",
+   "a": "O(n log n): cada nivel de la recursión prueba O(n) cortes en total y hay log n niveles."
+  }
+ ],
+ "cierre": "Las cinco aceleraciones comparten una idea: encontrar orden (en los dígitos, en los bits, en las rectas o en los cortes óptimos) y no volver a revisar lo que ese orden ya descarta."
+}
 ]},
 
 { parte: 'III. Estructuras de datos: consultas en rangos', caps: [
@@ -224,7 +299,56 @@ window.LIBRO = [
     { q: 'Si las consultas llegan una por una y dependen de la respuesta anterior, ¿puedes usar Mo?', a: 'No: Mo es offline, necesita reordenar las consultas.' },
     { q: '¿Qué tienen que guardar los nodos para responder "suma máxima de un subarreglo" en un rango?', a: 'Cuatro valores: suma total, mejor prefijo, mejor sufijo y mejor subarreglo. Al combinar, el mejor puede cruzar el medio: sufijo izquierdo + prefijo derecho.' }
   ],
-  cierre: 'Escalera para recordar: prefijos (sin cambios) → Sparse Table (mínimos sin cambios) → Fenwick (sumas con cambios) → Segment Tree (casi todo) → Lazy (cambios en rangos) → Mo (lo que no se combina).' }
+  cierre: 'Escalera para recordar: prefijos (sin cambios) → Sparse Table (mínimos sin cambios) → Fenwick (sumas con cambios) → Segment Tree (casi todo) → Lazy (cambios en rangos) → Mo (lo que no se combina).' },
+
+{
+ "t": "Estructuras avanzadas: orden, persistencia y treaps",
+ "obj": [
+  "Usar un conjunto ordenado con k-ésimo elemento (pb_ds).",
+  "Guardar todas las versiones de un arreglo con un Segment Tree persistente.",
+  "Cortar, pegar e invertir secuencias con un treap implícito."
+ ],
+ "clase": [
+  {
+   "h": "Conjunto ordenado con posiciones"
+  },
+  "El `tree` de pb_ds (extensión de GNU C++) es un `set` que además responde `find_by_order(k)` y `order_of_key(x)` en O(log n). En Python no existe: un Fenwick de 0/1 con descenso binario hace lo mismo.",
+  {
+   "h": "Persistencia"
+  },
+  "Un cambio en un Segment Tree solo toca el camino raíz–hoja. Si en vez de modificar esos nodos se crean copias, la versión vieja queda intacta y la nueva comparte todo lo demás: O(log n) memoria por cambio. Con una versión por prefijo del arreglo se responde \"k-ésimo menor en [l, r]\" restando dos versiones.",
+  {
+   "h": "Treap"
+  },
+  "Un árbol de búsqueda con prioridades aleatorias (heap en la prioridad) tiene altura esperada O(log n). Con **split** y **merge** se arma todo lo demás; si la clave es la posición (treap implícito), una secuencia se corta y se pega como si fuera una lista, en O(log n)."
+ ],
+ "algs": [
+  "Data-Structures-Algorithms-OrderedSet",
+  "Data-Structures-Algorithms-PersistentSegmentTree",
+  "Data-Structures-Algorithms-Treap"
+ ],
+ "teo": [
+  [
+   "Data Structures",
+   "Estructuras persistentes"
+  ],
+  [
+   "Data Structures",
+   "Técnica de los más pequeños (small to large)"
+  ]
+ ],
+ "preguntas": [
+  {
+   "q": "¿Cuántos nodos nuevos crea una actualización en un Segment Tree persistente con n = 2^17?",
+   "a": "18: uno por nivel, desde la raíz hasta la hoja."
+  },
+  {
+   "q": "¿Qué pasa con la altura de un treap si las prioridades no son aleatorias sino crecientes?",
+   "a": "Degenera en una lista de altura n: cada operación cuesta O(n)."
+  }
+ ],
+ "cierre": "Cuando el Segment Tree no alcanza: ordered_set para posiciones, persistencia para versiones y treap para secuencias que se cortan y se pegan."
+}
 ]},
 
 { parte: 'IV. Grafos', caps: [
@@ -302,6 +426,54 @@ window.LIBRO = [
   ],
   cierre: 'Contraer componentes fuertes y trabajar en el DAG resultante es una técnica que reaparece constantemente en problemas difíciles.' },
 
+{
+ "t": "Puentes y puntos de articulación",
+ "obj": [
+  "Calcular tin y low en un DFS sin recursión.",
+  "Encontrar las aristas puente y los vértices de corte.",
+  "Entender por qué en grafos no dirigidos no hay aristas cruzadas."
+ ],
+ "clase": [
+  "Una red es frágil si quitar una sola conexión (o un solo nodo) la parte en dos. Esas aristas son **puentes** y esos nodos son **puntos de articulación**. Los dos se encuentran con un único DFS, guardando dos números por nodo.",
+  {
+   "h": "tin y low"
+  },
+  "`tin[u]` es el momento en que el DFS descubre u. `low[u]` es el menor `tin` al que se puede llegar desde el subárbol de u usando una arista de retroceso. En un grafo no dirigido el DFS solo deja aristas de árbol y de retroceso, así que `low` mide exactamente \"hasta dónde puede escapar\" un subárbol.",
+  {
+   "h": "Las dos condiciones"
+  },
+  "La arista p–v es puente si `low[v] > tin[p]` (el subárbol de v no llega ni a p). El nodo p (que no es la raíz) es de articulación si algún hijo cumple `low[v] ≥ tin[p]` (llega a p, pero no más arriba). La raíz es de articulación si tiene dos o más hijos en el árbol DFS.",
+  {
+   "nota": "Con aristas repetidas, no se debe saltar \"al padre\" por número de nodo sino por el id de la arista: la segunda copia de una arista paralela sí es un camino de escape."
+  }
+ ],
+ "algs": [
+  "Graphs-Algorithms-Connectivity-Bridges",
+  "Graphs-Algorithms-Connectivity-ArticulationPoints"
+ ],
+ "teo": [
+  [
+   "Graphs",
+   "Puentes, articulaciones y low-link"
+  ],
+  [
+   "Graphs",
+   "Teorema de Menger"
+  ]
+ ],
+ "preguntas": [
+  {
+   "q": "En un ciclo de 5 nodos, ¿cuántos puentes y puntos de articulación hay?",
+   "a": "Ninguno: toda arista está en el ciclo y quitar un nodo deja un camino conexo."
+  },
+  {
+   "q": "¿Por qué la condición de articulación usa ≥ y la de puente usa >?",
+   "a": "Si el subárbol de v llega justo a p, quitar la arista p–v no lo desconecta (hay otra arista hacia p), pero quitar el nodo p sí."
+  }
+ ],
+ "cierre": "Con tin y low se resuelven los problemas de \"qué es indispensable\" en una red, y son la base de las componentes biconexas y 2-arista-conexas."
+},
+
 { t: 'Árboles',
   obj: ['Calcular el diámetro y las distancias máximas.', 'Subir k niveles y encontrar ancestros comunes en O(log n).', 'Aplanar un árbol para usar estructuras de rangos.', 'Dividir árboles por centroides y compararlos por forma.'],
   clase: [
@@ -321,7 +493,60 @@ window.LIBRO = [
     { q: '¿Por qué la descomposición por centroides tiene profundidad O(log n)?', a: 'Porque cada pedazo tiene a lo sumo la mitad de los nodos del anterior.' },
     { q: 'Con el Euler tour, ¿cómo sumas los valores de un subárbol con actualizaciones?', a: 'Con un Fenwick sobre el arreglo aplanado, consultando el tramo [entrada, salida] del nodo.' }
   ],
-  cierre: 'Los árboles son el lugar donde se juntan todas las ideas del curso: recorridos, DP, potencias de 2 y estructuras de rangos.' }
+  cierre: 'Los árboles son el lugar donde se juntan todas las ideas del curso: recorridos, DP, potencias de 2 y estructuras de rangos.' },
+
+{
+ "t": "Árboles avanzados: DP en árboles, rerooting y heavy-light",
+ "obj": [
+  "Diseñar DP con pocos estados por nodo.",
+  "Responder la misma DP para todas las raíces en O(n).",
+  "Responder consultas en caminos con heavy-light y un Segment Tree."
+ ],
+ "clase": [
+  {
+   "h": "DP en árboles"
+  },
+  "Una vez decidido qué pasa con un nodo, los subárboles de sus hijos son independientes. Por eso basta con pocos estados por nodo (libre/usado, color, ¿tomado?) y se combinan los hijos de las hojas a la raíz.",
+  {
+   "h": "Rerooting"
+  },
+  "Cuando piden la respuesta para cada nodo como raíz, se calcula con raíz 1 y luego se \"mueve\" la raíz de padre a hijo ajustando solo lo que cambia. En suma de distancias: `ans[v] = ans[p] + n − 2·sz[v]`.",
+  {
+   "h": "Heavy-light"
+  },
+  "Cada nodo sigue por su hijo de subárbol más grande. Bajar por una arista liviana al menos divide el tamaño entre dos, así que cualquier camino cruza O(log n) cadenas. Numerando las cadenas de forma contigua, un camino se vuelve O(log n) rangos de un Segment Tree: O(log² n) por consulta."
+ ],
+ "algs": [
+  "DP-Trees-TreeMatching",
+  "DP-Trees-Rerooting",
+  "Graphs-Algorithms-Trees-HLD"
+ ],
+ "teo": [
+  [
+   "Data Structures",
+   "Descomposición heavy-light"
+  ],
+  [
+   "Data Structures",
+   "Técnica de los más pequeños (small to large)"
+  ],
+  [
+   "Graphs",
+   "DP en árboles y rerooting"
+  ]
+ ],
+ "preguntas": [
+  {
+   "q": "En un árbol que es una línea de n nodos, ¿cuántas cadenas pesadas hay?",
+   "a": "Una sola: cada nodo tiene un único hijo, que es el pesado."
+  },
+  {
+   "q": "¿Por qué el rerooting de suma de distancias necesita long long?",
+   "a": "Porque la suma de distancias desde un extremo de una línea de 2·10^5 nodos es del orden de 2·10^10."
+  }
+ ],
+ "cierre": "DP en árboles para decidir, rerooting para todas las raíces y heavy-light para consultas en caminos: con eso se cubren casi todos los problemas de árboles de un regional."
+}
 ]},
 
 { parte: 'V. Optimización en redes', caps: [
@@ -346,7 +571,70 @@ window.LIBRO = [
     { q: 'Si el flujo máximo vale 7, ¿qué sabes del corte mínimo?', a: 'Que su capacidad también es 7.' },
     { q: '¿Cómo se modela un emparejamiento bipartito como flujo?', a: 'Fuente → cada nodo izquierdo, cada izquierdo → sus derechos posibles y cada derecho → sumidero, todo con capacidad 1.' }
   ],
-  cierre: 'Los flujos son el puente natural hacia la programación lineal, la dualidad y la optimización combinatoria. Con grafos y flujos ya tienes las herramientas para la probabilidad sobre árboles y grafos de la siguiente parte.' }
+  cierre: 'Los flujos son el puente natural hacia la programación lineal, la dualidad y la optimización combinatoria. Con grafos y flujos ya tienes las herramientas para la probabilidad sobre árboles y grafos de la siguiente parte.' },
+
+{
+ "t": "Flujos avanzados: cortes, Hopcroft-Karp, cotas y asignación",
+ "obj": [
+  "Reconstruir el corte mínimo a partir del flujo.",
+  "Emparejar en O(E·√V) con Hopcroft-Karp.",
+  "Modelar cotas inferiores en las aristas.",
+  "Resolver asignación con el algoritmo húngaro y entender sus potenciales."
+ ],
+ "clase": [
+  {
+   "h": "El corte que deja el flujo"
+  },
+  "Al terminar el flujo máximo, los nodos que la fuente todavía alcanza en el residual forman un lado del corte mínimo. Muchos problemas piden el corte, no el flujo: qué calles cerrar, qué proyectos descartar.",
+  {
+   "h": "Hopcroft-Karp"
+  },
+  "Es Dinic especializado en grafos bipartitos con capacidades 1: por fases, aumenta a la vez por un conjunto maximal de caminos disjuntos de largo mínimo. Hay O(√V) fases.",
+  {
+   "h": "Cotas inferiores"
+  },
+  "Si una arista debe llevar al menos l, se manda l por obligación y se reparan los desbalances con una fuente y un sumidero nuevos. Es la forma de modelar mínimos obligatorios, demandas y circulaciones.",
+  {
+   "h": "Asignación y dualidad"
+  },
+  "El algoritmo húngaro mantiene potenciales u, v con `u[i] + v[j] ≤ c[i][j]` y solo usa aristas donde vale la igualdad. Al terminar, el costo es Σu + Σv: el dual certifica que la asignación es óptima. Es el mismo principio que los potenciales de costo mínimo."
+ ],
+ "algs": [
+  "Graphs-Algorithms-Flow-Algorithms-MinCut",
+  "Graphs-Algorithms-Flow-Algorithms-HopcroftKarp",
+  "Graphs-Algorithms-Flow-Algorithms-LowerBoundFlow",
+  "Graphs-Algorithms-Flow-Algorithms-Hungarian"
+ ],
+ "teo": [
+  [
+   "Graphs",
+   "Flujo máximo = corte mínimo"
+  ],
+  [
+   "Graphs",
+   "Hopcroft-Karp: O(√V) fases"
+  ],
+  [
+   "Graphs",
+   "Circulaciones con demandas"
+  ],
+  [
+   "Graphs",
+   "Dualidad en el problema de asignación"
+  ]
+ ],
+ "preguntas": [
+  {
+   "q": "Si el flujo máximo vale 3, ¿cuántas aristas tiene el corte que se reconstruye en una red con capacidades 1?",
+   "a": "Exactamente 3: el corte tiene capacidad igual al flujo y cada arista aporta 1."
+  },
+  {
+   "q": "¿Cómo se convierte un flujo s–t con cotas inferiores en una circulación?",
+   "a": "Agregando una arista t → s de capacidad infinita; después se resuelve la circulación con S' y T'."
+  }
+ ],
+ "cierre": "Terminaste la parte de redes. Los flujos son el puente hacia la programación lineal y la dualidad: cuando un problema parece un LP con estructura de grafo, probablemente es un flujo."
+}
 ]},
 
 { parte: 'VI. Probabilidad', caps: [
@@ -382,9 +670,11 @@ window.LIBRO = [
     'En Bag of Mice el estado es (blancos, negros) y cada ronda quita ratones; en Fish el estado es el conjunto de peces vivos (una máscara de bits) y cada encuentro quita uno. Como el estado siempre se achica, se recorre de los estados grandes a los pequeños repartiendo la probabilidad, sin ciclos.',
     { h: 'Respuestas módulo un primo' },
     'Cuando la respuesta es una fracción p/q, muchos jueces piden p · q⁻¹ mód 998244353. Como el módulo es primo, q⁻¹ = q^(M−2), y una probabilidad como 37/100 se guarda como 37 · 100⁻¹. Toda la cuenta se hace con sumas y productos modulares, sin decimales.',
-    { py: 'MOD = 998244353\ninv100 = pow(100, MOD - 2, MOD)\nq = 37 * inv100 % MOD      # 0.37 representado módulo MOD\nprint(q * 100 % MOD)       # 37: la fracción se recupera' }
+    { py: 'MOD = 998244353\ninv100 = pow(100, MOD - 2, MOD)\nq = 37 * inv100 % MOD      # 0.37 representado módulo MOD\nprint(q * 100 % MOD)       # 37: la fracción se recupera' },
+    { h: 'Cuando hay ciclos: Gauss' },
+    'Si un estado puede volver a sí mismo (un paseo que regresa, un juego que puede repetirse), no hay orden para una DP: las ecuaciones E[v] = 1 + Σ P(v → w)·E[w] forman un sistema lineal. Con hasta unos 500 estados se resuelve con eliminación de Gauss en O(V³), eligiendo siempre el pivote de mayor valor absoluto.'
   ],
-  algs: ['Probability-Algorithms-MarkovChain', 'Probability-Classic-Problems-Ilya-and-Escalator', 'Probability-Classic-Problems-Bag-of-Mice', 'Probability-Classic-Problems-Fish', 'Probability-Algorithms-ModularExpectation'],
+  algs: ['Probability-Algorithms-MarkovChain', 'Probability-Classic-Problems-Ilya-and-Escalator', 'Probability-Classic-Problems-Bag-of-Mice', 'Probability-Classic-Problems-Fish', 'Probability-Algorithms-ModularExpectation', 'Probability-Algorithms-GaussianExpectation'],
   teo: [['Probability', 'Probabilidad condicional y probabilidad total'], ['Probability', 'Cadenas de Markov y matriz de transición'], ['Probability', 'Esperanza de una variable geométrica'], ['Probability', 'Fracciones módulo un primo'], ['Probability', 'Esperanza con ciclos: sistema de ecuaciones']],
   preguntas: [
     { q: 'Un intento tiene éxito con probabilidad 1/4. ¿Cuántos intentos se esperan hasta el primer éxito?', a: '4: la variable es geométrica y su esperanza es 1/p.' },
@@ -458,7 +748,58 @@ window.LIBRO = [
     { q: '¿Cuántas subcadenas distintas tiene "aaa"?', a: 'Tres: "a", "aa" y "aaa". Con el arreglo de sufijos: 3·4/2 − (1 + 2) = 3.' },
     { q: 'En Required Substring, ¿por qué el estado es "cuánto del patrón llevo" y no la cadena completa?', a: 'Porque para saber si el patrón aparecerá solo importa el borde más largo del texto escrito que es prefijo del patrón; eso es justo lo que calcula KMP.' }
   ],
-  cierre: 'Trie para diccionarios, arreglo de sufijos para preguntas sobre subcadenas, y KMP dentro de una DP cuando hay que contar cadenas que contienen (o evitan) un patrón.' }
+  cierre: 'Trie para diccionarios, arreglo de sufijos para preguntas sobre subcadenas, y KMP dentro de una DP cuando hay que contar cadenas que contienen (o evitan) un patrón.' },
+
+{
+ "t": "Cadenas avanzadas: Aho-Corasick y autómata de sufijos",
+ "obj": [
+  "Buscar muchos patrones a la vez con Aho-Corasick.",
+  "Construir el autómata de sufijos y contar subcadenas distintas.",
+  "Elegir entre suffix array, autómata de sufijos y hashing."
+ ],
+ "clase": [
+  {
+   "h": "Aho-Corasick"
+  },
+  "Es KMP para un diccionario: un trie con enlaces de fallo que apuntan al sufijo más largo que también está en el trie. Recorrer el texto es moverse una vez por letra en un autómata. Combinado con DP sobre los nodos, resuelve \"cuántas cadenas de largo n evitan todas estas palabras\".",
+  {
+   "h": "Autómata de sufijos"
+  },
+  "Agrupa las subcadenas que terminan en las mismas posiciones: a lo sumo 2n − 1 estados y 3n transiciones. Se construye agregando letras y clonando un estado cuando hace falta separar subcadenas de distinto largo. Cada estado aporta `len[v] − len[link[v]]` subcadenas distintas.",
+  {
+   "nota": "Regla práctica: para una sola cadena y preguntas de orden (k-ésima subcadena, LCP), suffix array; para conteos y recorridos en línea, autómata de sufijos; para comparar rápido, hashing."
+  }
+ ],
+ "algs": [
+  "Strings-Algorithms-AhoCorasick",
+  "Strings-Algorithms-SuffixAutomaton"
+ ],
+ "teo": [
+  [
+   "Strings",
+   "Aho–Corasick"
+  ],
+  [
+   "Strings",
+   "Tamaño del autómata de sufijos"
+  ],
+  [
+   "Strings",
+   "Subcadenas distintas con Suffix Array"
+  ]
+ ],
+ "preguntas": [
+  {
+   "q": "¿Cuántas subcadenas distintas tiene \"aaaa\"?",
+   "a": "Cuatro: a, aa, aaa, aaaa. El autómata tiene 5 estados en línea y cada uno aporta 1."
+  },
+  {
+   "q": "¿Qué representa el enlace de fallo de un nodo del trie?",
+   "a": "El sufijo propio más largo de su cadena que también es prefijo de algún patrón."
+  }
+ ],
+ "cierre": "Con Aho-Corasick y el autómata de sufijos ya tienes las estructuras de cadenas que aparecen en finales; casi todo lo demás es combinarlas con DP."
+}
 ]},
 
 { parte: 'VIII. Geometría', caps: [
@@ -484,6 +825,66 @@ window.LIBRO = [
   ],
   cierre: 'Con el producto cruz y enteros resuelves la mayoría de los problemas de geometría básicos; los casos colineales son los que hay que probar siempre.' },
 
+{
+ "t": "Geometría de uso diario: distancias, rectas, circunferencias y cortes",
+ "obj": [
+  "Medir la distancia de un punto a un segmento y entre segmentos.",
+  "Cortar rectas entre sí y circunferencias entre sí.",
+  "Cortar un polígono convexo con una recta.",
+  "Decidir punto en polígono convexo en O(log n)."
+ ],
+ "clase": [
+  "Estas son las funciones que todo equipo tiene en su notebook y copia sin pensar. Vale la pena entenderlas una vez para poder adaptarlas cuando el problema cambia un detalle.",
+  {
+   "h": "Proyecciones"
+  },
+  "La proyección de P sobre la recta AB es A + t·(B − A) con t = (P − A)·(B − A) / |B − A|². Recortando t a [0, 1] se obtiene el punto más cercano del segmento.",
+  {
+   "h": "Rectas y circunferencias"
+  },
+  "Dos rectas paramétricas se cortan en t = cross(C − A, s) / cross(r, s). Dos circunferencias se cortan en 0, 1 o 2 puntos según d² frente a (r1 ± r2)²; los puntos salen del punto medio de la cuerda.",
+  {
+   "h": "Cortes y convexos"
+  },
+  "Cortar un polígono convexo con una recta es recorrer sus aristas conservando un lado y agregando los cruces. Y en un convexo, la pregunta \"¿está el punto dentro?\" se responde con búsqueda binaria en el abanico desde un vértice.",
+  {
+   "nota": "Decide los casos especiales (paralelas, tangentes, colineales) con enteros exactos y usa flotantes solo para calcular el punto final."
+  }
+ ],
+ "algs": [
+  "Geometry-Advanced-SegmentDistance",
+  "Geometry-Advanced-LineIntersection",
+  "Geometry-Advanced-CircleIntersection",
+  "Geometry-Advanced-PolygonCut",
+  "Geometry-Advanced-PointInConvexPolygon"
+ ],
+ "teo": [
+  [
+   "Geometry",
+   "Producto cruz y orientación"
+  ],
+  [
+   "Geometry",
+   "Distancia punto-segmento"
+  ],
+  [
+   "Geometry",
+   "Eje radical"
+  ]
+ ],
+ "preguntas": [
+  {
+   "q": "Las circunferencias de centros (0, 0) y (3, 4) con radios 2 y 3, ¿cuántos puntos comunes tienen?",
+   "a": "Uno: d² = 25 = (2 + 3)², son tangentes exteriores."
+  },
+  {
+   "q": "¿Por qué para segmentos que no se cortan basta revisar los 4 extremos?",
+   "a": "Porque la distancia es convexa en los parámetros y su mínimo está en el borde del cuadrado [0, 1]², es decir, en un extremo."
+  }
+ ],
+ "cierre": "Con estas primitivas y el producto cruz, el resto de la geometría de competencia es combinar piezas conocidas."
+},
+
 { t: 'Geometría: envolvente convexa, barridos y estructuras',
   obj: ['Construir la envolvente convexa.', 'Encontrar el par más cercano.', 'Resolver problemas con una línea de barrido.', 'Mantener rectas con Li Chao.'],
   clase: [
@@ -496,12 +897,254 @@ window.LIBRO = [
     { h: 'Li Chao' },
     'Para insertar rectas y preguntar el mínimo en un x, el árbol de Li Chao guarda en cada nodo la recta que gana en el punto medio; la perdedora solo puede ganar en una mitad y baja por ella. O(log C) por operación.'
   ],
-  algs: ['Geometry-ConvexHull', 'Geometry-ClosestPair', 'Geometry-Classic-Problems-Maximum-Manhattan-Distances', 'Geometry-Classic-Problems-Intersection-Points', 'Geometry-Classic-Problems-Area-of-Rectangles', 'Geometry-Classic-Problems-Lines-and-Queries-I'],
-  teo: [['Geometry', 'Cota inferior de la envolvente convexa'], ['Geometry', 'Rotating calipers']],
+  algs: ['Geometry-ConvexHull', 'Geometry-ClosestPair', 'Geometry-Advanced-RotatingCalipers', 'Geometry-Classic-Problems-Maximum-Manhattan-Distances', 'Geometry-Classic-Problems-Intersection-Points', 'Geometry-Classic-Problems-Area-of-Rectangles', 'Geometry-Classic-Problems-Lines-and-Queries-I', 'Geometry-Advanced-HalfPlaneIntersection'],
+  teo: [['Geometry', 'Cota inferior de la envolvente convexa'], ['Geometry', 'Rotating calipers'], ["Geometry", "Intersección de semiplanos"], ["Geometry", "Suma de Minkowski"]],
   preguntas: [
     { q: '¿Qué pasa con los puntos colineales del borde en la envolvente?', a: 'Depende de lo que pida el problema: CSES pide incluirlos, y por eso el código tiene la opción include_collinear y un caso especial para el último tramo.' },
     { q: 'En Li Chao, ¿por qué la recta perdedora baja solo por una mitad?', a: 'Dos rectas se cruzan a lo sumo una vez; si una gana en el medio, la otra solo puede ganar a un lado del cruce.' }
   ],
   cierre: 'Envolvente, barrido y una buena estructura de datos: con eso se resuelve la geometría de nivel regional.' }
-]}
+]},
+
+{
+ "parte": "IX. Matemáticas avanzadas",
+ "caps": [
+  {
+   "t": "Teoría de números para finales",
+   "obj": [
+    "Resolver ecuaciones a·x + b·y = c y sistemas de congruencias.",
+    "Calcular φ para todos los números hasta N.",
+    "Probar primalidad y factorizar números de hasta 10^18."
+   ],
+   "clase": [
+    "La teoría de números de competencia descansa en tres herramientas: **Euclides extendido** (combinaciones lineales e inversos), la **criba** (información de todos los números pequeños) y la **aritmética modular rápida** (exponenciación y multiplicación en 128 bits).",
+    {
+     "h": "Bézout y el chino del resto"
+    },
+    "a·x + b·y = c tiene solución entera si y solo si gcd(a, b) divide a c, y Euclides extendido la construye. Con eso se combinan dos congruencias en una sola módulo el mcm, incluso si los módulos no son coprimos.",
+    {
+     "h": "φ de Euler"
+    },
+    "φ(n) = n·Π(1 − 1/p). Una criba la calcula para todos los números hasta N, y el teorema de Euler a^φ(m) ≡ 1 (mód m) reduce exponentes gigantes.",
+    {
+     "h": "Números grandes"
+    },
+    "Miller-Rabin decide primalidad con 7 bases (determinista para n < 2^64) y Pollard rho encuentra un factor en unos n^(1/4) pasos usando la paradoja del cumpleaños.",
+    {
+     "py": "def ext_gcd(a, b):\n    if b == 0:\n        return a, 1, 0\n    g, x, y = ext_gcd(b, a % b)\n    return g, y, x - (a // b) * y"
+    }
+   ],
+   "algs": [
+    "FunctionalTools-Number-Theory-ExtendedEuclid",
+    "FunctionalTools-Number-Theory-CRT",
+    "FunctionalTools-Number-Theory-EulerPhi",
+    "FunctionalTools-Number-Theory-MillerRabin",
+    "FunctionalTools-Number-Theory-PollardRho"
+   ],
+   "teo": [
+    [
+     "FunctionalTools",
+     "Algoritmo de Euclides e identidad de Bézout"
+    ],
+    [
+     "FunctionalTools",
+     "Teorema chino del resto"
+    ],
+    [
+     "FunctionalTools",
+     "Teorema de Euler y función φ"
+    ],
+    [
+     "FunctionalTools",
+     "Miller–Rabin determinístico"
+    ],
+    [
+     "FunctionalTools",
+     "Pollard rho"
+    ]
+   ],
+   "preguntas": [
+    {
+     "q": "¿Tiene solución entera 6x + 9y = 7?",
+     "a": "No: gcd(6, 9) = 3 no divide a 7."
+    },
+    {
+     "q": "¿Por qué Fermat solo no basta para probar primalidad?",
+     "a": "Por los números de Carmichael, como 561, que cumplen a^(n−1) ≡ 1 para toda base coprima."
+    },
+    {
+     "q": "x ≡ 2 (mód 4) y x ≡ 3 (mód 6), ¿tiene solución?",
+     "a": "No: gcd(4, 6) = 2 y 3 − 2 = 1 no es par."
+    }
+   ],
+   "cierre": "Con estas cinco piezas ya puedes leer casi cualquier problema de teoría de números de un regional y reconocer qué herramienta pide."
+  },
+  {
+   "t": "Juegos combinatorios",
+   "obj": [
+    "Decidir quién gana en Nim con el xor.",
+    "Calcular números de Grundy con mex.",
+    "Combinar juegos independientes."
+   ],
+   "clase": [
+    "En los juegos de dos jugadores con información completa y sin azar, cada posición es ganadora (N) o perdedora (P) para quien mueve: P si todas las jugadas llevan a N, y N si alguna lleva a P.",
+    {
+     "h": "Nim"
+    },
+    "En Nim, las posiciones perdedoras son exactamente las de xor 0. Es el ejemplo base porque **todo** juego imparcial se reduce a él.",
+    {
+     "h": "Sprague-Grundy"
+    },
+    "El número de Grundy de una posición es el mex de los Grundy alcanzables: la posición se comporta como una pila de Nim de ese tamaño. Para varios juegos simultáneos, se hace xor de sus Grundy.",
+    {
+     "nota": "Truco de competencia: si no ves el patrón, calcula los Grundy de los estados pequeños con fuerza bruta e imprímelos. Muchas veces son periódicos o tienen una forma cerrada."
+    }
+   ],
+   "algs": [
+    "FunctionalTools-Games-Nim",
+    "FunctionalTools-Games-SpragueGrundy"
+   ],
+   "teo": [
+    [
+     "FunctionalTools",
+     "Teorema de Sprague–Grundy"
+    ]
+   ],
+   "preguntas": [
+    {
+     "q": "Pilas 3, 5, 6: ¿quién gana?",
+     "a": "3 xor 5 xor 6 = 0: gana el segundo jugador."
+    },
+    {
+     "q": "Si solo se pueden sacar 1, 2 o 3 piedras de una pila, ¿cuál es su Grundy?",
+     "a": "h mód 4."
+    }
+   ],
+   "cierre": "Ganadoras, perdedoras, mex y xor: ese es todo el lenguaje de los juegos imparciales."
+  },
+  {
+   "t": "Polinomios: FFT y NTT",
+   "obj": [
+    "Entender por qué evaluar en raíces de la unidad acelera la multiplicación.",
+    "Multiplicar polinomios en O(n log n) con FFT y con NTT.",
+    "Reconocer conteos que son convoluciones."
+   ],
+   "clase": [
+    "Multiplicar dos polinomios de grado n con la escuela cuesta O(n²). La FFT lo hace en O(n log n) cambiando de representación: de coeficientes a valores en puntos bien elegidos.",
+    {
+     "h": "Por qué raíces de la unidad"
+    },
+    "En las raíces n-ésimas de la unidad, la evaluación se parte en pares e impares sobre las raíces (n/2)-ésimas: A(w) = Par(w²) + w·Impar(w²). Esa recursión da O(n log n), y la inversa es la misma transformada con w⁻¹.",
+    {
+     "h": "NTT"
+    },
+    "Módulo 998244353 = 119·2^23 + 1 existen raíces de la unidad de orden 2^k exactas, así que se hace lo mismo sin flotantes. Es la opción por defecto cuando la respuesta se pide módulo ese primo.",
+    {
+     "h": "Convoluciones escondidas"
+    },
+    "\"¿De cuántas formas se puede obtener cada suma con un elemento de A y uno de B?\" es multiplicar los polinomios de frecuencias. Lo mismo para coincidencias de cadenas con comodines o para sumas de dados."
+   ],
+   "algs": [
+    "FunctionalTools-Polynomials-FFT",
+    "FunctionalTools-Polynomials-NTT"
+   ],
+   "teo": [
+    [
+     "FunctionalTools",
+     "Convolución con FFT / NTT"
+    ]
+   ],
+   "preguntas": [
+    {
+     "q": "Si A tiene grado 5 y B grado 7, ¿de qué tamaño mínimo debe ser la FFT?",
+     "a": "El producto tiene grado 12, o sea 13 coeficientes: la potencia de 2 siguiente es 16."
+    },
+    {
+     "q": "¿Por qué no sirve NTT módulo 10^9 + 7?",
+     "a": "Porque 10^9 + 6 = 2·500000003 no tiene un factor 2^k grande: no hay raíces de la unidad de orden potencia de 2 suficientemente grandes."
+    }
+   ],
+   "cierre": "Cada vez que veas \"para cada suma posible, cuántas formas\", piensa en una convolución."
+  }
+ ]
+},
+
+{
+ "parte": "X. Hacia las finales: el oficio del ICPC",
+ "caps": [
+  {
+   "t": "Competir en equipo: el oficio del ICPC",
+   "obj": [
+    "Organizar un equipo de tres con un solo computador.",
+    "Preparar y usar un notebook de 25 páginas.",
+    "Encontrar errores con stress testing.",
+    "Resolver problemas interactivos y usar aleatorización con seguridad.",
+    "Conocer los recursos de C++ que ahorran tiempo."
+   ],
+   "clase": [
+    "En el ICPC compiten equipos de **tres personas con un solo computador** durante cinco horas, con un notebook impreso de hasta 25 páginas. Saber algoritmos es necesario, pero en las finales la diferencia la hace el oficio: cómo se reparte el trabajo, cómo se depura y cómo se evita perder tiempo.",
+    {
+     "h": "Roles y estrategia"
+    },
+    "Al empezar, los tres leen problemas distintos y anotan dificultad estimada y tema. El computador nunca debe estar libre: mientras uno escribe código, los otros piensan en papel o preparan casos. Se programa en el computador solo con la solución pensada completa. Si un problema lleva 40 minutos sin avance, se cambia de manos o se deja. Mira el marcador: los problemas que muchos equipos resolvieron suelen ser más fáciles de lo que parecen.",
+    {
+     "h": "El notebook"
+    },
+    "El notebook es la memoria compartida del equipo: plantilla, estructuras (DSU, Fenwick, Segment Tree lazy, treap), grafos (Dinic, costo mínimo, SCC, puentes, HLD), cadenas (KMP, Z, SA, Aho-Corasick, autómata de sufijos), matemáticas (CRT, Miller-Rabin, Pollard, NTT, Gauss) y geometría. Cada código debe estar probado y tener una línea que diga qué entra y qué sale. KACTL es el ejemplo de referencia de cómo se ve uno bueno.",
+    {
+     "h": "Stress testing"
+    },
+    "Cuando un envío da WA y no ves el error, escribe una **fuerza bruta** obviamente correcta y un **generador** de casos pequeños al azar, y compáralos en un ciclo hasta encontrar un caso que difiera. Es la técnica más eficaz para depurar en competencia (y es la que se usó para verificar cada código de esta guía).",
+    {
+     "py": "# stress.py: compara solucion y bruta con casos al azar\nimport random, subprocess\nfor it in range(1000):\n    n = random.randint(1, 8)\n    caso = f\"{n}\\n\" + \" \".join(str(random.randint(1, 10)) for _ in range(n)) + \"\\n\"\n    a = subprocess.run([\"./sol\"], input=caso, capture_output=True, text=True).stdout\n    b = subprocess.run([\"./bruta\"], input=caso, capture_output=True, text=True).stdout\n    if a.split() != b.split():\n        print(\"Caso que falla:\\n\" + caso, \"sol:\", a, \"bruta:\", b)\n        break"
+    },
+    {
+     "h": "Problemas interactivos"
+    },
+    "En un problema interactivo tu programa conversa con el juez: imprime una pregunta, lee la respuesta y decide. Hay que **vaciar la salida** después de cada pregunta (`cout << endl` o `cout.flush()` en C++, `print(..., flush=True)` en Python), no exceder el número de preguntas y leer exactamente lo que el juez manda. Casi siempre la idea es una búsqueda binaria o un descarte por mitades.",
+    {
+     "h": "Aleatorización"
+    },
+    "Muchas soluciones usan azar: hashing con base aleatoria, treaps, Pollard rho, mezclar la entrada antes de un algoritmo con mal peor caso. Usa `mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count())` y nunca `rand()`: en Codeforces otros participantes pueden ver tu código y construir casos contra semillas fijas (*hacks*). Para `unordered_map`, usa un hash propio con semilla aleatoria.",
+    {
+     "h": "C++ que ahorra tiempo"
+    },
+    "`__int128` para productos de 64 bits, `bitset` para dividir por 64 el costo de DP booleanas, `__builtin_popcountll` y `__builtin_ctzll` para bits, `pb_ds` para conjuntos ordenados con k-ésimo, `lower_bound` sobre vectores ordenados en vez de `set` cuando no hay inserciones. Y compila siempre con `-Wall -Wextra -fsanitize=address,undefined` mientras practicas: encuentra lecturas fuera de rango que de otra forma darían WA aleatorio.",
+    {
+     "nota": "Rutina antes de enviar: probar los ejemplos, probar el caso mínimo (n = 1), el caso máximo (para el tiempo), revisar desbordes (¿long long?) y el formato de salida. Un envío incorrecto cuesta 20 minutos de penalización."
+    },
+    {
+     "h": "Entrenar hacia las finales"
+    },
+    "El camino típico: CSES completo como base, luego problemas de Codeforces en la banda de 1900 a 2400 (y después 2400–3000), y contests virtuales de regionales en equipo, con la misma duración y el mismo notebook. Después de cada contest, se **cierra** cada problema que no salió (se lee la solución y se programa). En la sección Practicar están los problemas de la banda alta y regionales latinoamericanos para empezar."
+   ],
+   "algs": [],
+   "teo": [
+    [
+     "Strings",
+     "Probabilidad de colisión del hashing"
+    ],
+    [
+     "Probability",
+     "Paradoja del cumpleaños"
+    ]
+   ],
+   "preguntas": [
+    {
+     "q": "Tu solución da WA en el caso 37 y los ejemplos pasan. ¿Qué haces primero?",
+     "a": "Revisar desbordes y casos borde; si no aparece el error, escribir una fuerza bruta y un generador de casos pequeños y comparar (stress testing)."
+    },
+    {
+     "q": "En un interactivo te da Idleness Limit Exceeded. ¿Cuál es el error más probable?",
+     "a": "No vaciar la salida después de imprimir la pregunta: el juez nunca la recibió."
+    },
+    {
+     "q": "¿Por qué usar una semilla basada en el reloj y no una fija?",
+     "a": "Porque con una semilla fija el comportamiento es predecible y alguien puede construir un caso que haga fallar el hashing o volver lento el algoritmo."
+    }
+   ],
+   "cierre": "Terminaste el libro. El siguiente paso es practicar en equipo con contests virtuales completos. Vuelve al modo libre cuando necesites repasar un algoritmo, y a Practicar para seguir subiendo de nivel."
+  }
+ ]
+}
 ];

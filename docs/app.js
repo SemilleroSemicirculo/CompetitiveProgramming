@@ -312,12 +312,14 @@ function pagina(a){
   if (dem) h += '<h2>Míralo en acción</h2><div id="demo"></div>';
   if (c.pasos) h += '<h2>Paso a paso</h2><ol class="steps">'+c.pasos.map(p => '<li>'+esc(p)+'</li>').join('')+'</ol>';
   if (c.cuando) h += '<div class="when"><b>¿Cuándo usarlo?</b> '+esc(c.cuando)+'</div>';
+  if (c.pq) h += '<h2>¿Por qué funciona?</h2><p>'+esc(c.pq)+'</p>';
+  if (c.err) h += '<h2>Errores típicos</h2><ul class="errs">'+c.err.map(e => '<li>'+esc(e)+'</li>').join('')+'</ul>';
   if (!L) h += '<p><a href="#/teoria" onclick="window.__teo(\''+a.carpeta+'\')">Ver los teoremas de '+esc(teoNombre(a.carpeta))+' →</a></p>';
   h += '<div class="meta"><div><b>Complejidad</b>'+esc(a.complejidad)+'</div>';
   h += '<div><b>Pruébalo</b>'+(a.cses ? '<a href="'+a.cses+'" target="_blank" rel="noopener">'+esc(a.problema.replace(/\s*\(https?:[^)]*\)/,''))+'</a>' : esc(a.problema))+'</div>';
   h += '<div><b>Entrada</b>'+esc(a.entrada)+'</div><div><b>Salida</b>'+esc(a.salida)+'</div></div>';
   const gh = 'https://github.com/SemilleroSemicirculo/CompetitiveProgramming/blob/main/';
-  h += '<details class="code" open><summary>Ver el código</summary><div class="row"><button class="btn lang on" data-l="cpp">C++</button>'+(a.python?'<button class="btn lang" data-l="py">Python</button>':'')+'<span style="flex:1"></span><button class="btn" id="copiar">Copiar código</button><a class="btn" id="gh" style="text-decoration:none" href="'+gh+encodeURI(a.archivo)+'" target="_blank" rel="noopener">Ver en GitHub</a></div><p class="note" id="aviso" style="display:none">⚠️ Esta versión en Python da respuestas correctas, pero es demasiado lenta para el límite de tiempo de CSES. En competencia usa la versión en C++.</p><pre><code id="src">'+resaltar(a.codigo)+'</code></pre></details>';
+  h += '<details class="code" open><summary>Ver el código</summary><div class="row"><button class="btn lang on" data-l="cpp">C++</button>'+(a.python?'<button class="btn lang" data-l="py">Python</button>':'')+'<span style="flex:1"></span><button class="btn" id="copiar">Copiar código</button><a class="btn" id="gh" style="text-decoration:none" href="'+gh+encodeURI(a.archivo)+'" target="_blank" rel="noopener">Ver en GitHub</a></div><p class="note" id="aviso" style="display:none">⚠️ Esta versión en Python da respuestas correctas, pero es demasiado lenta para el límite de tiempo del juez. En competencia usa la versión en C++.</p><pre><code id="src">'+resaltar(a.codigo)+'</code></pre></details>';
   if (L) {
     const pid = cap.algs[L.k - 1], nid = cap.algs[L.k + 1], ncap = CAPS[cap.num];
     h += '<div class="row" style="margin-top:24px"><button class="btn" id="hecho"></button></div>';

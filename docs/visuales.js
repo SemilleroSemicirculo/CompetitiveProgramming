@@ -1504,4 +1504,442 @@ V('Probability-Classic-Problems-Serval-and-Bonus-Problem', 'De lo continuo a con
   g += '<line x1="' + X(s.x) + '" y1="25" x2="' + X(s.x) + '" y2="140" stroke="#d4a72c" stroke-width="2" stroke-dasharray="4 3"/>' + '<circle cx="' + X(s.x) + '" cy="40" r="6" fill="#d4a72c"/>';
   return svgBox(g, 540, 150); });
 
+
+// =================== Temas avanzados: teoría de números, juegos y polinomios ===================
+const TN = 'FunctionalTools-Number-Theory-', JG = 'FunctionalTools-Games-', PO = 'FunctionalTools-Polynomials-';
+V(TN + 'ExtendedEuclid', 'Euclides extendido paso a paso', 'Bajando: a, b y el cociente q. Subiendo: x, y con a·x + b·y = gcd. Cada fila sale de la de abajo: x = y\', y = x\' − q·y\'.', push => {
+  let a = R(20, 99), b = R(10, a - 1); const filas = [];
+  while (true) { filas.push({ a, b, q: b ? Math.floor(a / b) : '—', x: null, y: null }); if (!b) break; [a, b] = [b, a % b]; }
+  const cls = () => filas.map(() => ['', '', '', '', '']);
+  for (let i = 0; i < filas.length; i++) { const c = cls(); c[i] = ['a', 'a', 'a', '', ''];
+    push(filas[i].b ? 'gcd(' + filas[i].a + ', ' + filas[i].b + ') = gcd(' + filas[i].b + ', ' + filas[i].a + ' mod ' + filas[i].b + '); q = ' + filas[i].q + '.' : 'b = 0: el gcd es ' + filas[i].a + ', y ' + filas[i].a + '·1 + 0·0 = ' + filas[i].a + '.', { filas, c }); }
+  const g = filas[filas.length - 1].a; filas[filas.length - 1].x = 1; filas[filas.length - 1].y = 0;
+  for (let i = filas.length - 2; i >= 0; i--) { const d = filas[i + 1]; filas[i].x = d.y; filas[i].y = d.x - filas[i].q * d.y; const c = cls(); c[i] = ['', '', '', 'g', 'g']; c[i + 1] = ['', '', '', 'b', 'b'];
+    const P = v => v < 0 ? '(' + v + ')' : v; push('x = ' + d.y + ', y = ' + d.x + ' − ' + filas[i].q + '·' + P(d.y) + ' = ' + filas[i].y + '. Comprobación: ' + filas[i].a + '·' + P(filas[i].x) + ' + ' + filas[i].b + '·' + P(filas[i].y) + ' = ' + g + '.', { filas, c }); }
+}, s => table(s.filas.map(f => [f.a, f.b, f.q, f.x, f.y]), s.c, null, ['a', 'b', 'q', 'x', 'y']));
+
+V(TN + 'CRT', 'Teorema chino del resto', 'Se recorren los números x ≡ a (mód n): a, a + n, a + 2n, … hasta que uno cumpla x ≡ b (mód m). El código hace ese salto de una vez con Euclides extendido.', push => {
+  const n = R(3, 9), m = R(3, 9), g = gcdF(n, m), a = R(0, n - 1); const b = Math.random() < 0.75 ? (a + n * R(0, m)) % m : R(0, m - 1);
+  const L = n * m / g, xs = [], ok = []; push('Buscar x con x ≡ ' + a + ' (mód ' + n + ') y x ≡ ' + b + ' (mód ' + m + '). gcd(' + n + ', ' + m + ') = ' + g + ', mcm = ' + L + '.', { xs, ok, m, hit: -1 });
+  for (let x = a; x < L; x += n) { xs.push(x); ok.push(x % m === b); if (x % m === b) { push(x + ' mód ' + m + ' = ' + b + ': ¡sirve! Las soluciones son x ≡ ' + x + ' (mód ' + L + ').', { xs, ok, m, hit: xs.length - 1 }); return; }
+    push(x + ' mód ' + m + ' = ' + (x % m) + ' ≠ ' + b + '.', { xs, ok, m, hit: -1 }); }
+  push('Se probaron los ' + xs.length + ' candidatos hasta el mcm y ninguno sirve: como ' + b + ' − ' + a + ' no es múltiplo de gcd = ' + g + ', no hay solución.', { xs, ok, m, hit: -1 });
+}, s => rows([{ t: 'x', v: s.xs, c: s.xs.map((_, i) => i === s.hit ? 'g' : 'a') }, { t: 'x mód ' + s.m, v: s.xs.map(x => x % s.m), c: s.ok.map(o => o ? 'g' : 'r') }]));
+
+V(TN + 'EulerPhi', 'Criba de φ de Euler', 'φ(n) empieza en n. Por cada primo p (los que nadie tocó) se multiplica por (1 − 1/p) a todos sus múltiplos: φ[j] −= φ[j] / p.', push => {
+  const N = 30, phi = [...Array(N + 1).keys()]; push('φ[i] = i al empezar.', { phi, p: 0 });
+  for (let p = 2; p <= N; p++) if (phi[p] === p) { for (let j = p; j <= N; j += p) phi[j] -= phi[j] / p; push('p = ' + p + ' es primo: sus múltiplos pierden la fracción 1/' + p + '.', { phi, p }); }
+  push('Listo: por ejemplo φ(12) = ' + phi[12] + ' (1, 5, 7, 11) y φ(30) = ' + phi[30] + '.', { phi, p: 0 });
+}, s => { const ids = [...Array(30).keys()].map(i => i + 1); return rows([{ t: 'n', v: ids.slice(0, 15), c: ids.slice(0, 15).map(v => s.p && v % s.p === 0 ? 'a' : '') }, { t: 'φ(n)', v: s.phi.slice(1, 16), c: ids.slice(0, 15).map(v => s.p && v % s.p === 0 ? 'g' : '') }, { t: 'n', v: ids.slice(15), c: ids.slice(15).map(v => s.p && v % s.p === 0 ? 'a' : '') }, { t: 'φ(n)', v: s.phi.slice(16), c: ids.slice(15).map(v => s.p && v % s.p === 0 ? 'g' : '') }]); });
+
+const powmodS = (b, e, m) => { let r = 1n, B = BigInt(b) % BigInt(m), E = BigInt(e), M = BigInt(m); for (; E > 0n; E >>= 1n, B = B * B % M) if (E & 1n) r = r * B % M; return Number(r); };
+V(TN + 'MillerRabin', 'Miller-Rabin con algunas bases', 'n − 1 = d·2^s. Para cada base a se mira la secuencia a^d, a^(2d), …, a^(n−1). Si n es primo, esa secuencia empieza en 1 o pasa por n − 1 (las únicas raíces de 1 módulo un primo son ±1).', push => {
+  const n = pick([561, 1105, 1729, 2465, 97, 101, 7919, 221, 341, 8911]); let d = n - 1, s = 0; while (d % 2 === 0) { d /= 2; s++; }
+  const filas = []; push('n = ' + n + ': n − 1 = ' + d + '·2^' + s + '.', { filas });
+  for (const a of [2, 3, 5, 7]) { if (a % n === 0) continue; const seq = [powmodS(a, d, n)]; for (let i = 1; i < s; i++) seq.push(powmodS(seq[i - 1], 2, n));
+    const pasa = seq[0] === 1 || seq.includes(n - 1); filas.push({ a, seq, pasa });
+    push('Base ' + a + ': ' + seq.join(' → ') + (pasa ? '. Se comporta como primo.' : '. Nunca llega a ' + (n - 1) + ' ni empieza en 1: ' + a + ' es testigo, ' + n + ' es compuesto.'), { filas, n });
+    if (!pasa) return; }
+  push('Ninguna base es testigo: ' + n + ' es primo (con las 7 bases del código esto es seguro para todo n < 2^64).', { filas, n });
+}, s => s.filas.length ? s.filas.map(f => cellsRow('a = ' + f.a, f.seq, f.seq.map(x => x === 1 || x === s.n - 1 ? 'g' : f.pasa ? '' : 'r'))).join('') : '<p class="note">Elige una base para empezar.</p>');
+
+V(TN + 'PollardRho', 'Pollard rho: la tortuga y la liebre', 'x avanza un paso y y dos con f(v) = v² + c (mód n). Módulo un factor p la secuencia entra en un ciclo mucho antes (≈ √p pasos): ahí x ≡ y (mód p) y gcd(|x − y|, n) revela p. El código usa la variante de Brent, que hace lo mismo con menos gcd.', push => {
+  const n = pick([8051, 10403, 2021, 4087, 1147]), c = 1, f = v => (v * v + c) % n; let x = 2, y = 2; const filas = [];
+  push('n = ' + n + ', f(v) = v² + 1, empezando en 2.', { filas });
+  for (let i = 1; i <= 40; i++) { x = f(x); y = f(f(y)); const g = gcdF(Math.abs(x - y), n); filas.push([i, x, y, Math.abs(x - y), g]);
+    push('Paso ' + i + ': x = ' + x + ', y = ' + y + ', gcd(' + Math.abs(x - y) + ', ' + n + ') = ' + g + (g > 1 && g < n ? ': ¡factor encontrado! ' + n + ' = ' + g + ' · ' + n / g + '.' : g === n ? ': el ciclo se cerró sin separar los factores; el código prueba otra c.' : '.'), { filas: filas.slice(-8), hit: g > 1 && g < n });
+    if (g > 1) return; }
+}, s => s.filas.length ? table(s.filas, s.filas.map((_, i) => i === s.filas.length - 1 && s.hit ? ['', '', '', '', 'g'] : []), null, ['paso', 'x', 'y', '|x − y|', 'gcd']) : '<p class="note">—</p>');
+
+V(JG + 'Nim', 'Nim: jugar con el xor', 'Barras = pilas. Si el xor no es 0, existe una pila a con a xor X < a: bajarla a ese valor deja xor 0. Quien recibe xor 0 pierde.', push => {
+  const h = Array.from({ length: R(3, 4) }, () => R(1, 7)); let turno = 0; const X = () => h.reduce((a, b) => a ^ b, 0);
+  push('Pilas ' + h.join(', ') + '. xor = ' + X() + (X() ? ' ≠ 0: gana quien empieza.' : ' = 0: gana el segundo.'), { h: h.slice(), hl: [] });
+  for (let paso = 0; paso < 14 && h.some(x => x); paso++) { const x = X(); let i, nv;
+    if (x) { i = h.findIndex(a => (a ^ x) < a); nv = h[i] ^ x; } else { i = h.findIndex(a => a > 0); nv = h[i] - 1; }
+    const hl = h.map((_, k) => k === i ? 'a' : ''); h[i] = nv;
+    push('Jugador ' + (turno + 1) + ': la pila ' + (i + 1) + ' baja a ' + nv + (x ? ' (deja xor 0).' : ' (con xor 0 no hay buena jugada: saca 1).') + ' xor ahora = ' + X() + '.', { h: h.slice(), hl }); turno ^= 1; }
+  push('No quedan piedras: pierde el jugador ' + (turno + 1) + ', que ya no puede mover.', { h: h.slice(), hl: [] });
+}, s => barras(s.h.map(x => x || 0.0001), s.hl, s.h.map((x, i) => 'pila ' + (i + 1) + ': ' + x + ' = ' + x.toString(2).padStart(3, '0')), 7));
+
+V(JG + 'SpragueGrundy', 'Números de Grundy con mex', 'g[h] = mex de los g alcanzables con una jugada (el menor número que no aparece). g = 0 ⟺ posición perdedora. Varias pilas: se hace xor de sus g.', push => {
+  const S = shuffle([1, 2, 3, 4, 5]).slice(0, R(2, 3)).sort((a, b) => a - b), N = 15, g = Array(N + 1).fill(null); g[0] = 0;
+  push('Se pueden sacar ' + S.join(', ') + ' piedras. g[0] = 0: sin jugadas, pierde quien mueve.', { g, S, cur: 0, from: [] });
+  for (let h = 1; h <= N; h++) { const from = S.filter(x => x <= h).map(x => h - x), al = new Set(from.map(v => g[v])); let v = 0; while (al.has(v)) v++; g[h] = v;
+    push('h = ' + h + ': alcanza ' + (from.length ? from.map(v => 'g[' + v + '] = ' + g[v]).join(', ') : 'nada') + ' → mex = ' + v + '.', { g, S, cur: h, from }); }
+}, s => rows([{ t: 'h', v: s.g.map((_, i) => i) }, { t: 'g[h]', v: s.g, c: s.g.map((v, i) => i === s.cur ? 'a' : s.from.includes(i) ? 'b' : v === 0 ? 'r' : v !== null ? 'g' : '') }]) + '<p class="note">Rojo = g = 0 (perdedora). Movidas: ' + s.S.join(', ') + '</p>');
+
+const cplx = (re, im) => ({ re, im }), cmul = (a, b) => cplx(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
+const cstr = z => { const r = Math.round(z.re * 100) / 100, i = Math.round(z.im * 100) / 100; return i === 0 ? '' + r : r === 0 ? i + 'i' : r + (i > 0 ? '+' : '−') + Math.abs(i) + 'i'; };
+function dftSlow(a, inv) { const n = a.length; return a.map((_, k) => a.reduce((acc, x, j) => { const ang = (inv ? -1 : 1) * 2 * Math.PI * j * k / n, w = cplx(Math.cos(ang), Math.sin(ang)), t = cmul(x, w); return cplx(acc.re + t.re, acc.im + t.im); }, cplx(0, 0))); }
+V(PO + 'FFT', 'Multiplicar polinomios: evaluar, multiplicar, interpolar', 'Con n = 8 raíces de la unidad ω^k = e^(2πik/8): los coeficientes se convierten en valores (FFT), los valores se multiplican uno a uno y la FFT inversa recupera los coeficientes. La FFT hace cada conversión en O(n log n) en vez de O(n²).', push => {
+  const A = Array.from({ length: 3 }, () => R(0, 3)), B = Array.from({ length: 3 }, () => R(0, 3)); A[2] = A[2] || 1; B[2] = B[2] || 1;
+  const pad = v => v.concat(Array(8 - v.length).fill(0)).map(x => cplx(x, 0)), fa = dftSlow(pad(A)), fb = dftSlow(pad(B)), fc = fa.map((z, i) => cmul(z, fb[i])), c = dftSlow(fc, true).map(z => Math.round(z.re / 8));
+  const base = { A, B }; push('A(x) = ' + A.map((v, i) => v + 'x^' + i).join(' + ') + ' y B(x) = ' + B.map((v, i) => v + 'x^' + i).join(' + ') + '. Se rellenan con ceros hasta 8 coeficientes.', Object.assign({ r: [] }, base));
+  push('FFT de A: A(ω^k) para k = 0 … 7.', Object.assign({ r: [['A(ω^k)', fa.map(cstr)]] }, base));
+  push('FFT de B: B(ω^k).', Object.assign({ r: [['A(ω^k)', fa.map(cstr)], ['B(ω^k)', fb.map(cstr)]] }, base));
+  push('Producto punto a punto: C(ω^k) = A(ω^k)·B(ω^k). Esto cuesta solo O(n).', Object.assign({ r: [['A(ω^k)', fa.map(cstr)], ['B(ω^k)', fb.map(cstr)], ['C(ω^k)', fc.map(cstr)]] }, base));
+  push('FFT inversa (con ω^−k y dividiendo por 8): los coeficientes de C = A·B son ' + c.slice(0, 5).join(', ') + '.', Object.assign({ r: [['C(ω^k)', fc.map(cstr)], ['coef. de C', c]] }, base));
+}, s => rows([{ t: 'A', v: s.A }, { t: 'B', v: s.B }].concat(s.r.map(([t, v], i) => ({ t, v, c: v.map(() => i === s.r.length - 1 ? 'g' : '') })))));
+
+V(PO + 'NTT', 'NTT: la misma idea con enteros módulo un primo', 'Con p = 17 = 2^4 + 1, el 9 es raíz de la unidad de orden 8 (9^8 ≡ 1 y 9^4 ≡ −1 mód 17): hace el papel de ω sin errores de redondeo. El código usa p = 998244353 = 119·2^23 + 1 y raíz primitiva 3.', push => {
+  const P = 17, W = 9, n = 8, pw = (b, e) => { let r = 1; for (let i = 0; i < e; i++) r = r * b % P; return r; };
+  const ntt = (a, w) => a.map((_, k) => a.reduce((acc, x, j) => (acc + x * pw(w, j * k % n)) % P, 0));
+  const A = [R(0, 2), R(0, 2), R(1, 2)], B = [R(0, 2), R(0, 2), R(1, 2)], pad = v => v.concat(Array(n - v.length).fill(0));
+  const fa = ntt(pad(A), W), fb = ntt(pad(B), W), fc = fa.map((x, i) => x * fb[i] % P), inv8 = pw(8, 15), winv = pw(W, 7), c = ntt(fc, winv).map(x => x * inv8 % P);
+  push('A = ' + A.join(', ') + ' y B = ' + B.join(', ') + ' (coeficientes). Potencias de 9 mód 17: ' + [...Array(8).keys()].map(k => pw(W, k)).join(', ') + '.', { A, B, r: [] });
+  push('NTT de A: A(9^k) mód 17.', { A, B, r: [['A(9^k)', fa]] });
+  push('NTT de B: B(9^k) mód 17.', { A, B, r: [['A(9^k)', fa], ['B(9^k)', fb]] });
+  push('Producto punto a punto mód 17.', { A, B, r: [['A(9^k)', fa], ['B(9^k)', fb], ['C(9^k)', fc]] });
+  push('Inversa: usar 9^−1 = ' + winv + ' y multiplicar por 8^−1 = ' + inv8 + '. Resultado: ' + c.slice(0, 5).join(', ') + ' (todos los coeficientes reales son < 17, así que coinciden).', { A, B, r: [['C(9^k)', fc], ['coef. de C', c]] });
+}, s => rows([{ t: 'A', v: s.A }, { t: 'B', v: s.B }].concat(s.r.map(([t, v], i) => ({ t, v, c: v.map(() => i === s.r.length - 1 ? 'g' : '') })))));
+
+// =================== Optimizaciones de DP y DP en árboles ===================
+const DO_ = 'DP-Optimizations-', DT_ = 'DP-Trees-';
+V(DO_ + 'ConvexHullTrick', 'Convex Hull Trick: la envolvente inferior de las rectas', 'Cada monstruo matado agrega la recta y = f·x + dp. Para el siguiente se evalúa el mínimo en x = s. Como las pendientes bajan y las consultas suben, las rectas inútiles salen por los extremos de la deque. Azul = rectas en la deque; gris = descartadas.', push => {
+  const n = 5, x0 = R(8, 10), s = [], f = []; let v = R(1, 2); for (let i = 0; i < n; i++) { v += R(1, 3); s.push(v); }
+  let fv = x0; for (let i = 0; i < n; i++) { fv = Math.max(1, fv - R(1, 3)); f.push(fv); }
+  const lines = [{ m: x0, b: 0, id: 0 }], dq = [0], dead = []; const st = (q, best) => ({ lines, dq: dq.slice(), dead: dead.slice(), q, best, X: s[n - 1] + 1 });
+  const ev = (l, x) => l.m * x + l.b, sobra = (a, b, c) => (c.b - a.b) * (a.m - b.m) <= (b.b - a.b) * (a.m - c.m);
+  push('Fuerzas s = ' + s.join(', ') + '; factores f = ' + f.join(', ') + '; factor inicial ' + x0 + '. Recta inicial y = ' + x0 + '·x.', st(-1, -1)); let dp = 0;
+  for (let i = 0; i < n; i++) {
+    while (dq.length >= 2 && ev(lines[dq[1]], s[i]) <= ev(lines[dq[0]], s[i])) dead.push(dq.shift());
+    dp = ev(lines[dq[0]], s[i]); push('Monstruo ' + (i + 1) + ' (x = ' + s[i] + '): la mejor recta es la del frente, y = ' + lines[dq[0]].m + 'x + ' + lines[dq[0]].b + ' → dp = ' + dp + '.', st(s[i], dq[0]));
+    const nl = { m: f[i], b: dp, id: lines.length }; lines.push(nl);
+    if (lines[dq[dq.length - 1]].m === nl.m && lines[dq[dq.length - 1]].b <= nl.b) { dead.push(nl.id); push('La recta nueva tiene la misma pendiente y es peor: no sirve.', st(-1, -1)); continue; }
+    while (dq.length >= 2 && sobra(lines[dq[dq.length - 2]], lines[dq[dq.length - 1]], nl)) dead.push(dq.pop());
+    dq.push(nl.id); push('Se agrega y = ' + nl.m + 'x + ' + nl.b + ' al final (se sacan las que quedan tapadas).', st(-1, -1));
+  }
+  push('Respuesta: ' + dp + ' (O(n) en total: cada recta entra y sale una vez).', st(-1, -1));
+}, s => { const W = 540, H = 280, X = s.X, ys = s.lines.flatMap(l => [l.b, l.m * X + l.b]), Y = Math.max(...ys, 1), px = x => 30 + (W - 50) * x / X, py = y => H - 25 - (H - 45) * y / Y;
+  let g = '<line x1="30" y1="' + (H - 25) + '" x2="' + (W - 20) + '" y2="' + (H - 25) + '" stroke="#888"/>';
+  s.lines.forEach(l => { const on = s.dq.includes(l.id), col = l.id === s.best ? '#d4a72c' : on ? '#1f6feb' : '#bbb'; g += '<line x1="' + px(0) + '" y1="' + py(l.b) + '" x2="' + px(X) + '" y2="' + py(l.m * X + l.b) + '" stroke="' + col + '" stroke-width="' + (on ? 2.5 : 1.2) + '"' + (s.dead.includes(l.id) ? ' stroke-dasharray="4 3"' : '') + '/>'; });
+  if (s.q >= 0) g += '<line x1="' + px(s.q) + '" y1="15" x2="' + px(s.q) + '" y2="' + (H - 25) + '" stroke="#2da44e" stroke-dasharray="5 4"/>' + txt(px(s.q), 12, 'x = ' + s.q, { s: 11 });
+  return svgBox(g, W, H); });
+
+V(DO_ + 'DivideAndConquerDP', 'Divide y vencerás sobre una capa de la DP', 'Se calcula dp[mid] probando los cortes p en [optl, optr] (azul). Su mejor corte (verde) parte el problema: la mitad izquierda solo prueba cortes ≤ ese, la derecha solo ≥. Cada nivel de la recursión cuesta O(n).', push => {
+  const n = 8, k = 2, x = Array.from({ length: n }, () => R(1, 6)), pre = [0]; x.forEach(v => pre.push(pre[pre.length - 1] + v));
+  const ant = Array(n + 1).fill(Infinity); ant[0] = 0; for (let i = 1; i <= n; i++) ant[i] = pre[i] * pre[i];
+  const cur = Array(n + 1).fill(null), opt = Array(n + 1).fill(null); const st = (mid, l, r, best) => ({ x, ant: ant.slice(), cur: cur.slice(), opt: opt.slice(), mid, l, r, best });
+  push('Arreglo ' + x.join(', ') + '. Capa 1 (un tramo): dp₁[i] = (suma de los primeros i)². Ahora la capa 2: dp₂[i] = min_p dp₁[p] + (suma de (p, i])².', st(-1, -1, -1, -1));
+  const solve = (lo, hi, ol, or) => { if (lo > hi) return; const mid = (lo + hi) >> 1; let best = ol, bv = Infinity;
+    for (let p = ol; p <= Math.min(mid - 1, or); p++) { const v = ant[p] + (pre[mid] - pre[p]) ** 2; if (v < bv) { bv = v; best = p; } }
+    cur[mid] = bv; opt[mid] = best; push('mid = ' + mid + ': se prueban p ∈ [' + ol + ', ' + Math.min(mid - 1, or) + ']; el mejor es p = ' + best + ' con dp₂ = ' + bv + '.', st(mid, ol, Math.min(mid - 1, or), best));
+    solve(lo, mid - 1, ol, best); solve(mid + 1, hi, best, or); };
+  solve(1, n, 0, n - 1); push('Capa 2 lista. Fíjate en que los cortes óptimos (fila opt) nunca bajan: esa monotonía es lo que permite podar.', st(-1, -1, -1, -1));
+}, s => rows([{ t: 'i', v: [...Array(s.x.length + 1).keys()], c: [...Array(s.x.length + 1).keys()].map(i => i === s.mid ? 'a' : i >= s.l && i <= s.r ? 'b' : '') }, { t: 'x', v: [null].concat(s.x) }, { t: 'dp₁', v: s.ant, c: s.ant.map((_, i) => i === s.best ? 'g' : '') }, { t: 'dp₂', v: s.cur, c: s.cur.map((v, i) => i === s.mid ? 'a' : v !== null ? 'g' : '') }, { t: 'opt', v: s.opt }]));
+
+V(DO_ + 'KnuthOptimization', 'Optimización de Knuth', 'dp[i][j] = costo mínimo de partir el tramo [i, j] hasta dejar piezas sueltas. Solo se prueban los cortes entre opt[i][j−1] y opt[i+1][j], no todos. Amarillo = casilla que se calcula; azul = dp[i][j−1] y dp[i+1][j], de donde salen esos límites.', push => {
+  const n = 5, x = Array.from({ length: n }, () => R(1, 9)), pre = [0]; x.forEach(v => pre.push(pre[pre.length - 1] + v));
+  const dp = Array.from({ length: n }, () => Array(n).fill(null)), opt = Array.from({ length: n }, () => Array(n).fill(null)); for (let i = 0; i < n; i++) { dp[i][i] = 0; opt[i][i] = i; }
+  const cl = (i, j) => dp.map((r, a) => r.map((_, b) => a === i && b === j ? 'a' : (a === i && b === j - 1) || (a === i + 1 && b === j) ? 'b' : dp[a][b] !== null ? 'g' : ''));
+  push('Arreglo ' + x.join(', ') + '. Diagonal: un elemento solo ya es una pieza (costo 0).', { dp, cl: cl(-1, -1), x });
+  for (let L = 2; L <= n; L++) for (let i = 0; i + L - 1 < n; i++) { const j = i + L - 1; let best = Infinity, bc = -1, lo = opt[i][j - 1], hi = Math.min(j - 1, opt[i + 1][j]);
+    for (let c = lo; c <= hi; c++) { const v = dp[i][c] + dp[c + 1][j]; if (v < best) { best = v; bc = c; } }
+    dp[i][j] = best + pre[j + 1] - pre[i]; opt[i][j] = bc;
+    push('[' + (i + 1) + ', ' + (j + 1) + ']: cortes probados ' + (lo + 1) + '…' + (hi + 1) + ' (de ' + (j - i) + ' posibles); mejor después de ' + (bc + 1) + ' → ' + best + ' + suma ' + (pre[j + 1] - pre[i]) + ' = ' + dp[i][j] + '.', { dp, cl: cl(i, j), x }); }
+  push('Respuesta: dp[1][' + n + '] = ' + dp[0][n - 1] + '.', { dp, cl: cl(0, n - 1), x });
+}, s => table(s.dp, s.cl, s.x.map((v, i) => (i + 1) + ' (' + v + ')'), s.x.map((_, j) => j + 1)));
+
+V(DO_ + 'SOSDP', 'Suma sobre subconjuntos, bit por bit', 'sub[m] cuenta los y ⊆ m. Al procesar el bit b, cada máscara con ese bit prendido suma lo de la máscara sin él. Después de los B bits, cada subconjunto se contó exactamente una vez: O(B·2^B) en vez de O(3^B).', push => {
+  const B = 3, M = 1 << B, cnt = Array(M).fill(0); for (let i = 0; i < 6; i++) cnt[R(0, M - 1)]++;
+  const sub = cnt.slice(); push('Cantidad de cada número (como máscaras de 3 bits).', { cnt, sub: sub.slice(), b: -1 });
+  for (let b = 0; b < B; b++) { for (let m = 0; m < M; m++) if (m >> b & 1) sub[m] += sub[m ^ (1 << b)]; push('Bit ' + b + ': sub[m] += sub[m sin el bit ' + b + '] para las máscaras que lo tienen (amarillo).', { cnt, sub: sub.slice(), b }); }
+  push('Listo: sub[m] = cuántos números son subconjunto de m. Por ejemplo sub[111] = ' + sub[M - 1] + ' = todos.', { cnt, sub: sub.slice(), b: -1 });
+}, s => { const lab = [...Array(8).keys()].map(m => m.toString(2).padStart(3, '0')); return rows([{ t: 'máscara', v: lab, c: lab.map((_, m) => s.b >= 0 && m >> s.b & 1 ? 'a' : '') }, { t: 'cantidad', v: s.cnt }, { t: 'sub', v: s.sub, c: s.sub.map((_, m) => s.b >= 0 && m >> s.b & 1 ? 'g' : '') }]); });
+
+V(DO_ + 'DigitDP', 'DP de dígitos: el camino pegado al límite', 'Se cuentan los números ≤ N con a lo sumo 3 dígitos no nulos. Se recorre N dígito por dígito: poner un dígito menor que el de N libera el resto, que se cuenta con una fórmula (libre). Poner el mismo dígito sigue "pegado".', push => {
+  const N = R(1000, 99999), D = String(N).split('').map(Number), libre = (r, nz) => { if (nz > 3) return 0; if (!r) return 1; return libre(r - 1, nz) + 9 * libre(r - 1, nz + 1); };
+  let total = 0, nz = 0; const filas = [];
+  push('N = ' + N + '. Contar los números de [0, N] con ≤ 3 dígitos distintos de cero.', { D, pos: -1, filas: [], total });
+  for (let p = 0; p < D.length; p++) { const resto = D.length - p - 1; let suma = 0; for (let d = 0; d < D[p]; d++) suma += libre(resto, nz + (d !== 0)); total += suma;
+    filas.push(['pos ' + (p + 1), 'dígitos 0…' + (D[p] - 1), suma]); push('Posición ' + (p + 1) + ' (límite ' + D[p] + '): poner 0…' + Math.max(0, D[p] - 1) + ' libera ' + resto + ' dígitos → suma ' + suma + '. Total = ' + total + '.', { D, pos: p, filas: filas.slice(), total });
+    nz += D[p] !== 0; if (nz > 3) { push('Pegados a N ya hay ' + nz + ' dígitos no nulos: el camino se corta. Respuesta = ' + total + '.', { D, pos: p, filas: filas.slice(), total }); return; } }
+  total++; push('Se llegó al final pegados: el propio N también cuenta. Respuesta = ' + total + '.', { D, pos: D.length, filas, total });
+}, s => cellsRow('N', s.D, s.D.map((_, i) => i < s.pos ? 'g' : i === s.pos ? 'a' : '')) + (s.filas.length ? table(s.filas, null, null, ['dígito', 'opciones menores', 'se suman']) : ''));
+
+V(DT_ + 'TreeMatching', 'Emparejamiento máximo en un árbol', 'Etiqueta = libre / usado: lo mejor en el subárbol sin usar el nodo, o usándolo con un hijo. Se calcula de las hojas a la raíz. Verde = parejas elegidas al final.', push => {
+  const n = R(7, 10), { T, E, s } = treeState(n); const libre = Array(n).fill(0), usado = Array(n).fill(0), orden = [0]; for (const u of orden) T.kids[u].forEach(v => orden.push(v));
+  push('Árbol con ' + n + ' nodos. Raíz = 1.', s);
+  for (let k = n - 1; k >= 0; k--) { const u = orden[k]; let suma = 0, mej = -1; for (const v of T.kids[u]) { const m = Math.max(libre[v], usado[v]); suma += m; mej = Math.max(mej, libre[v] + 1 - m); }
+    libre[u] = suma; usado[u] = mej >= 0 ? suma + mej : 0; s.ns[u] = libre[u] + ' / ' + usado[u]; s.nc[u] = 'b'; push('Nodo ' + (u + 1) + ': libre = ' + libre[u] + ', usado = ' + usado[u] + '.', s); s.nc[u] = ''; }
+  const elegir = (u, puedeUsar) => { let mejorHijo = -1; if (puedeUsar && usado[u] > libre[u]) { let best = -1; for (const v of T.kids[u]) { const g = libre[v] + 1 - Math.max(libre[v], usado[v]); if (g > best) { best = g; mejorHijo = v; } } }
+    for (const v of T.kids[u]) { if (v === mejorHijo) { s.ec[v - 1] = 'g'; s.nc[u] = s.nc[v] = 'g'; elegir(v, false); } else elegir(v, true); } };
+  elegir(0, true); push('Respuesta: ' + Math.max(libre[0], usado[0]) + ' parejas.', s);
+}, GR);
+
+V(DT_ + 'Rerooting', 'Rerooting: la respuesta para todas las raíces', 'Primero una pasada hacia arriba (tamaños y suma de distancias desde 1). Luego, al mover la raíz del padre p al hijo v: los sz[v] nodos de su subárbol quedan 1 más cerca y los n − sz[v] restantes 1 más lejos.', push => {
+  const n = R(7, 10), { T, s } = treeState(n), sz = Array(n).fill(1), ans = Array(n).fill(null), orden = [0]; for (const u of orden) T.kids[u].forEach(v => orden.push(v));
+  for (let k = n - 1; k > 0; k--) sz[T.par[orden[k]]] += sz[orden[k]];
+  s.ns = sz.map(x => 'sz ' + x); push('Pasada 1: tamaños de subárbol (etiquetas).', s);
+  ans[0] = T.depth.reduce((a, b) => a + b, 0); s.ns[0] = 'Σ = ' + ans[0]; s.nc[0] = 'g'; push('Suma de distancias desde la raíz 1 = suma de profundidades = ' + ans[0] + '.', s);
+  for (const u of orden.slice(1)) { const p = T.par[u]; ans[u] = ans[p] + n - 2 * sz[u]; s.nc[u] = 'a'; s.ns[u] = 'Σ = ' + ans[u];
+    push('Nodo ' + (u + 1) + ': ' + ans[p] + ' + (' + n + ' − ' + sz[u] + ') − ' + sz[u] + ' = ' + ans[u] + '.', s); s.nc[u] = 'g'; }
+  push('Las n respuestas en O(n), sin recorrer el árbol desde cada nodo.', s);
+}, GR);
+
+// =================== Grafos avanzados ===================
+const GC = 'Graphs-Algorithms-Connectivity-', GF = 'Graphs-Algorithms-Flow-Algorithms-';
+function lowLinkSteps(push, modo) {
+  const n = R(7, 9), xy = circleLayout(n), E = [], has = new Set(), add = (a, b) => { const k = Math.min(a, b) + ',' + Math.max(a, b); if (a === b || has.has(k)) return; has.add(k); E.push({ a, b }); };
+  // dos o tres "bloques" con ciclos unidos por aristas sueltas, para que haya puentes y articulaciones
+  const ord = shuffle([...Array(n).keys()]), c1 = R(3, 4); for (let i = 0; i < c1; i++) add(ord[i], ord[(i + 1) % c1]);
+  for (let i = c1; i < n; i++) add(ord[R(Math.max(0, i - 3), i - 1)], ord[i]); if (R(0, 1)) add(ord[n - 1], ord[n - 3]);
+  const s = GS(xy, E), G = adjOf(n, E), tin = Array(n).fill(0), low = Array(n).fill(0), par = Array(n).fill(-1), pe = Array(n).fill(-1); let t = 0; const res = [];
+  const lab = u => tin[u] ? tin[u] + '/' + low[u] : '';
+  push('tin/low de cada nodo: tin = momento de descubrimiento; low = el menor tin alcanzable bajando por el árbol DFS y usando una arista de retroceso.', s);
+  const dfs = u => { tin[u] = low[u] = ++t; s.nc[u] = 'a'; s.ns[u] = lab(u); push('Se descubre ' + (u + 1) + ' (tin = ' + tin[u] + ').', s); let hijos = 0;
+    for (const [v, k] of G[u]) { if (k === pe[u]) continue;
+      if (tin[v]) { if (tin[v] < low[u]) { low[u] = tin[v]; s.ec[k] = 'p'; s.ns[u] = lab(u); push('Arista de retroceso ' + (u + 1) + '–' + (v + 1) + ': low[' + (u + 1) + '] = ' + low[u] + '.', s); } continue; }
+      par[v] = u; pe[v] = k; s.ec[k] = 'b'; hijos++; dfs(v); low[u] = Math.min(low[u], low[v]); s.ns[u] = lab(u);
+      if (modo === 'puente' && low[v] > tin[u]) { s.ec[k] = 'r'; res.push((u + 1) + '–' + (v + 1)); push('low[' + (v + 1) + '] = ' + low[v] + ' > tin[' + (u + 1) + '] = ' + tin[u] + ': nada debajo de ' + (v + 1) + ' sube más arriba. ' + (u + 1) + '–' + (v + 1) + ' es puente.', s); }
+      else if (modo === 'corte' && par[u] >= 0 && low[v] >= tin[u] && !res.includes(u + 1)) { res.push(u + 1); s.ring = u; push('low[' + (v + 1) + '] = ' + low[v] + ' ≥ tin[' + (u + 1) + '] = ' + tin[u] + ': el subárbol de ' + (v + 1) + ' solo sale pasando por ' + (u + 1) + '. Es punto de articulación.', s); }
+      else push('Vuelve de ' + (v + 1) + ' a ' + (u + 1) + ': low[' + (u + 1) + '] = ' + low[u] + '.', s); }
+    if (modo === 'corte' && par[u] < 0 && hijos >= 2) { res.push(u + 1); push('La raíz tiene ' + hijos + ' hijos en el árbol DFS: es punto de articulación.', s); }
+    s.nc[u] = modo === 'corte' && res.includes(u + 1) ? 'r' : 'g'; };
+  dfs(0); s.ring = undefined; s.nc = s.nc.map((_, u) => modo === 'corte' && res.includes(u + 1) ? 'r' : 'g');
+  push(modo === 'puente' ? (res.length ? 'Puentes: ' + res.join(', ') + ' (rojo).' : 'No hay puentes: toda arista está en algún ciclo.') : (res.length ? 'Puntos de articulación: ' + res.join(', ') + ' (rojo).' : 'No hay puntos de articulación.'), s);
+}
+V(GC + 'Bridges', 'Puentes con tin y low', 'Azul = arista del árbol DFS; morado = arista de retroceso que baja low; rojo = puente.', push => lowLinkSteps(push, 'puente'), GR);
+V(GC + 'ArticulationPoints', 'Puntos de articulación con tin y low', 'Igual que con puentes, pero la condición es low[hijo] ≥ tin[u] (con ≥: el hijo puede volver a u, pero no más arriba). La raíz es especial: es de corte si tiene 2 o más hijos en el DFS.', push => lowLinkSteps(push, 'corte'), GR);
+
+V('Graphs-Algorithms-Trees-HLD', 'Heavy-light: cadenas pesadas y saltos', 'Cada nodo continúa su cadena por el hijo de subárbol más grande (aristas de color). Un camino cualquiera cruza O(log n) cadenas, y cada tramo de cadena es un rango contiguo del Segment Tree.', push => {
+  const n = R(11, 14), { T, E, s } = treeState(n, 540, 280), sz = Array(n).fill(1), orden = [0]; for (const u of orden) T.kids[u].forEach(v => orden.push(v));
+  for (let k = n - 1; k > 0; k--) sz[T.par[orden[k]]] += sz[orden[k]];
+  const pes = Array(n).fill(-1); for (let u = 0; u < n; u++) { let b = -1; for (const v of T.kids[u]) if (b < 0 || sz[v] > sz[b]) b = v; pes[u] = b; }
+  const cab = Array(n).fill(-1), pos = Array(n).fill(0); let t = 0, ci = 0; const colC = ['b', 'g', 'o', 'p', 'a', 'r'];
+  s.ns = sz.map(x => 'sz ' + x); push('Tamaños de subárbol.', s);
+  for (const u of orden) if (u === 0 || pes[T.par[u]] !== u) { const col = colC[ci++ % colC.length]; for (let v = u; v >= 0; v = pes[v]) { cab[v] = u; pos[v] = t++; s.nc[v] = col; if (v) s.ec[v - 1] = v === u ? '' : col; }
+    push('Cadena que empieza en ' + (u + 1) + ': ' + (function () { const L = []; for (let v = u; v >= 0; v = pes[v]) L.push(v + 1); return L.join(' → '); })() + ' (posiciones consecutivas).', s); }
+  s.ns = pos.map(p => 'pos ' + p); push('Etiqueta = posición en el arreglo del Segment Tree.', s);
+  let a = R(1, n - 1), b = R(1, n - 1); while (b === a) b = R(0, n - 1); const A0 = a, B0 = b; const tramos = [];
+  s.ring = a; push('Consulta en el camino ' + (a + 1) + ' – ' + (b + 1) + '.', s);
+  while (cab[a] !== cab[b]) { if (T.depth[cab[a]] < T.depth[cab[b]]) [a, b] = [b, a]; tramos.push('[' + pos[cab[a]] + ', ' + pos[a] + ']'); s.ring = a;
+    push('Las cabezas son distintas: se toma el tramo ' + tramos[tramos.length - 1] + ' de la cadena de ' + (a + 1) + ' y se salta al padre de su cabeza.', s); a = T.par[cab[a]]; }
+  if (T.depth[a] > T.depth[b]) [a, b] = [b, a]; tramos.push('[' + pos[a] + ', ' + pos[b] + ']'); s.ring = b;
+  push('Misma cadena: último tramo ' + tramos[tramos.length - 1] + '. El camino ' + (A0 + 1) + '–' + (B0 + 1) + ' se respondió con ' + pl(tramos.length, 'consulta', 'consultas') + ' de rango: ' + tramos.join(', ') + '.', s);
+}, GR);
+
+V(GF + 'HopcroftKarp', 'Hopcroft-Karp: muchos caminos aumentantes por fase', 'Cada fase hace un BFS desde todos los izquierdos libres (etiqueta = capa) y luego aumenta por caminos disjuntos de largo mínimo. Verde = emparejado.', push => {
+  const L = 5, Rr = 5, xy = []; for (let i = 0; i < L; i++) xy.push({ x: 140, y: 30 + i * 58 }); for (let j = 0; j < Rr; j++) xy.push({ x: 400, y: 30 + j * 58 });
+  const E = []; for (let i = 0; i < L; i++) shuffle([...Array(Rr).keys()]).slice(0, R(1, 3)).forEach(j => E.push({ a: i, b: L + j }));
+  const s = GS(xy, E); s.lab = [...Array(L).keys()].map(i => 'I' + (i + 1)).concat([...Array(Rr).keys()].map(j => 'D' + (j + 1)));
+  const mL = Array(L).fill(-1), mR = Array(Rr).fill(-1), paint = () => { s.ec = E.map(e => mL[e.a] === e.b - L ? 'g' : ''); s.nc = s.nc.map((_, v) => (v < L ? mL[v] >= 0 : mR[v - L] >= 0) ? 'g' : ''); };
+  push('Izquierda y derecha; las líneas son las parejas posibles.', s); let K = 0;
+  for (let fase = 1; fase <= 6; fase++) { const dist = Array(L).fill(-1), q = []; for (let a = 0; a < L; a++) if (mL[a] < 0) { dist[a] = 0; q.push(a); } let hay = false;
+    for (const a of q) for (const e of E) if (e.a === a) { const c = mR[e.b - L]; if (c < 0) hay = true; else if (dist[c] < 0) { dist[c] = dist[a] + 1; q.push(c); } }
+    s.ns = dist.map(d => d < 0 ? '' : 'capa ' + d).concat(Array(Rr).fill('')); paint();
+    if (!hay) { push('Fase ' + fase + ': el BFS no llega a ningún derecho libre. Emparejamiento máximo = ' + K + '.', s); return; }
+    push('Fase ' + fase + ': BFS por capas desde los izquierdos libres.', s); let nuevos = 0;
+    const dfs = a => { for (const e of E) { if (e.a !== a) continue; const c = mR[e.b - L]; if (c < 0 || (dist[c] === dist[a] + 1 && dfs(c))) { mL[a] = e.b - L; mR[e.b - L] = a; return true; } } dist[a] = -1; return false; };
+    for (let a = 0; a < L; a++) if (mL[a] < 0 && dfs(a)) { K++; nuevos++; paint(); push('Se aumenta desde I' + (a + 1) + ' (camino alternante de largo mínimo). Total: ' + K + '.', s); }
+    push('Fin de la fase ' + fase + ': ' + pl(nuevos, 'camino', 'caminos') + ' en una sola fase.', s); }
+}, GR);
+
+V(GF + 'MinCut', 'Corte mínimo a partir del flujo máximo', 'Se calcula el flujo máximo; después, los nodos que S todavía alcanza en el residual (verde) forman un lado del corte. Las aristas rojas cruzan de verde a naranja: son las que hay que cortar.', push => { const { n, xy, E } = flowNet(); augmentSteps(push, n, xy, E, true, 'Flujo terminado'); }, GR);
+
+V(GF + 'LowerBoundFlow', 'Cotas inferiores: mandar lo obligatorio y reparar', 'Cada tubo [l, c] manda primero l "por obligación" y queda con capacidad c − l. Eso deja nodos con exceso (+) o con déficit (−). Una fuente nueva S\' reparte los excesos y un sumidero T\' recoge los déficits: hay circulación válida si el flujo máximo de S\' a T\' los satisface todos.', push => {
+  const n = 4, xy = circleLayout(n, 540, 240), base = [[0, 1], [1, 2], [2, 3], [3, 0], [0, 2]], E = base.map(([a, b]) => { const l = R(0, 3); return { a, b, l, w: l + R(0, 3) }; });
+  const s = GS(xy, E, true); s.el = E.map(e => '[' + e.l + ', ' + e.w + ']'); push('Tubos con [mínimo, máximo]. Hay que elegir un flujo dentro de cada rango que se conserve en todos los nodos.', s);
+  const ex = Array(n).fill(0); E.forEach(e => { ex[e.b] += e.l; ex[e.a] -= e.l; }); s.ns = ex.map(x => x > 0 ? '+' + x : '' + x); s.el = E.map(e => 'libre ' + (e.w - e.l));
+  push('Se manda l en cada tubo. Etiqueta del nodo = lo que le sobra (+) o le falta (−). A cada tubo le queda c − l libre.', s);
+  // flujo máximo de S' a T' con Edmonds-Karp sobre la red auxiliar
+  const N = n + 2, S = n, T = n + 1, cap = {}, adj = Array.from({ length: N }, () => new Set()), add = (a, b, c) => { cap[a + ',' + b] = (cap[a + ',' + b] || 0) + c; cap[b + ',' + a] = cap[b + ',' + a] || 0; adj[a].add(b); adj[b].add(a); };
+  E.forEach(e => add(e.a, e.b, e.w - e.l)); let need = 0; ex.forEach((x, v) => { if (x > 0) { add(S, v, x); need += x; } else if (x < 0) add(v, T, -x); });
+  let fl = 0; while (true) { const prev = Array(N).fill(-1); prev[S] = S; const q = [S]; for (const u of q) for (const v of adj[u]) if (prev[v] < 0 && cap[u + ',' + v] > 0) { prev[v] = u; q.push(v); } if (prev[T] < 0) break; let b = Infinity; for (let v = T; v !== S; v = prev[v]) b = Math.min(b, cap[prev[v] + ',' + v]); for (let v = T; v !== S; v = prev[v]) { cap[prev[v] + ',' + v] -= b; cap[v + ',' + prev[v]] += b; } fl += b; }
+  const ok = fl === need, f = E.map(e => e.l + (e.w - e.l - cap[e.a + ',' + e.b]));   // l + lo que pasó por el tubo
+  s.ec = E.map(() => ok ? 'g' : 'r'); s.el = E.map((e, k) => ok ? f[k] + ' ∈ [' + e.l + ', ' + e.w + ']' : '[' + e.l + ', ' + e.w + ']'); s.ns = ex.map(() => '');
+  push(ok ? 'El flujo de S\' a T\' vale ' + fl + ' = suma de excesos: todos se satisfacen. Flujo de cada tubo = l + lo que pasó (verde).' : 'El flujo de S\' a T\' vale ' + fl + ' < ' + need + ': algún exceso no se puede repartir. No hay circulación válida.', s);
+}, GR);
+
+V(GF + 'Hungarian', 'Algoritmo húngaro: potenciales y costos reducidos', 'Se muestra el costo reducido c[i][j] − u[i] − v[j] (nunca negativo). Las casillas en 0 son las aristas "ajustadas"; verde = asignación actual. Al agregar cada fila se suben/bajan los potenciales lo justo para crear un camino de ceros.', push => {
+  const n = 4, c = Array.from({ length: n }, () => Array.from({ length: n }, () => R(1, 9))); const u = Array(n + 1).fill(0), v = Array(n + 1).fill(0), p = Array(n + 1).fill(0), way = Array(n + 1).fill(0);
+  const st = fila => { const red = c.map((r, i) => r.map((x, j) => x - u[i + 1] - v[j + 1])); const cls = red.map((r, i) => r.map((x, j) => p[j + 1] === i + 1 ? 'g' : x === 0 ? 'b' : '')); if (fila >= 0) cls[fila] = cls[fila].map(x => x || 'a'); return { red, cls, u: u.slice(1), v: v.slice(1), c }; };
+  push('Matriz de costos (empleado × tarea). Potenciales en 0.', st(-1));
+  for (let i = 1; i <= n; i++) { p[0] = i; let j0 = 0; const minv = Array(n + 1).fill(Infinity), used = Array(n + 1).fill(false);
+    do { used[j0] = true; const i0 = p[j0]; let delta = Infinity, j1 = 0; for (let j = 1; j <= n; j++) if (!used[j]) { const cur = c[i0 - 1][j - 1] - u[i0] - v[j]; if (cur < minv[j]) { minv[j] = cur; way[j] = j0; } if (minv[j] < delta) { delta = minv[j]; j1 = j; } }
+      for (let j = 0; j <= n; j++) if (used[j]) { u[p[j]] += delta; v[j] -= delta; } else minv[j] -= delta; j0 = j1; } while (p[j0] !== 0);
+    do { const j1 = way[j0]; p[j0] = p[j1]; j0 = j1; } while (j0);
+    push('Fila ' + i + ' agregada: los potenciales se movieron y apareció un camino de ceros que la asigna (amarillo = fila nueva).', st(i - 1)); }
+  let tot = 0; for (let j = 1; j <= n; j++) tot += c[p[j] - 1][j - 1]; push('Asignación óptima (verde) con costo total ' + tot + ' = Σu + Σv: los potenciales prueban que no hay nada mejor (dualidad).', st(-1));
+}, s => table(s.red, s.cls, s.u.map((x, i) => 'E' + (i + 1) + ' u=' + x), s.v.map((x, j) => 'T' + (j + 1) + ' v=' + x)) + '<p class="note">Costos originales: ' + s.c.map(r => r.join(' ')).join(' | ') + '</p>');
+
+// =================== Estructuras y cadenas avanzadas ===================
+V('Data-Structures-Algorithms-PersistentSegmentTree', 'Segment Tree persistente: versiones que comparten nodos', 'Cada caja es un nodo con su número y su suma. Un cambio no modifica nada: crea copias de los nodos del camino raíz → hoja (amarillo) y reutiliza todo lo demás (mismo número = mismo nodo en memoria).', push => {
+  const a = Array.from({ length: 4 }, () => R(1, 9)); let cnt = 0; const nodos = {};
+  const build = (l, r) => { const id = ++cnt; if (l === r) nodos[id] = { l, r, s: a[l], L: 0, R: 0 }; else { const m = (l + r) >> 1, L = build(l, m), Rr = build(m + 1, r); nodos[id] = { l, r, s: nodos[L].s + nodos[Rr].s, L, R: Rr }; } return id; };
+  const cambiar = (u, pos, x) => { const o = nodos[u], id = ++cnt; if (o.l === o.r) { nodos[id] = { l: o.l, r: o.r, s: x, L: 0, R: 0 }; return id; } const m = (o.l + o.r) >> 1; const L = pos <= m ? cambiar(o.L, pos, x) : o.L, Rr = pos > m ? cambiar(o.R, pos, x) : o.R; nodos[id] = { l: o.l, r: o.r, s: nodos[L].s + nodos[Rr].s, L, R: Rr }; return id; };
+  const raices = [build(0, 3)]; const st = nuevo => ({ nodos, raices: raices.slice(), nuevo: nuevo || [] });
+  push('Versión 1 del arreglo ' + a.join(', ') + ': 7 nodos.', st());
+  for (let v = 0; v < 2; v++) { const pos = R(0, 3), x = R(1, 9), antes = cnt; raices.push(cambiar(raices[raices.length - 1], pos, x)); const nuevos = []; for (let i = antes + 1; i <= cnt; i++) nuevos.push(i);
+    push('Versión ' + raices.length + ' = versión ' + (raices.length - 1) + ' con a[' + (pos + 1) + '] = ' + x + ': solo ' + nuevos.length + ' nodos nuevos (' + nuevos.join(', ') + '); los otros se comparten.', st(nuevos)); }
+  push('Total: ' + cnt + ' nodos para 3 versiones, en vez de 21. Cada versión sigue respondiendo consultas desde su propia raíz.', st());
+}, s => { let g = ''; const W = 540, w3 = W / 3;
+  s.raices.forEach((rt, v) => { const x0 = v * w3; const dib = (u, x, y, dx) => { const o = s.nodos[u]; if (o.L) { g += '<line x1="' + x + '" y1="' + y + '" x2="' + (x - dx) + '" y2="' + (y + 60) + '" stroke="#999"/><line x1="' + x + '" y1="' + y + '" x2="' + (x + dx) + '" y2="' + (y + 60) + '" stroke="#999"/>'; dib(o.L, x - dx, y + 60, dx / 2); dib(o.R, x + dx, y + 60, dx / 2); }
+      const nuevo = s.nuevo.includes(u); g += '<rect x="' + (x - 20) + '" y="' + (y - 14) + '" width="40" height="28" rx="6" fill="' + (nuevo ? '#ffd33d' : 'var(--card)') + '" stroke="#666"/>' + txt(x, y - 1, '#' + u, { s: 9, c: nuevo ? '#111' : undefined }) + txt(x, y + 10, 'Σ ' + o.s, { s: 10, b: 1, c: nuevo ? '#111' : undefined }); };
+    g += txt(x0 + w3 / 2, 16, 'versión ' + (v + 1), { b: 1 }); dib(rt, x0 + w3 / 2, 44, w3 / 4); });
+  return svgBox(g, W, 230); });
+
+V('Data-Structures-Algorithms-Treap', 'Treap implícito: cortar y pegar', 'El árbol es de búsqueda por posición (en orden da la cadena) y un heap por prioridad (número pequeño). split parte por posición y merge une poniendo arriba la prioridad mayor; ambos bajan por una sola rama: O(log n) esperado.', push => {
+  const str = shuffle('ABCDEFG'.split('')).join('').slice(0, 7), n = str.length, pr = shuffle([...Array(n).keys()].map(i => (i + 1) * 7 % 50 + R(0, 4))), nodos = str.split('').map((c, i) => ({ c, p: pr[i], l: -1, r: -1 }));
+  const merge = (a, b) => { if (a < 0) return b; if (b < 0) return a; if (nodos[a].p > nodos[b].p) { nodos[a].r = merge(nodos[a].r, b); return a; } nodos[b].l = merge(a, nodos[b].l); return b; };
+  const size = u => u < 0 ? 0 : 1 + size(nodos[u].l) + size(nodos[u].r);
+  const split = (u, k) => { if (u < 0) return [-1, -1]; if (size(nodos[u].l) < k) { const [a, b] = split(nodos[u].r, k - size(nodos[u].l) - 1); nodos[u].r = a; return [u, b]; } const [a, b] = split(nodos[u].l, k); nodos[u].l = b; return [a, u]; };
+  const inord = u => u < 0 ? [] : inord(nodos[u].l).concat([u], inord(nodos[u].r));
+  let raiz = -1; for (let i = 0; i < n; i++) raiz = merge(raiz, i);
+  const st = (rs, hl) => ({ nodos: clone(nodos), rs, hl: hl || [] });
+  push('Cadena ' + str + ' con prioridades al azar.', st([raiz]));
+  for (let op = 0; op < 2; op++) { const cur = inord(raiz).map(u => nodos[u].c).join(''), a = R(1, n - 1), b = R(a, n);
+    const [x, y0] = split(raiz, a - 1), [y, z] = split(y0, b - a + 1); const tramo = inord(y);
+    push('Cortar [' + a + ', ' + b + '] de ' + cur + ': dos splits dejan tres treaps (el del medio en amarillo).', st([x, y, z].filter(t => t >= 0), tramo));
+    raiz = merge(merge(x, z), y); push('merge(merge(izquierda, derecha), tramo): ' + inord(raiz).map(u => nodos[u].c).join('') + '.', st([raiz], tramo)); }
+}, s => { let g = ''; const W = 540, ts = s.rs; let col = 0; const total = ts.reduce((acc, t) => { const c = u => u < 0 ? 0 : 1 + c(s.nodos[u].l) + c(s.nodos[u].r); return acc + c(t); }, 0), dx = (W - 60) / Math.max(total - 1 + 0.8 * (ts.length - 1), 1);
+  ts.forEach(t => { const pos = []; const ino = (u, d) => { if (u < 0) return; ino(s.nodos[u].l, d + 1); pos[u] = [30 + dx * col++, 30 + d * 44]; ino(s.nodos[u].r, d + 1); }; ino(t, 0);
+    const lin = u => { if (u < 0) return; for (const v of [s.nodos[u].l, s.nodos[u].r]) if (v >= 0) { g += '<line x1="' + pos[u][0] + '" y1="' + pos[u][1] + '" x2="' + pos[v][0] + '" y2="' + pos[v][1] + '" stroke="#999"/>'; lin(v); } }; lin(t);
+    col += 0.8; pos.forEach((p, u) => { if (!p) return; const hl = s.hl.includes(u); g += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="15" fill="' + (hl ? '#ffd33d' : 'var(--card)') + '" stroke="#666"/>' + txt(p[0], p[1] + 4, s.nodos[u].c, { b: 1, c: hl ? '#111' : undefined }) + txt(p[0], p[1] - 19, s.nodos[u].p, { s: 9 }); }); });
+  const prof = u => u < 0 ? 0 : 1 + Math.max(prof(s.nodos[u].l), prof(s.nodos[u].r)); return svgBox(g, W, Math.max(200, 30 + Math.max(...ts.map(prof)) * 44)); });
+
+V('Data-Structures-Algorithms-OrderedSet', 'Josephus con un conjunto ordenado', 'Quedan los niños en orden; find_by_order(pos) da el niño en la posición pos en O(log n). Amarillo = el que sale.', push => {
+  const n = R(7, 10), k = R(1, 4), vivos = [...Array(n).keys()].map(i => i + 1), salen = []; let pos = 0;
+  push(n + ' niños, se saltan ' + k + ' cada vez.', { vivos: vivos.slice(), salen: [], hl: -1 });
+  while (vivos.length) { pos = (pos + k) % vivos.length; push('pos = (pos + ' + k + ') mód ' + vivos.length + ' = ' + pos + ': find_by_order(' + pos + ') = ' + vivos[pos] + '.', { vivos: vivos.slice(), salen: salen.slice(), hl: pos }); salen.push(vivos.splice(pos, 1)[0]); }
+  push('Orden de salida: ' + salen.join(' ') + '.', { vivos: [], salen, hl: -1 });
+}, s => rows([{ t: 'quedan', v: s.vivos.length ? s.vivos : ['—'], c: s.vivos.map((_, i) => i === s.hl ? 'a' : '') }, { t: 'salieron', v: s.salen.length ? s.salen : ['—'] }]));
+
+V('Strings-Algorithms-AhoCorasick', 'Aho-Corasick: trie con enlaces de fallo', 'Líneas grises = trie; punteadas moradas = enlace de fallo (el sufijo propio más largo que también está en el trie). Al leer el texto, si no hay transición se sigue el fallo, igual que KMP. Verde = nodo final de un patrón encontrado.', push => {
+  const pats = pick([['he', 'she', 'his', 'hers'], ['ab', 'bab', 'bc', 'ca'], ['aa', 'ab', 'ba', 'bb']]), text = pick({ 0: ['ushers', 'ahishers'], 1: ['abcab', 'babca'], 2: ['aabba', 'abab'] }[['he', 'ab', 'aa'].indexOf(pats[0])]);
+  const ch = [{}], fin = []; const par = [-1], letra = ['']; pats.forEach(p => { let u = 0; for (const c of p) { if (ch[u][c] === undefined) { ch[u][c] = ch.length; ch.push({}); par.push(u); letra.push(c); } u = ch[u][c]; } fin.push(u); });
+  const N = ch.length, link = Array(N).fill(0), depth = Array(N).fill(0), orden = []; const q = Object.values(ch[0]); q.forEach(v => depth[v] = 1);
+  while (q.length) { const u = q.shift(); orden.push(u); for (const [c, v] of Object.entries(ch[u])) { let f = link[u]; while (f && ch[f][c] === undefined) f = link[f]; const w = ch[f][c]; link[v] = w !== undefined && w !== v ? w : 0; depth[v] = depth[u] + 1; q.push(v); } }
+  const porNivel = {}; for (let u = 0; u < N; u++) (porNivel[depth[u]] = porNivel[depth[u]] || []).push(u);
+  const xy = Array(N); Object.entries(porNivel).forEach(([d, us]) => us.forEach((u, i) => xy[u] = { x: Math.round(40 + (460) * (us.length > 1 ? i / (us.length - 1) : 0.5)), y: 30 + d * 62 }));
+  const E = []; for (let u = 1; u < N; u++) E.push({ a: par[u], b: u, w: letra[u] }); const nT = E.length; for (let u = 1; u < N; u++) if (link[u]) E.push({ a: u, b: link[u], w: '' });
+  const s = GS(xy, E, true); s.lab = [...Array(N).keys()].map(u => { let t = '', v = u; while (v > 0) { t = letra[v] + t; v = par[v]; } return t || '∅'; }); s.ec = E.map((_, k) => k >= nT ? 'p' : ''); E.forEach((e, k) => { if (k >= nT) e.bend = 18; });
+  push('Patrones: ' + pats.join(', ') + '. Trie con sus enlaces de fallo.', s); let u = 0, enc = new Set();
+  for (let i = 0; i < text.length; i++) { const c = text[i]; while (u && ch[u][c] === undefined) u = link[u]; u = ch[u][c] !== undefined ? ch[u][c] : 0;
+    for (let v = u; v; v = link[v]) fin.forEach((f, k) => { if (f === v) enc.add(pats[k]); });
+    s.nc = s.nc.map((_, v) => v === u ? 'a' : fin.includes(v) && [...enc].some(p => fin[pats.indexOf(p)] === v) ? 'g' : '');
+    push('Texto "' + text + '", letra ' + (i + 1) + ' (' + c + '): se está en el nodo "' + s.lab[u] + '". Encontrados: ' + ([...enc].join(', ') || 'ninguno') + '.', s); }
+}, GR);
+
+V('Strings-Algorithms-SuffixAutomaton', 'Autómata de sufijos, letra por letra', 'Cada estado agrupa subcadenas que terminan en las mismas posiciones; etiqueta = len (la más larga del estado). Flechas = transiciones; morado punteado = enlace de sufijo. Naranja = estado clonado.', push => {
+  const str = pick(['abab', 'aabb', 'abcbc', 'abba', 'aaba']); const len = [0], link = [-1], nxt = [{}], clon = [false]; let last = 0;
+  const snap = msg => { const N = len.length, porLen = {}; for (let v = 0; v < N; v++) (porLen[len[v]] = porLen[len[v]] || []).push(v);
+    const xy = Array(N); Object.entries(porLen).forEach(([L, vs]) => vs.forEach((v, i) => xy[v] = { x: 40 + (+L) * (460 / Math.max(1, str.length)), y: 60 + i * 110 }));
+    const E = []; for (let v = 0; v < N; v++) for (const [c, w] of Object.entries(nxt[v])) E.push({ a: v, b: w, w: c, bend: 10 }); const nT = E.length; for (let v = 1; v < N; v++) E.push({ a: v, b: link[v], w: '', bend: -30 });
+    const s = GS(xy, E, true); s.lab = len.map(String); s.ec = E.map((_, k) => k >= nT ? 'p' : ''); s.nc = clon.map((c, v) => c ? 'o' : v === last ? 'a' : ''); s.ns = len.map((_, v) => v === 0 ? 'inicio' : ''); push(msg, s); };
+  snap('Autómata de la cadena vacía: un solo estado.');
+  for (const c of str) { const cur = len.length; len.push(len[last] + 1); link.push(-1); nxt.push({}); clon.push(false); let p = last;
+    while (p !== -1 && nxt[p][c] === undefined) { nxt[p][c] = cur; p = link[p]; }
+    let msg = 'Se agrega "' + c + '": estado nuevo de len ' + len[cur] + '.';
+    if (p === -1) link[cur] = 0; else { const q = nxt[p][c]; if (len[p] + 1 === len[q]) link[cur] = q; else { const cl = len.length; len.push(len[p] + 1); link.push(link[q]); nxt.push(Object.assign({}, nxt[q])); clon.push(true);
+      while (p !== -1 && nxt[p][c] === q) { nxt[p][c] = cl; p = link[p]; } link[q] = link[cur] = cl; msg += ' Hubo que clonar un estado para separar subcadenas de distinto largo.'; } }
+    last = cur; snap(msg); }
+  let tot = 0; for (let v = 1; v < len.length; v++) tot += len[v] - len[link[v]];
+  snap('"' + str + '" tiene ' + tot + ' subcadenas distintas: Σ (len[v] − len[link[v]]) sobre los estados. Hay ' + len.length + ' estados (siempre ≤ 2n − 1).');
+}, GR);
+
+// =================== Probabilidad con ciclos ===================
+V('Probability-Algorithms-GaussianExpectation', 'Esperanza con ciclos: Gauss', 'Paseo al azar en un grafo hasta llegar al nodo final. E[v] = 1 + promedio de E[vecinos] crea un sistema con ciclos (no hay orden para una DP). Se resuelve con eliminación de Gauss: amarillo = pivote de la columna.', push => {
+  const n = 4, adj = [[1, 2], [0, 2, 3], [0, 1, 3], [1, 2]]; const V_ = n - 1;
+  const A = Array.from({ length: V_ }, (_, v) => { const row = Array(V_ + 1).fill(0); row[v] = 1; row[V_] = 1; adj[v].forEach(w => { if (w < V_) row[w] -= 1 / adj[v].length; }); return row; });
+  const f = x => Math.abs(x) < 1e-9 ? 0 : Math.round(x * 1000) / 1000;
+  const st = (piv) => ({ A: A.map(r => r.map(f)), piv });
+  push('Grafo 1–2, 1–3, 2–3, 2–4, 3–4; se busca E[pasos] desde cada nodo hasta 4. Fila v: E[v] − Σ E[w]/grado = 1.', st(-1));
+  for (let c = 0; c < V_; c++) { let p = c; for (let r = c + 1; r < V_; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r; [A[c], A[p]] = [A[p], A[c]];
+    const d = A[c][c]; for (let k = c; k <= V_; k++) A[c][k] /= d; for (let r = 0; r < V_; r++) if (r !== c && A[r][c]) { const m = A[r][c]; for (let k = c; k <= V_; k++) A[r][k] -= m * A[c][k]; }
+    push('Columna ' + (c + 1) + ': se normaliza la fila del pivote y se elimina E[' + (c + 1) + '] de las demás filas.', st(c)); }
+  push('Solución: E[1] = ' + f(A[0][V_]) + ', E[2] = ' + f(A[1][V_]) + ', E[3] = ' + f(A[2][V_]) + ' pasos.', st(-1));
+}, s => table(s.A, s.A.map((r, i) => r.map((_, j) => i === s.piv && j === s.piv ? 'a' : j === r.length - 1 ? 'g' : '')), s.A.map((_, i) => 'fila ' + (i + 1)), ['E[1]', 'E[2]', 'E[3]', '= b']));
+
+// =================== Geometría avanzada ===================
+const GA = 'Geometry-Advanced-';
+const distPS = (p, a, b) => { const ab = [b[0] - a[0], b[1] - a[1]], ap = [p[0] - a[0], p[1] - a[1]], L = ab[0] ** 2 + ab[1] ** 2; let t = L ? (ap[0] * ab[0] + ap[1] * ab[1]) / L : 0; t = Math.max(0, Math.min(1, t)); const q = [a[0] + t * ab[0], a[1] + t * ab[1]]; return { d: Math.hypot(p[0] - q[0], p[1] - q[1]), q, t }; };
+V(GA + 'SegmentDistance', 'Distancia entre dos segmentos', 'Si no se cortan, la distancia mínima siempre se alcanza en un extremo: se prueban los 4 extremos contra el otro segmento. Para cada uno, la proyección se recorta a [0, 1] (si cae fuera, el más cercano es un extremo).', push => {
+  let A, B, C, D; do { A = [R(-9, -1), R(-5, 5)]; B = [R(-4, 3), R(-5, 5)]; C = [R(0, 6), R(-5, 5)]; D = [R(3, 10), R(-5, 5)]; } while ((A[0] === B[0] && A[1] === B[1]) || (C[0] === D[0] && C[1] === D[1]));
+  const cand = [[A, C, D, 'A'], [B, C, D, 'B'], [C, A, B, 'C'], [D, A, B, 'D']], hechos = [];
+  push('Segmentos AB (azul) y CD (naranja).', { A, B, C, D, hechos: [], best: -1 });
+  cand.forEach(([p, a, b, nm]) => { const r = distPS(p, a, b); hechos.push({ p, q: r.q, d: r.d }); push('Desde ' + nm + ': ' + (r.t === 0 || r.t === 1 ? 'la proyección cae fuera, se usa el extremo' : 'la proyección cae dentro (t = ' + f3(r.t) + ')') + '. Distancia ' + f3(r.d) + '.', { A, B, C, D, hechos: hechos.slice(), best: -1 }); });
+  let bi = 0; hechos.forEach((h, i) => { if (h.d < hechos[bi].d) bi = i; }); push('Mínimo: ' + f3(hechos[bi].d) + ' (verde). (Si los segmentos se cortaran, la respuesta sería 0.)', { A, B, C, D, hechos, best: bi });
+}, s => { let g = gridBg() + seg(s.A, s.B, '#1f6feb', 3) + seg(s.C, s.D, '#fb8f44', 3); s.hechos.forEach((h, i) => g += seg(h.p, h.q, i === s.best ? '#2da44e' : '#999', i === s.best ? 3 : 1.5, i !== s.best));
+  return svgBox(g + dot(s.A, '#1f6feb', 5, 'A') + dot(s.B, '#1f6feb', 5, 'B') + dot(s.C, '#fb8f44', 5, 'C') + dot(s.D, '#fb8f44', 5, 'D'), G0.W, G0.H); });
+
+V(GA + 'LineIntersection', 'Intersección de dos rectas', 'Recta 1: A + t·r; recta 2: C + u·s. Cruzando la ecuación A + t·r = C + u·s con s se despeja t = cross(C − A, s) / cross(r, s). Si cross(r, s) = 0 son paralelas (o la misma recta).', push => {
+  const A = [R(-9, -3), R(-5, 5)], B = [R(-2, 4), R(-5, 5)], C = [R(-8, 8), R(-5, -1)], par = Math.random() < 0.25; const D = par ? [C[0] + B[0] - A[0], C[1] + B[1] - A[1]] : [R(-8, 8), R(1, 5)];
+  const r = [B[0] - A[0], B[1] - A[1]], sv = [D[0] - C[0], D[1] - C[1]], den = r[0] * sv[1] - r[1] * sv[0];
+  push('Recta por A y B (azul), recta por C y D (naranja). r = (' + r + '), s = (' + sv + ').', { A, B, C, D, P: null });
+  push('cross(r, s) = ' + den + (den ? '' : ': direcciones paralelas.'), { A, B, C, D, P: null });
+  if (!den) { const same = r[0] * (C[1] - A[1]) - r[1] * (C[0] - A[0]) === 0; push(same ? 'Además C está sobre la primera recta: son la misma (SAME).' : 'C no está sobre la primera recta: no se cortan (PARALLEL).', { A, B, C, D, P: null }); return; }
+  const num = (C[0] - A[0]) * sv[1] - (C[1] - A[1]) * sv[0], t = num / den, P = [A[0] + t * r[0], A[1] + t * r[1]];
+  push('cross(C − A, s) = ' + num + ', así que t = ' + num + ' / ' + den + ' = ' + f3(t) + '. Punto = A + t·r = (' + f3(P[0]) + ', ' + f3(P[1]) + ').', { A, B, C, D, P });
+}, s => { const ext = (a, b) => { const d = [b[0] - a[0], b[1] - a[1]]; return [[a[0] - 30 * d[0], a[1] - 30 * d[1]], [a[0] + 30 * d[0], a[1] + 30 * d[1]]]; }; const [a1, a2] = ext(s.A, s.B), [c1, c2] = ext(s.C, s.D);
+  let g = gridBg() + seg(a1, a2, '#1f6feb', 2) + seg(c1, c2, '#fb8f44', 2) + dot(s.A, '#1f6feb', 4, 'A') + dot(s.B, '#1f6feb', 4, 'B') + dot(s.C, '#fb8f44', 4, 'C') + dot(s.D, '#fb8f44', 4, 'D');
+  if (s.P) g += dot(s.P, '#2da44e', 7, 'P'); return svgBox(g, G0.W, G0.H); });
+
+V(GA + 'CircleIntersection', 'Intersección de dos circunferencias', 'La cantidad de puntos se decide con enteros comparando d² con (r1 + r2)² y (r1 − r2)². Luego a = (r1² − r2² + d²) / (2d) ubica el punto medio M de la cuerda y h = √(r1² − a²) da la mitad de la cuerda.', push => {
+  const c1 = [R(-5, -1), R(-2, 2)], r1 = R(2, 5), tipo = R(0, 3); let c2, r2;
+  if (tipo === 0) { c2 = [c1[0] + 3, c1[1] + 4]; r2 = Math.max(1, 5 - r1) === 5 - r1 ? 5 - r1 : r1 + 5; } else if (tipo === 1) { c2 = [c1[0] + R(8, 10), c1[1]]; r2 = R(1, 3); } else { c2 = [R(0, 5), R(-2, 2)]; r2 = R(2, 5); }
+  const dx = c2[0] - c1[0], dy = c2[1] - c1[1], d2 = dx * dx + dy * dy, S = (r1 + r2) ** 2, Df = (r1 - r2) ** 2;
+  push('C1 = (' + c1 + '), r1 = ' + r1 + '; C2 = (' + c2 + '), r2 = ' + r2 + '. d² = ' + d2 + '.', { c1, c2, r1, r2, pts: [], M: null });
+  if (d2 === 0 || d2 > S || d2 < Df) { push(d2 === 0 ? 'Mismo centro: ' + (r1 === r2 ? 'son la misma circunferencia (infinitos puntos).' : 'una dentro de la otra, 0 puntos.') : d2 > S ? 'd² = ' + d2 + ' > (r1 + r2)² = ' + S + ': están separadas, 0 puntos.' : 'd² = ' + d2 + ' < (r1 − r2)² = ' + Df + ': una dentro de la otra, 0 puntos.', { c1, c2, r1, r2, pts: [], M: null }); return; }
+  const d = Math.sqrt(d2), a = (r1 * r1 - r2 * r2 + d2) / (2 * d), h = Math.sqrt(Math.max(0, r1 * r1 - a * a)), M = [c1[0] + a * dx / d, c1[1] + a * dy / d];
+  push('(r1 − r2)² ≤ d² ≤ (r1 + r2)²: se cortan' + (d2 === S || d2 === Df ? ' en un solo punto (tangentes).' : '.') + ' a = ' + f3(a) + ', M = (' + f3(M[0]) + ', ' + f3(M[1]) + ').', { c1, c2, r1, r2, pts: [], M });
+  const pts = [[M[0] - h * dy / d, M[1] + h * dx / d]]; if (h > 1e-9) pts.push([M[0] + h * dy / d, M[1] - h * dx / d]);
+  push('h = ' + f3(h) + '. Puntos: ' + pts.map(p => '(' + f3(p[0]) + ', ' + f3(p[1]) + ')').join(' y ') + '.', { c1, c2, r1, r2, pts, M });
+}, s => { const C = (c, r, col) => { const P = toS(c); return '<circle cx="' + P[0] + '" cy="' + P[1] + '" r="' + r * 22 + '" fill="none" stroke="' + col + '" stroke-width="2.5"/>'; };
+  let g = gridBg() + C(s.c1, s.r1, '#1f6feb') + C(s.c2, s.r2, '#fb8f44') + dot(s.c1, '#1f6feb', 4, 'C1') + dot(s.c2, '#fb8f44', 4, 'C2');
+  if (s.M) g += seg(s.c1, s.c2, '#999', 1.5, true) + dot(s.M, '#8250df', 4, 'M'); s.pts.forEach(p => g += dot(p, '#2da44e', 6)); return svgBox(g, G0.W, G0.H); });
+
+const hullJS = P => { const p = P.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]).filter((q, i, A) => !i || q[0] !== A[i - 1][0] || q[1] !== A[i - 1][1]); if (p.length < 3) return p; const lo = [], up = [];
+  for (const q of p) { while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); } for (const q of p.slice().reverse()) { while (up.length >= 2 && cross(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+  return lo.slice(0, -1).concat(up.slice(0, -1)); };
+V(GA + 'RotatingCalipers', 'Rotating calipers: el par más lejano', 'Para cada arista i → i+1 de la envolvente (azul) se busca el vértice j más lejano de su recta (antípoda). Al girar la arista, j solo avanza: en total O(h). El par más lejano siempre es uno de esos pares antípodas.', push => {
+  let P, H; do { P = Array.from({ length: 12 }, () => [R(-10, 10), R(-5, 5)]); H = hullJS(P); } while (H.length < 4);
+  const n = H.length, d2 = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2; let j = 1, best = 0, bp = null;
+  push('Puntos y su envolvente convexa (' + n + ' vértices).', { P, H, i: -1, j: -1, bp });
+  for (let i = 0; i < n; i++) { const a = H[i], b = H[(i + 1) % n]; while (cross(a, b, H[(j + 1) % n]) > cross(a, b, H[j])) j = (j + 1) % n;
+    for (const q of [a, b]) if (d2(q, H[j]) > best) { best = d2(q, H[j]); bp = [q, H[j]]; }
+    push('Arista ' + (i + 1) + ': su antípoda es el vértice ' + (j + 1) + '. Mejor distancia hasta ahora: √' + best + ' = ' + f3(Math.sqrt(best)) + '.', { P, H, i, j, bp }); }
+  push('Diámetro = ' + f3(Math.sqrt(best)) + ' (verde).', { P, H, i: -1, j: -1, bp });
+}, s => { let g = gridBg() + poly(s.H, '#1f6feb22', '#1f6feb'); s.P.forEach(p => g += dot(p, '#888', 3));
+  if (s.i >= 0) { const a = s.H[s.i], b = s.H[(s.i + 1) % s.H.length]; g += seg(a, b, '#d4a72c', 4) + dot(s.H[s.j], '#cf222e', 6, 'j'); }
+  if (s.bp) g += seg(s.bp[0], s.bp[1], '#2da44e', 3); return svgBox(g, G0.W, G0.H); });
+
+const clipJS = (pol, a, b) => { const res = []; for (let i = 0; i < pol.length; i++) { const c = pol[i], d = pol[(i + 1) % pol.length], sc = cross(a, b, c), sd = cross(a, b, d); if (sc >= 0) res.push(c); if ((sc > 0 && sd < 0) || (sc < 0 && sd > 0)) { const t = sc / (sc - sd); res.push([c[0] + (d[0] - c[0]) * t, c[1] + (d[1] - c[1]) * t]); } } return res; };
+const areaJS = p => Math.abs(p.reduce((acc, q, i) => acc + q[0] * p[(i + 1) % p.length][1] - q[1] * p[(i + 1) % p.length][0], 0)) / 2;
+V(GA + 'HalfPlaneIntersection', 'Intersección de semiplanos', 'Se conserva el lado izquierdo de cada recta dirigida (la flecha). El algoritmo ordena las rectas por ángulo y mantiene en una deque solo las que aportan un lado; aquí se dibuja la región que queda (verde) a medida que se agregan.', push => {
+  const B = 11, caja = [[-B, -6], [B, -6], [B, 6], [-B, 6]]; // rectas tangentes a circunferencias alrededor del origen, con el origen a la izquierda: la región nunca queda vacía
+  const lines = Array.from({ length: R(4, 6) }, () => { const t = Math.random() * 2 * Math.PI, r = R(2, 5), p = [r * 1.6 * Math.cos(t), r * Math.sin(t)], d = [-Math.sin(t), Math.cos(t)]; return [p, [p[0] + 3 * d[0], p[1] + 3 * d[1]]]; });
+  lines.sort((x, y) => Math.atan2(x[1][1] - x[0][1], x[1][0] - x[0][0]) - Math.atan2(y[1][1] - y[0][1], y[1][0] - y[0][0]));
+  let reg = caja.slice(); push(lines.length + ' semiplanos, ordenados por el ángulo de su recta. Se empieza con la caja que acota todo.', { lines, k: -1, reg });
+  lines.forEach(([a, b], k) => { reg = clipJS(reg, a, b); push('Recta ' + (k + 1) + ' (ángulo ' + Math.round(Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI) + '°): queda ' + (reg.length >= 3 ? 'una región de área ' + f3(areaJS(reg)) : 'vacío') + '.', { lines, k, reg }); });
+}, s => { let g = gridBg(); if (s.reg.length >= 3) g += poly(s.reg, '#2da44e44', '#2da44e');
+  s.lines.forEach(([a, b], k) => { const d = [b[0] - a[0], b[1] - a[1]], col = k === s.k ? '#d4a72c' : k < s.k || s.k < 0 && false ? '#1f6feb' : '#bbb'; g += seg([a[0] - 6 * d[0], a[1] - 6 * d[1]], [a[0] + 6 * d[0], a[1] + 6 * d[1]], k <= s.k ? (k === s.k ? '#d4a72c' : '#1f6feb') : '#ccc', k === s.k ? 3 : 1.5, k > s.k);
+    const A = toS(a), Bp = toS(b); g += '<line x1="' + A[0] + '" y1="' + A[1] + '" x2="' + Bp[0] + '" y2="' + Bp[1] + '" stroke="' + (k <= s.k ? '#1f6feb' : '#bbb') + '" stroke-width="2.5" marker-end="url(#hp-ar)"/>'; });
+  return svgBox('<defs><marker id="hp-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1f6feb"/></marker></defs>' + g, G0.W, G0.H); });
+
+V(GA + 'PolygonCut', 'Cortar un polígono convexo con una recta', 'Se recorren las aristas: los vértices a la izquierda de la recta se conservan (verde), los de la derecha se descartan (rojo) y, cada vez que una arista cruza la recta, se agrega el punto de cruce (morado).', push => {
+  let P; do { P = hullJS(Array.from({ length: 9 }, () => [R(-8, 8), R(-5, 5)])); } while (P.length < 4);
+  const a = [R(-9, -5), R(-5, 5)], b = [R(5, 9), R(-5, 5)], res = [], lados = P.map(p => cross(a, b, p));
+  push('Polígono de ' + P.length + ' vértices y recta dirigida (se conserva la izquierda).', { P, a, b, res: [], i: -1, lados });
+  for (let i = 0; i < P.length; i++) { const c = P[i], d = P[(i + 1) % P.length], sc = lados[i], sd = lados[(i + 1) % P.length]; let m = 'Vértice ' + (i + 1) + ': ' + (sc >= 0 ? 'a la izquierda, se conserva.' : 'a la derecha, se descarta.');
+    if (sc >= 0) res.push(c); if ((sc > 0 && sd < 0) || (sc < 0 && sd > 0)) { const t = sc / (sc - sd); res.push([c[0] + (d[0] - c[0]) * t, c[1] + (d[1] - c[1]) * t]); m += ' La arista hacia el siguiente cruza la recta: se agrega el cruce.'; }
+    push(m, { P, a, b, res: res.slice(), i, lados }); }
+  push('Pedazo izquierdo con área ' + f3(areaJS(res)) + ' de ' + f3(areaJS(P)) + '.', { P, a, b, res, i: -2, lados });
+}, s => { const d = [s.b[0] - s.a[0], s.b[1] - s.a[1]]; let g = gridBg() + poly(s.P, '#8882', '#888'); if (s.i === -2 && s.res.length >= 3) g += poly(s.res, '#2da44e55', '#2da44e');
+  g += seg([s.a[0] - 3 * d[0], s.a[1] - 3 * d[1]], [s.a[0] + 3 * d[0], s.a[1] + 3 * d[1]], '#d4a72c', 2.5);
+  s.P.forEach((p, i) => g += dot(p, i <= s.i || s.i === -2 ? (s.lados[i] >= 0 ? '#2da44e' : '#cf222e') : '#888', i === s.i ? 7 : 5, '' + (i + 1)));
+  s.res.forEach(p => { if (!s.P.some(q => q[0] === p[0] && q[1] === p[1])) g += dot(p, '#8250df', 5); }); return svgBox(g, G0.W, G0.H); });
+
+V(GA + 'PointInConvexPolygon', 'Punto en polígono convexo en O(log n)', 'Desde el vértice 1 el polígono se ve como un abanico de triángulos. Con búsqueda binaria por producto cruz se encuentra el triángulo cuyo ángulo contiene al punto, y una última orientación contra la arista de afuera decide.', push => {
+  let P; do { P = hullJS(Array.from({ length: 14 }, () => [R(-9, 9), R(-5, 5)])); } while (P.length < 6);
+  const q = Math.random() < 0.6 ? [R(-4, 4), R(-3, 3)] : [R(-10, 10), R(-6, 6)], n = P.length, c = (o, a, b) => cross(o, a, b);
+  push('Polígono de ' + n + ' vértices (antihorario) y el punto Q (amarillo).', { P, q, lo: -1, hi: -1, res: null });
+  if (c(P[0], P[1], q) <= 0 || c(P[0], P[n - 1], q) >= 0) { push('Q queda fuera del abanico visto desde el vértice 1: está afuera (o en el borde).', { P, q, lo: -1, hi: -1, res: false }); return; }
+  let lo = 1, hi = n - 1; push('Q está entre los rayos 1→2 y 1→' + n + '. Búsqueda binaria en [' + (lo + 1) + ', ' + (hi + 1) + '].', { P, q, lo, hi, res: null });
+  while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (c(P[0], P[mid], q) > 0) lo = mid; else hi = mid; push('Rayo 1→' + (mid + 1) + ': Q está ' + (lo === mid ? 'a su izquierda, lo = ' + (mid + 1) : 'a su derecha (o encima), hi = ' + (mid + 1)) + '.', { P, q, lo, hi, res: null }); }
+  const ok = c(P[lo], P[lo + 1], q) > 0; push('Triángulo 1, ' + (lo + 1) + ', ' + (lo + 2) + '. Contra la arista ' + (lo + 1) + '→' + (lo + 2) + ' Q está ' + (ok ? 'a la izquierda: DENTRO.' : 'a la derecha o encima: FUERA (o en el borde).'), { P, q, lo, hi: lo + 1, res: ok });
+}, s => { let g = gridBg() + poly(s.P, '#1f6feb18', '#1f6feb'); for (let i = 2; i < s.P.length - 1; i++) g += seg(s.P[0], s.P[i], '#1f6feb55', 1, true);
+  if (s.lo >= 0) g += poly([s.P[0], s.P[s.lo], s.P[s.hi]], s.res === null ? '#d4a72c33' : s.res ? '#2da44e55' : '#cf222e44', '#d4a72c');
+  s.P.forEach((p, i) => g += dot(p, '#1f6feb', 4, '' + (i + 1))); return svgBox(g + dot(s.q, s.res === false ? '#cf222e' : s.res ? '#2da44e' : '#d4a72c', 7, 'Q'), G0.W, G0.H); });
+
 })();
