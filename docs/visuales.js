@@ -182,7 +182,7 @@ V('DP-Algorithms-BitmaskDP', 'DP sobre subconjuntos (ascensor)', 'Cada fila es u
   push('Todos juntos necesitan ' + pl(ri[full - 1], 'viaje', 'viajes') + '.', st(full - 1));
 }, s => { const ms = [...Array(1 << s.n).keys()]; return table(ms.map(m => [m.toString(2).padStart(s.n, '0'), s.ri[m], s.la[m]]), ms.map(m => m === s.cur ? ['a', 'a', 'a'] : s.ri[m] !== null ? ['', 'g', 'g'] : ['', '', '']), null, ['grupo', 'viajes', 'último kg']); });
 
-V('DP-Classic-Problems-Campeonato', 'Probabilidad de ganar la serie', 'P[i][j] = probabilidad de que A gane si le faltan i victorias y a B le faltan j.', push => {
+V('Probability-Classic-Problems-Campeonato', 'Probabilidad de ganar la serie', 'P[i][j] = probabilidad de que A gane si le faltan i victorias y a B le faltan j.', push => {
   const n = 4, p = pick([0.4, 0.5, 0.6]), q = 1 - p;
   const P = Array.from({ length: n + 1 }, (_, i) => Array.from({ length: n + 1 }, (_, j) => i === 0 && j > 0 ? 1 : (j === 0 ? 0 : null)));
   const show = () => P.map(r => r.map(v => v === null ? null : v.toFixed(2)));

@@ -4,8 +4,8 @@ window.CARPETAS = {
  "FunctionalTools": "Herramientas y matemáticas",
  "Data Structures": "Estructuras de datos",
  "DP": "Programación dinámica",
- "Probability": "Probabilidad",
  "Graphs": "Grafos",
+ "Probability": "Probabilidad",
  "Strings": "Cadenas",
  "Geometry": "Geometría"
 };
@@ -26,13 +26,7 @@ window.SECCIONES = {
   {"t": "Conteo y mochila", "d": "Formas de sumar, monedas y mochila.", "ids": ["DP-Classic-Problems-Dice-Combinations", "DP-Algorithms-CoinChange", "DP-Algorithms-CoinCombinations", "DP-Classic-Problems-Money-Sums", "DP-Algorithms-Knapsack"]},
   {"t": "Subarreglos y subsecuencias", "d": "Kadane, LIS, LCS y distancia de edición.", "ids": ["DP-Algorithms-Kadane1D", "DP-Algorithms-Kadane2D", "DP-Algorithms-LIS-I", "DP-Algorithms-LIS-II", "DP-Algorithms-LCS", "DP-Algorithms-EditDistance"]},
   {"t": "Cuadrículas e intervalos", "d": "Estados en 2D y tramos [l, r].", "ids": ["DP-Classic-Problems-Grid-Paths-I", "DP-Classic-Problems-Removal-Game"]},
-  {"t": "Técnicas avanzadas", "d": "Subconjuntos, dígitos y probabilidades.", "ids": ["DP-Algorithms-BitmaskDP", "DP-Classic-Problems-Counting-Numbers", "DP-Classic-Problems-Campeonato"]}
-],
-"Probability": [
-  {"t": "Probabilidad y esperanza", "d": "Regla de la suma y del producto, linealidad e indicadores.", "ids": ["Probability-Algorithms-ProbabilityDP", "Probability-Algorithms-LinearityOfExpectation", "Probability-Algorithms-ExpectedMaximum", "Probability-Classic-Problems-Game-on-Tree", "Probability-Classic-Problems-Lets-Play-Osu"]},
-  {"t": "Procesos aleatorios", "d": "Cadenas de Markov y DP sobre estados que cambian al azar.", "ids": ["Probability-Algorithms-MarkovChain", "Probability-Classic-Problems-Ilya-and-Escalator", "Probability-Classic-Problems-Journey", "Probability-Classic-Problems-Bag-of-Mice", "Probability-Classic-Problems-Fish"]},
-  {"t": "Distribuciones", "d": "Binomial, geométrica, condicional (Bayes) y continua uniforme.", "ids": ["Probability-Distributions-Binomial", "Probability-Distributions-CouponCollector", "Probability-Classic-Problems-Probability-Given", "Probability-Distributions-ContinuousUniform", "Probability-Classic-Problems-Serval-and-Bonus-Problem"]},
-  {"t": "Probabilidad modular", "d": "Respuestas p · q⁻¹ módulo un primo.", "ids": ["Probability-Algorithms-ModularExpectation"]}
+  {"t": "Técnicas avanzadas", "d": "Subconjuntos y dígitos.", "ids": ["DP-Algorithms-BitmaskDP", "DP-Classic-Problems-Counting-Numbers"]}
 ],
 "Graphs": [
   {"t": "Recorridos", "d": "BFS, DFS, ciclos y bipartición.", "ids": ["Graphs-Algorithms-Graph-Traversal-DFS", "Graphs-Classic-Problems-Counting-Rooms", "Graphs-Algorithms-Graph-Traversal-BFS", "Graphs-Classic-Problems-Labyrinth", "Graphs-Algorithms-Graph-Traversal-Bipartite", "Graphs-Algorithms-Miscellaneous-CycleFindingUndirected", "Graphs-Algorithms-Miscellaneous-CycleFindingDirected"]},
@@ -42,6 +36,12 @@ window.SECCIONES = {
   {"t": "Caminos eulerianos", "d": "Usar cada arista una vez.", "ids": ["Graphs-Algorithms-Graph-Traversal-EulerianCycle", "Graphs-Algorithms-Graph-Traversal-HierholzerDirected"]},
   {"t": "Árboles", "d": "Subárboles, diámetro, LCA, centroides e isomorfismo.", "ids": ["Graphs-Classic-Problems-Subordinates", "Graphs-Algorithms-Graph-Traversal-Diameter", "Graphs-Algorithms-Trees-TreeDistances", "Graphs-Algorithms-Trees-EulerTour", "Graphs-Algorithms-Trees-BinaryLifting", "Graphs-Algorithms-Trees-LCA", "Graphs-Algorithms-Trees-Centroid", "Graphs-Algorithms-Trees-CentroidDecomposition", "Graphs-Algorithms-Trees-TreeIsomorphismRooted", "Graphs-Algorithms-Trees-TreeIsomorphism"]},
   {"t": "Flujos y emparejamientos", "d": "Flujo máximo, emparejamiento y costo mínimo.", "ids": ["Graphs-Algorithms-Flow-Algorithms-EdmondsKarp", "Graphs-Algorithms-Flow-Algorithms-Dinic", "Graphs-Algorithms-Flow-Algorithms-BipartiteMatching", "Graphs-Algorithms-Flow-Algorithms-MinCostMaxFlow", "Graphs-Algorithms-Flow-Algorithms-MinCostAnyFlow"]}
+],
+"Probability": [
+  {"t": "Probabilidad y esperanza", "d": "Regla de la suma y del producto, linealidad e indicadores.", "ids": ["Probability-Algorithms-ProbabilityDP", "Probability-Classic-Problems-Campeonato", "Probability-Algorithms-LinearityOfExpectation", "Probability-Algorithms-ExpectedMaximum", "Probability-Classic-Problems-Game-on-Tree", "Probability-Classic-Problems-Lets-Play-Osu"]},
+  {"t": "Procesos aleatorios", "d": "Cadenas de Markov y DP sobre estados que cambian al azar.", "ids": ["Probability-Algorithms-MarkovChain", "Probability-Classic-Problems-Ilya-and-Escalator", "Probability-Classic-Problems-Journey", "Probability-Classic-Problems-Bag-of-Mice", "Probability-Classic-Problems-Fish"]},
+  {"t": "Distribuciones", "d": "Binomial, geométrica, condicional (Bayes) y continua uniforme.", "ids": ["Probability-Distributions-Binomial", "Probability-Distributions-CouponCollector", "Probability-Classic-Problems-Probability-Given", "Probability-Distributions-ContinuousUniform", "Probability-Classic-Problems-Serval-and-Bonus-Problem"]},
+  {"t": "Probabilidad modular", "d": "Respuestas p · q⁻¹ módulo un primo.", "ids": ["Probability-Algorithms-ModularExpectation"]}
 ],
 "Strings": [
   {"t": "Prefijos, bordes y periodos", "d": "Función de prefijos (KMP) y función Z.", "ids": ["Strings-Algorithms-KMP-I", "Strings-Algorithms-KMP-II", "Strings-Classic-Problems-Finding-Borders", "Strings-Algorithms-ZFunction", "Strings-Classic-Problems-Finding-Periods"]},

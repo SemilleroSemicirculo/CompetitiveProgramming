@@ -211,11 +211,13 @@ function elegir(){
 
 // ---------- Ruta de estudio ----------
 function ruta(){
-  let h = '<h1>Ruta de estudio</h1><p class="note">Empieza por la columna de la izquierda. Cada algoritmo usa ideas de los anteriores.</p><div class="lvlcol">';
-  for (const n of [1,2,3]) {
+  let h = '<h1>Ruta de estudio</h1><p class="note">Empieza por el nivel Básico y avanza hacia Finales mundiales. Cada algoritmo usa ideas de los anteriores. Si prefieres un orden con clases y preguntas, usa el <a href="#/libro">modo libro</a>.</p><div class="lvlcol c4">';
+  for (const n of [1,2,3,4]) {
     h += '<div class="box"><h3>'+lvl(n)+'</h3>';
-    for (const c of ORDEN) { const it = A.filter(a => a.carpeta === c && (K[a.id]||{}).nivel === n); if (!it.length) continue;
-      h += '<h5 style="margin:12px 0 2px;color:var(--mut)">'+esc(cn(c))+'</h5>' + it.map(a => '<a href="#/'+a.id+'">'+esc(a.nombre)+'</a>').join(''); }
+    let cuantos = 0;
+    for (const c of ORDEN) { const it = A.filter(a => a.carpeta === c && (K[a.id]||{}).nivel === n); if (!it.length) continue; cuantos += it.length;
+      h += '<h5 style="margin:12px 0 2px;color:var(--mut)">'+esc(cn(c))+'</h5>' + it.map(a => '<a href="#/'+a.id+'">'+(hechos.has(a.id) ? '✓ ' : '')+esc(a.nombre)+'</a>').join(''); }
+    if (!cuantos) h += '<p class="note">Todavía no hay lecciones en este nivel.</p>';
     h += '</div>';
   }
   main.innerHTML = h + '</div>';
@@ -321,7 +323,7 @@ function pagina(a){
     h += '<div class="row" style="margin-top:24px"><button class="btn" id="hecho"></button></div>';
     h += '<div class="pn">'+(pid ? '<a href="#/'+pid+'"><small>← Lección anterior</small>'+esc(byId[pid].nombre)+'</a>' : '<a href="#/libro/'+cap.num+'"><small>← Volver a la clase</small>Capítulo '+cap.num+'</a>')
        + (nid ? '<a class="nx" href="#/'+nid+'"><small>Siguiente lección →</small>'+esc(byId[nid].nombre)+'</a>' : ncap ? '<a class="nx" href="#/libro/'+ncap.num+'"><small>Siguiente capítulo →</small>'+ncap.num+'. '+esc(ncap.t)+'</a>' : '<a class="nx" href="#/libro"><small>Fin del libro →</small>Índice</a>')+'</div>';
-  } else h += '<div class="pn">'+(prev ? '<a href="#/'+prev.id+'"><small>← Anterior</small>'+esc(prev.nombre)+'</a>' : '<span></span>')+(next ? '<a class="nx" href="#/'+next.id+'"><small>Siguiente →</small>'+esc(next.nombre)+'</a>' : '<span></span>')+'</div>';
+  } else h += (capDe[a.id] ? '<div class="row" style="margin-top:24px"><button class="btn" id="hecho"></button><span class="note">Capítulo '+capDe[a.id].num+' del libro: <a href="#/libro/'+capDe[a.id].num+'">'+esc(CAPS[capDe[a.id].num - 1].t)+'</a></span></div>' : '') + '<div class="pn">'+(prev ? '<a href="#/'+prev.id+'"><small>← Anterior</small>'+esc(prev.nombre)+'</a>' : '<span></span>')+(next ? '<a class="nx" href="#/'+next.id+'"><small>Siguiente →</small>'+esc(next.nombre)+'</a>' : '<span></span>')+'</div>';
   main.innerHTML = h;
   let lang = 'cpp';
   try { if (localStorage.getItem('lang') === 'py' && a.python) lang = 'py'; } catch (_) {}
@@ -348,8 +350,8 @@ function router(){
   document.body.classList.toggle('alg', !!a);
   if (id.startsWith('libro') && modo !== 'libro') { ponerModo('libro'); menu(); }
   document.body.classList.toggle('libro', modo === 'libro');
-  if (modo === 'libro' && !a && !id.startsWith('libro') && id !== 'practicar') { location.replace('#/libro'); return; }
-  if (modo === 'libro') document.body.classList.add('alg');
+  if (modo === 'libro' && !a && !id.startsWith('libro') && !['practicar', 'teoria', 'ruta', 'elegir'].includes(id)) { location.replace('#/libro'); return; }
+  if (modo === 'libro' && (a || id.startsWith('libro'))) document.body.classList.add('alg');
   if (a) pagina(a); else if (id === 'libro') libroIndice(); else if (id.startsWith('libro/')) capitulo(+id.slice(6)); else if (id === 'elegir') elegir(); else if (id === 'ruta') ruta(); else if (id === 'teoria') teoria(); else if (id === 'practicar') practicar(); else inicio();
   marcar(); window.scrollTo && window.scrollTo(0, 0); nav.classList.remove('open');
 }
@@ -371,7 +373,7 @@ document.querySelectorAll('#modo button').forEach(b => b.onclick = () => {
 ponerModo(modo);
 // en el celular el selector de modo va al final de la fila de secciones; en pantallas grandes, a la derecha
 const mq = matchMedia('(max-width:820px)'), modoEl = document.getElementById('modo');
-const ubicarModo = () => { const dentro = mq.matches && modo !== 'libro';
+const ubicarModo = () => { const dentro = false;
   const destino = dentro ? document.querySelector('header nav.top') : document.querySelector('header .tools');
   if (modoEl.parentNode !== destino) dentro ? destino.appendChild(modoEl) : destino.insertBefore(modoEl, destino.firstChild); };
 mq.addEventListener ? mq.addEventListener('change', ubicarModo) : mq.addListener(ubicarModo);

@@ -44,7 +44,7 @@ C("DP-Algorithms-BitmaskDP", 3, "Representa cada grupo de personas como un núme
   "Con n ≤ 20 hay solo 2ⁿ (≈ un millón) subconjuntos, y cada uno cabe en un entero: el bit i encendido indica que la persona i está incluida. Para cada subconjunto se prueba quién subió último al ascensor y se guarda el mejor par (viajes, peso del último viaje).",
   "Cuando n es pequeño (≤ 20) y el problema depende de qué elementos ya usaste.",
   ["dp[0] = (1 viaje, 0 kg).", "Para cada máscara, probar quitar cada persona i.", "Si cabe, se suma al último viaje; si no, se abre otro."]);
-C("DP-Classic-Problems-Campeonato", 1, "La probabilidad de ganar se calcula a partir de lo que falta: un partido más acerca a uno de los dos equipos.",
+C("Probability-Classic-Problems-Campeonato", 1, "La probabilidad de ganar se calcula a partir de lo que falta: un partido más acerca a uno de los dos equipos.",
   "P[i][j] es la probabilidad de que A gane si le faltan i victorias y a B le faltan j. Después de un partido, o A ganó (le falta una menos) o ganó B. Así cada casilla sale de dos más pequeñas, con los casos base cuando alguno ya ganó.",
   "Cuando hay que calcular probabilidades de procesos que avanzan por etapas.",
   ["P[0][j] = 1 (A ya ganó) y P[i][0] = 0.", "P[i][j] = p·P[i−1][j] + q·P[i][j−1].", "La respuesta es P[n][n]."]);
