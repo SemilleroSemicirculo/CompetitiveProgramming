@@ -12,16 +12,16 @@ window.LIBRO = [
 { t: 'Cómo medir un algoritmo',
   obj: ['Estimar si una idea entra en el tiempo límite antes de programarla.', 'Leer la entrada rápido en Python.', 'Entender la plantilla que usan todos los códigos del repositorio.'],
   clase: [
-    'Bienvenido. Antes de aprender un solo algoritmo hay que aprender a **medirlos**, porque en competencia casi nunca basta con que el programa sea correcto: tiene que terminar a tiempo. Un juez como CSES te da cerca de 1 segundo, y la pregunta que debes hacerte siempre es: ¿cuántas operaciones va a hacer mi idea con la entrada más grande permitida?',
+    'Bienvenido. Antes de aprender un solo algoritmo hay que aprender a **medirlos**, porque en competencia casi nunca basta con que el programa sea correcto: tiene que terminar a tiempo. Un juez típico te da entre 1 y 2 segundos, y la pregunta que debes hacerte siempre es: ¿cuántas operaciones va a hacer mi idea con la entrada más grande permitida?',
     { h: 'La notación O grande' },
     'Decimos que un algoritmo es `O(f(n))` si, para entradas grandes, la cantidad de pasos crece como mucho como `f(n)` multiplicado por una constante. No nos importan las constantes ni los términos pequeños: `3n² + 5n + 7` es simplemente `O(n²)`. Lo que nos importa es la **forma** del crecimiento.',
     { py: '# O(n): una pasada\ntotal = 0\nfor x in a:\n    total += x\n\n# O(n²): todos los pares\nfor i in range(n):\n    for j in range(i + 1, n):\n        if a[i] + a[j] == x:\n            print(i, j)\n\n# O(log n): cada paso parte el problema a la mitad\nwhile n > 1:\n    n //= 2' },
     { h: 'La regla de oro' },
-    'Un computador hace del orden de `10^8` operaciones simples por segundo en C++. En Python puro la cuenta es mucho menor, más o menos `10^7`, y con PyPy (CSES ofrece tanto CPython como PyPy; elige PyPy al enviar) se acerca a C++ en ciclos sencillos. Con eso puedes leer las restricciones como un mapa:',
+    'Un computador hace del orden de `10^8` operaciones simples por segundo en C++. En Python puro la cuenta es mucho menor, más o menos `10^7`, y con PyPy (muchos jueces lo ofrecen además de CPython; elígelo al enviar si existe) se acerca a C++ en ciclos sencillos. Con eso puedes leer las restricciones como un mapa:',
     { nota: 'n ≤ 20 → alcanza O(2ⁿ) · n ≤ 500 → O(n³) · n ≤ 5000 → O(n²) · n ≤ 2·10⁵ → O(n log n) · n ≤ 10⁷ → O(n) · n ≤ 10¹⁸ → O(log n) o una fórmula.' },
     'Esto es lo más útil que vas a aprender en todo el curso: **las restricciones te dicen qué algoritmo buscar**. Si n ≤ 20, el autor del problema te está invitando a probar subconjuntos; si n ≤ 2·10⁵, está pidiendo algo con ordenamiento, búsqueda binaria o un árbol de segmentos.',
     { h: 'Leer rápido en Python' },
-    'La función `input()` es lenta cuando hay cientos de miles de números. Por eso todos los códigos en Python de este repositorio leen toda la entrada de una vez con `sys.stdin.buffer.read()` y la parten en números. También juntan la salida en una lista y la imprimen con un solo `write`.',
+    'La función `input()` es lenta cuando hay cientos de miles de números. Por eso los códigos en Python de este repositorio nunca usan el `input()` normal: usan `sys.stdin.readline` y, cuando la entrada es grande, leen todo de una vez con `sys.stdin.buffer.read()` y lo parten en números. También juntan la salida en una lista y la imprimen de una sola vez.',
     { py: 'import sys\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    n = int(data[0])\n    a = list(map(int, data[1:1 + n]))\n    out = []\n    out.append(str(sum(a)))\n    sys.stdout.write("\\n".join(out) + "\\n")\n\nmain()' },
     'Poner el código dentro de `main()` no es solo estilo: en Python las variables locales se acceden más rápido que las globales. Es la primera de muchas optimizaciones pequeñas que verás en el curso.'
   ],
@@ -174,7 +174,7 @@ window.LIBRO = [
     'En niveles altos, la DP no cambia de idea, pero las transiciones se aceleran con estructura matemática: si la función de costo cumple la desigualdad del cuadrángulo, el punto óptimo de corte es monótono (Knuth, divide y vencerás); si las transiciones son rectas, el **Convex Hull Trick** las responde en O(log n); y si hay una restricción de "exactamente k", el **truco de Aliens** la convierte en una penalización lagrangiana. Lee esas entradas de teoría: son el puente entre este curso y la optimización matemática.'
   ],
   algs: ['DP-Algorithms-BitmaskDP', 'DP-Classic-Problems-Counting-Numbers'],
-  teo: [['DP', 'DP sobre subconjuntos y SOS (suma sobre subconjuntos)'], ['DP', 'Desigualdad del cuadrángulo y optimización de Knuth'], ['DP', 'Divide y vencerás para DP'], ['DP', 'Convex Hull Trick y Li Chao'], ['DP', 'Truco de Aliens (WQS / relajación lagrangiana)']],
+  teo: [['DP', 'DP sobre subconjuntos y SOS (suma sobre subconjuntos)'], ['DP', 'Principio de optimalidad de Bellman'], ['DP', 'Número de estados × costo de transición']],
   preguntas: [
     { q: '¿Cuántos estados y transiciones tiene una DP de bitmask con n = 20?', a: '2²⁰ ≈ 10⁶ estados con 20 transiciones cada uno: unos 2·10⁷ pasos.' },
     { q: '¿Qué relación tiene el truco de Aliens con la optimización continua?', a: 'Es relajación lagrangiana: se quita la restricción "exactamente k" y se cobra una penalización λ por cada elemento, ajustando λ con búsqueda binaria.' }
@@ -284,9 +284,9 @@ window.LIBRO = [
   clase: [
     { h: 'Segment Tree' },
     'El Segment Tree es la navaja suiza: cada nodo guarda el resultado de una operación sobre su tramo, y funciona con **cualquier operación asociativa que tenga neutro** (suma con 0, mínimo con +∞, máximo con −∞, gcd con 0, xor con 0…). No necesita restar ni que la operación sea idempotente. Todo rango se descompone en a lo sumo unos 2 log n nodos: ese es el teorema que hace funcionar todo.',
-    'Los nodos no tienen que guardar un solo número. En Prefix Sum Queries cada nodo guarda dos (la suma y el mejor prefijo) y la combinación es `(s1 + s2, max(p1, s1 + p2))`. Diseñar qué guarda cada nodo y cómo se combinan dos hijos es el 90 % del trabajo.',
+    'Los nodos no tienen que guardar un solo número. Para responder el mejor prefijo de un rango, cada nodo guarda dos (la suma y el mejor prefijo) y la combinación es `(s1 + s2, max(p1, s1 + p2))`. Diseñar qué guarda cada nodo y cómo se combinan dos hijos es el 90 % del trabajo.',
     { h: 'Descender por el árbol' },
-    'En Hotel Queries se busca el primer hotel con espacio suficiente. En vez de búsqueda binaria más consultas (O(log² n)), se baja desde la raíz: si el hijo izquierdo tiene un máximo suficiente, se va a la izquierda; si no, a la derecha. O(log n).',
+    'Para encontrar la primera posición con valor ≥ x (por ejemplo, el primer contenedor con espacio suficiente), en vez de búsqueda binaria más consultas (O(log² n)), se baja desde la raíz: si el hijo izquierdo tiene un máximo suficiente, se va a la izquierda; si no, a la derecha. O(log n).',
     { h: 'Lazy Segment Tree' },
     'Si además hay que modificar rangos enteros (sumar x o asignar x a [l, r]), se agrega **propagación perezosa**: la modificación se anota en los nodos que cubren el rango y se baja a los hijos solo cuando hace falta. Así las modificaciones de rango también cuestan O(log n). La parte delicada es componer dos marcas pendientes (por ejemplo, "asignar 5" y luego "sumar 2" es "asignar 7").',
     { h: 'Mo: cuando ninguna estructura sirve' },
@@ -571,7 +571,7 @@ window.LIBRO = [
     { q: 'Si el flujo máximo vale 7, ¿qué sabes del corte mínimo?', a: 'Que su capacidad también es 7.' },
     { q: '¿Cómo se modela un emparejamiento bipartito como flujo?', a: 'Fuente → cada nodo izquierdo, cada izquierdo → sus derechos posibles y cada derecho → sumidero, todo con capacidad 1.' }
   ],
-  cierre: 'Los flujos son el puente natural hacia la programación lineal, la dualidad y la optimización combinatoria. Con grafos y flujos ya tienes las herramientas para la probabilidad sobre árboles y grafos de la siguiente parte.' },
+  cierre: 'Los flujos son el puente natural hacia la programación lineal, la dualidad y la optimización combinatoria. En el siguiente capítulo se ve cómo leer el corte mínimo, emparejar más rápido, imponer mínimos y asignar con costo mínimo.' },
 
 {
  "t": "Flujos avanzados: cortes, Hopcroft-Karp, cotas y asignación",
@@ -647,7 +647,7 @@ window.LIBRO = [
     'Si un proceso avanza por pasos independientes, la probabilidad de una secuencia es el **producto** de las de cada paso, y la de un estado es la **suma** sobre todos los caminos que llegan a él. Eso es exactamente una DP donde cada casilla guarda una probabilidad en lugar de un conteo. Con dados: `p[d][s]` es la probabilidad de que d dados sumen s.',
     { py: 'p = [1.0]\nfor _ in range(n):\n    q = [0.0] * (len(p) + 6)\n    for s, ps in enumerate(p):\n        for c in range(1, 7):\n            q[s + c] += ps / 6\n    p = q\nprint(sum(p[a:b + 1]))' },
     { h: 'Linealidad de la esperanza' },
-    'La idea más poderosa del tema: **E[X + Y] = E[X] + E[Y] siempre**, aunque X e Y dependan una de la otra. Para un conteo, se escribe como suma de **indicadores** (1 si pasa algo, 0 si no), y la esperanza de un indicador es su probabilidad. Así, el número esperado de inversiones es la suma de P(x_i > x_j) sobre los pares; y en Game on Tree, cada nodo cuenta como paso con probabilidad 1/profundidad.',
+    'La idea más poderosa del tema: **E[X + Y] = E[X] + E[Y] siempre**, aunque X e Y dependan una de la otra. Para un conteo, se escribe como suma de **indicadores** (1 si pasa algo, 0 si no), y la esperanza de un indicador es su probabilidad. Así, el número esperado de inversiones es la suma de P(x_i > x_j) sobre los pares; y si en un árbol se borran subárboles eligiendo nodos al azar, cada nodo cuenta como paso con probabilidad 1/profundidad.',
     { h: 'Máximos y funciones no lineales' },
     'Para el máximo de variables independientes, «el máximo es ≤ m» equivale a «todas son ≤ m», que es un producto. Para un cuadrado, E[X²] no es E[X]²: se mira cuánto **aumenta** el valor en cada paso ((L+1)² − L² = 2L + 1) y a esa expresión lineal sí se le aplica la linealidad.'
   ],
@@ -667,7 +667,7 @@ window.LIBRO = [
     { h: 'Cadenas de Markov' },
     'Si el siguiente estado solo depende del actual, basta llevar la distribución p (la probabilidad de estar en cada estado) y aplicar las transiciones paso a paso. Si los pasos son muchísimos, la misma transición se escribe como una matriz y se eleva a la k con exponenciación rápida.',
     { h: 'Estados que se achican' },
-    'En Bag of Mice el estado es (blancos, negros) y cada ronda quita ratones; en Fish el estado es el conjunto de peces vivos (una máscara de bits) y cada encuentro quita uno. Como el estado siempre se achica, se recorre de los estados grandes a los pequeños repartiendo la probabilidad, sin ciclos.',
+    'Si se sacan objetos al azar de una bolsa, el estado es cuántos quedan de cada tipo y cada ronda quita alguno; si se eliminan participantes de un torneo al azar, el estado es el conjunto de vivos (una máscara de bits) y cada encuentro quita uno. Como el estado siempre se achica, se recorre de los estados grandes a los pequeños repartiendo la probabilidad, sin ciclos.',
     { h: 'Respuestas módulo un primo' },
     'Cuando la respuesta es una fracción p/q, muchos jueces piden p · q⁻¹ mód 998244353. Como el módulo es primo, q⁻¹ = q^(M−2), y una probabilidad como 37/100 se guarda como 37 · 100⁻¹. Toda la cuenta se hace con sumas y productos modulares, sin decimales.',
     { py: 'MOD = 998244353\ninv100 = pow(100, MOD - 2, MOD)\nq = 37 * inv100 % MOD      # 0.37 representado módulo MOD\nprint(q * 100 % MOD)       # 37: la fracción se recupera' },
@@ -740,13 +740,13 @@ window.LIBRO = [
     { h: 'Arreglo de sufijos' },
     'El **arreglo de sufijos** ordena todos los sufijos duplicando la longitud comparada en cada ronda. Junto con el arreglo LCP (Kasai, O(n)) responde casi todo sobre subcadenas: la repetida más larga es el mayor LCP entre vecinos, y el número de subcadenas distintas es n(n+1)/2 − Σ LCP.',
     { h: 'Contar con DP' },
-    'Distinct Subsequences cuenta subsecuencias distintas restando las que se repiten con la última aparición de cada letra. Required Substring combina KMP con DP: el estado es "cuánto del patrón llevo emparejado", que es exactamente el autómata de la función de prefijos.'
+    'Para contar subsecuencias distintas se duplican las que había y se restan las que se repiten, usando la última aparición de cada letra. Para contar cadenas de largo n que contienen (o evitan) un patrón, se combina KMP con DP: el estado es "cuánto del patrón llevo emparejado", que es exactamente el autómata de la función de prefijos.'
   ],
   algs: ['Strings-Algorithms-PrefixTrie', 'Strings-Algorithms-MinimalRotation', 'Strings-Algorithms-SuffixArray', 'Strings-Classic-Problems-Repeating-Substring', 'Strings-Classic-Problems-Distinct-Subsequences', 'Strings-Classic-Problems-Required-Substring'],
   teo: [['Strings', 'Subcadenas distintas con Suffix Array'], ['Strings', 'Aho–Corasick']],
   preguntas: [
     { q: '¿Cuántas subcadenas distintas tiene "aaa"?', a: 'Tres: "a", "aa" y "aaa". Con el arreglo de sufijos: 3·4/2 − (1 + 2) = 3.' },
-    { q: 'En Required Substring, ¿por qué el estado es "cuánto del patrón llevo" y no la cadena completa?', a: 'Porque para saber si el patrón aparecerá solo importa el borde más largo del texto escrito que es prefijo del patrón; eso es justo lo que calcula KMP.' }
+    { q: 'Al contar cadenas que contienen un patrón, ¿por qué el estado es "cuánto del patrón llevo" y no la cadena completa?', a: 'Porque para saber si el patrón aparecerá solo importa el borde más largo del texto escrito que es prefijo del patrón; eso es justo lo que calcula KMP.' }
   ],
   cierre: 'Trie para diccionarios, arreglo de sufijos para preguntas sobre subcadenas, y KMP dentro de una DP cuando hay que contar cadenas que contienen (o evitan) un patrón.' },
 
@@ -809,7 +809,7 @@ window.LIBRO = [
   clase: [
     'La geometría en competencia es casi toda **álgebra con vectores** y una regla de oro: usa enteros siempre que puedas. Los flotantes acumulan errores y una comparación con `==` puede fallar por 10⁻¹⁵. Cuando no se puede evitar, se compara con una tolerancia `eps`.',
     { h: 'El producto cruz' },
-    'Para vectores (x1, y1) y (x2, y2), `x1·y2 − y1·x2` es positivo si el segundo gira a la izquierda del primero, negativo si gira a la derecha y cero si son paralelos. Con esta sola operación se deciden orientaciones, se calculan áreas (fórmula del Shoelace) y se detectan intersecciones de segmentos. Con coordenadas hasta 10⁹ el producto llega a 10¹⁸: cabe justo en `long long`, pero no lo sumes muchas veces sin cuidado.',
+    'Para vectores (x1, y1) y (x2, y2), `x1·y2 − y1·x2` es positivo si el segundo gira a la izquierda del primero, negativo si gira a la derecha y cero si son paralelos. Con esta sola operación se deciden orientaciones, se calculan áreas (fórmula del Shoelace) y se detectan intersecciones de segmentos. Con coordenadas hasta 10⁹ las diferencias llegan a 2·10⁹ y el producto cruz a unos 8·10¹⁸: cabe en `long long` (hasta 9,2·10¹⁸) por muy poco, así que no lo sumes ni lo multipliques otra vez sin pasar a `__int128`.',
     { py: 'def cross(o, a, b):\n    return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])' },
     { h: 'Intersección de segmentos' },
     'Dos segmentos se cortan si los extremos de cada uno quedan en lados distintos del otro. Los casos con orientación 0 (colineales o extremos que tocan) son la fuente número uno de WA: ahí hay que revisar además que las cajas de los segmentos se solapen.',
@@ -900,7 +900,7 @@ window.LIBRO = [
   algs: ['Geometry-ConvexHull', 'Geometry-ClosestPair', 'Geometry-Advanced-RotatingCalipers', 'Geometry-Classic-Problems-Maximum-Manhattan-Distances', 'Geometry-Classic-Problems-Intersection-Points', 'Geometry-Classic-Problems-Area-of-Rectangles', 'Geometry-Classic-Problems-Lines-and-Queries-I', 'Geometry-Advanced-HalfPlaneIntersection'],
   teo: [['Geometry', 'Cota inferior de la envolvente convexa'], ['Geometry', 'Rotating calipers'], ["Geometry", "Intersección de semiplanos"], ["Geometry", "Suma de Minkowski"]],
   preguntas: [
-    { q: '¿Qué pasa con los puntos colineales del borde en la envolvente?', a: 'Depende de lo que pida el problema: CSES pide incluirlos, y por eso el código tiene la opción include_collinear y un caso especial para el último tramo.' },
+    { q: '¿Qué pasa con los puntos colineales del borde en la envolvente?', a: 'Depende de lo que pida el problema: algunos piden incluirlos y otros no, y por eso el código tiene la opción include_collinear y un caso especial para el último tramo.' },
     { q: 'En Li Chao, ¿por qué la recta perdedora baja solo por una mitad?', a: 'Dos rectas se cruzan a lo sumo una vez; si una gana en el medio, la otra solo puede ganar a un lado del cruce.' }
   ],
   cierre: 'Envolvente, barrido y una buena estructura de datos: con eso se resuelve la geometría de nivel regional.' }
@@ -1082,7 +1082,7 @@ window.LIBRO = [
     "Conocer los recursos de C++ que ahorran tiempo."
    ],
    "clase": [
-    "En el ICPC compiten equipos de **tres personas con un solo computador** durante cinco horas, con un notebook impreso de hasta 25 páginas. Saber algoritmos es necesario, pero en las finales la diferencia la hace el oficio: cómo se reparte el trabajo, cómo se depura y cómo se evita perder tiempo.",
+    "En el ICPC compiten equipos de **tres personas con un solo computador** durante cinco horas, con un notebook impreso (en las finales mundiales el límite ha sido de 25 páginas; revisa la regla vigente de tu competencia). Saber algoritmos es necesario, pero en las finales la diferencia la hace el oficio: cómo se reparte el trabajo, cómo se depura y cómo se evita perder tiempo.",
     {
      "h": "Roles y estrategia"
     },
@@ -1094,7 +1094,7 @@ window.LIBRO = [
     {
      "h": "Stress testing"
     },
-    "Cuando un envío da WA y no ves el error, escribe una **fuerza bruta** obviamente correcta y un **generador** de casos pequeños al azar, y compáralos en un ciclo hasta encontrar un caso que difiera. Es la técnica más eficaz para depurar en competencia (y es la que se usó para verificar cada código de esta guía).",
+    "Cuando un envío da WA y no ves el error, escribe una **fuerza bruta** obviamente correcta y un **generador** de casos pequeños al azar, y compáralos en un ciclo hasta encontrar un caso que difiera. Es la técnica más eficaz para depurar en competencia (es la que se usó para verificar los códigos de esta guía: los generadores, las fuerzas brutas y el script están en la carpeta tests/ del repositorio).",
     {
      "py": "# stress.py: compara solucion y bruta con casos al azar\nimport random, subprocess\nfor it in range(1000):\n    n = random.randint(1, 8)\n    caso = f\"{n}\\n\" + \" \".join(str(random.randint(1, 10)) for _ in range(n)) + \"\\n\"\n    a = subprocess.run([\"./sol\"], input=caso, capture_output=True, text=True).stdout\n    b = subprocess.run([\"./bruta\"], input=caso, capture_output=True, text=True).stdout\n    if a.split() != b.split():\n        print(\"Caso que falla:\\n\" + caso, \"sol:\", a, \"bruta:\", b)\n        break"
     },
@@ -1111,12 +1111,12 @@ window.LIBRO = [
     },
     "`__int128` para productos de 64 bits, `bitset` para dividir por 64 el costo de DP booleanas, `__builtin_popcountll` y `__builtin_ctzll` para bits, `pb_ds` para conjuntos ordenados con k-ésimo, `lower_bound` sobre vectores ordenados en vez de `set` cuando no hay inserciones. Y compila siempre con `-Wall -Wextra -fsanitize=address,undefined` mientras practicas: encuentra lecturas fuera de rango que de otra forma darían WA aleatorio.",
     {
-     "nota": "Rutina antes de enviar: probar los ejemplos, probar el caso mínimo (n = 1), el caso máximo (para el tiempo), revisar desbordes (¿long long?) y el formato de salida. Un envío incorrecto cuesta 20 minutos de penalización."
+     "nota": "Rutina antes de enviar: probar los ejemplos, probar el caso mínimo (n = 1), el caso máximo (para el tiempo), revisar desbordes (¿long long?) y el formato de salida. Cada envío incorrecto suma 20 minutos de penalización si al final resuelves ese problema (los rechazos de problemas que nunca resuelves no cuentan, pero sí el tiempo perdido). Y recuerda que el marcador se congela en la última hora: lo que ves ahí ya no es la tabla real."
     },
     {
      "h": "Entrenar hacia las finales"
     },
-    "El camino típico: CSES completo como base, luego problemas de Codeforces en la banda de 1900 a 2400 (y después 2400–3000), y contests virtuales de regionales en equipo, con la misma duración y el mismo notebook. Después de cada contest, se **cierra** cada problema que no salió (se lee la solución y se programa). En la sección Practicar están los problemas de la banda alta y regionales latinoamericanos para empezar."
+    "El camino típico: una colección clásica completa (como CSES) como base, luego problemas de Codeforces en la banda de 1900 a 2400 (y después 2400–3000), y contests virtuales de regionales en equipo, con la misma duración y el mismo notebook. Después de cada contest, se **cierra** cada problema que no salió (se lee la solución y se programa). En la sección Practicar están los problemas de la banda alta y regionales latinoamericanos para empezar."
    ],
    "algs": [],
    "teo": [

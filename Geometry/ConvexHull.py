@@ -5,7 +5,7 @@ INF = float('inf')
 MOD = 998244353
 
 """
- * Algoritmo : Envolvente convexa (Graham scan, incluye puntos colineales del borde)
+ * Algoritmo : Envolvente convexa (cadena monótona de Andrew, incluye puntos colineales del borde)
  * Problema  : CSES 2195 - Convex Hull (https://cses.fi/problemset/task/2195)
  * Entrada   : n, luego n puntos enteros "x y"
  * Salida    : cantidad de puntos de la envolvente (incluye los del borde) y sus coordenadas

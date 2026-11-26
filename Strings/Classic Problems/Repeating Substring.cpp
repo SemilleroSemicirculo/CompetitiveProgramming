@@ -3,23 +3,23 @@
 using namespace std;
 typedef long long ll;
 typedef long double ld;
-const ll INF = numeric_limits<ll>::max();
+const ll INF = numeric_limits<ll>::max() / 4;   // deja margen para INF + w sin desbordar
 
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
 #define pi acos(-1)
 #define gcd __gcd
-#define lcm(a, b) ((a) * (b) / gcd(a, b))
+inline ll lcm(ll a, ll b) { return a / __gcd(a, b) * b; }   // divide antes de multiplicar
 #define precision(n) cout << fixed << setprecision(n)
-#define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
+#define debug(arr) do { cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl; } while (0)
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 /*
  * Algoritmo : Suffix Array + LCP (mayor subcadena que se repite)
  * Problema  : CSES 2106 - Repeating Substring (https://cses.fi/problemset/task/2106)
  * Entrada   : una cadena de largo n
  * Salida    : la subcadena más larga que aparece al menos dos veces, o -1
- * Complejidad: tiempo O(n log n), memoria O(n)
+ * Complejidad: tiempo O(n log² n) (duplicación con sort), memoria O(n)
  */
 
 int main() {

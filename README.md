@@ -32,9 +32,10 @@ Estudiantes, autodidactas y entusiastas de la programación competitiva que dese
 
 ## 🏋️ Para practicar
 
-- Cada tema tiene, además de los algoritmos, una carpeta **Classic Problems** con problemas clásicos de CSES resueltos en C++ y Python.
+- Cada tema tiene, además de los algoritmos, una carpeta **Classic Problems** con problemas clásicos resueltos en C++ y Python (de CSES, Codeforces, UVa y otros jueces).
 - La carpeta **Probability** cubre probabilidad y valor esperado: DP de probabilidades, linealidad de la esperanza, cadenas de Markov y respuestas módulo un primo.
-- En [Problemas Recomendados.md](Problemas%20Recomendados.md) hay 30 problemas sin resolver por tema (10 sencillos, 10 medios y 10 difíciles) de CSES y Codeforces.
+- En [Problemas Recomendados.md](Problemas%20Recomendados.md) hay 40 problemas sin resolver por tema (10 sencillos, 10 medios, 10 difíciles y 10 de nivel finales, rating 2400–3000) de CSES y Codeforces, y los regionales latinoamericanos del ICPC.
+- La carpeta [tests](tests/) tiene los generadores, las fuerzas brutas y el script que verifican cada código (`sh tests/run_all.sh`).
 
 ---
 

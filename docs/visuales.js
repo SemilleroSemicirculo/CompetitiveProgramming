@@ -1595,19 +1595,19 @@ V(PO + 'NTT', 'NTT: la misma idea con enteros módulo un primo', 'Con p = 17 = 2
 
 // =================== Optimizaciones de DP y DP en árboles ===================
 const DO_ = 'DP-Optimizations-', DT_ = 'DP-Trees-';
-V(DO_ + 'ConvexHullTrick', 'Convex Hull Trick: la envolvente inferior de las rectas', 'Cada monstruo matado agrega la recta y = f·x + dp. Para el siguiente se evalúa el mínimo en x = s. Como las pendientes bajan y las consultas suben, las rectas inútiles salen por los extremos de la deque. Azul = rectas en la deque; gris = descartadas.', push => {
+V(DO_ + 'ConvexHullTrick', 'Convex Hull Trick: la envolvente inferior de las rectas', 'Cada estado calculado agrega la recta y = m·x + dp. Para el siguiente se evalúa el mínimo en su x. Como las pendientes bajan y las consultas suben, las rectas inútiles salen por los extremos de la deque. Azul = rectas en la deque; gris = descartadas.', push => {
   const n = 5, x0 = R(8, 10), s = [], f = []; let v = R(1, 2); for (let i = 0; i < n; i++) { v += R(1, 3); s.push(v); }
   let fv = x0; for (let i = 0; i < n; i++) { fv = Math.max(1, fv - R(1, 3)); f.push(fv); }
   const lines = [{ m: x0, b: 0, id: 0 }], dq = [0], dead = []; const st = (q, best) => ({ lines, dq: dq.slice(), dead: dead.slice(), q, best, X: s[n - 1] + 1 });
   const ev = (l, x) => l.m * x + l.b, sobra = (a, b, c) => (c.b - a.b) * (a.m - b.m) <= (b.b - a.b) * (a.m - c.m);
-  push('Fuerzas s = ' + s.join(', ') + '; factores f = ' + f.join(', ') + '; factor inicial ' + x0 + '. Recta inicial y = ' + x0 + '·x.', st(-1, -1)); let dp = 0;
+  push('Consultas en x = ' + s.join(', ') + ' (crecientes); pendientes de las rectas nuevas: ' + f.join(', ') + ' (decrecientes). Recta inicial y = ' + x0 + '·x.', st(-1, -1)); let dp = 0;
   for (let i = 0; i < n; i++) {
-    while (dq.length >= 2 && ev(lines[dq[1]], s[i]) <= ev(lines[dq[0]], s[i])) dead.push(dq.shift());
-    dp = ev(lines[dq[0]], s[i]); push('Monstruo ' + (i + 1) + ' (x = ' + s[i] + '): la mejor recta es la del frente, y = ' + lines[dq[0]].m + 'x + ' + lines[dq[0]].b + ' → dp = ' + dp + '.', st(s[i], dq[0]));
+    let sal = 0; while (dq.length >= 2 && ev(lines[dq[1]], s[i]) <= ev(lines[dq[0]], s[i])) { dead.push(dq.shift()); sal++; }
+    dp = ev(lines[dq[0]], s[i]); push('Consulta ' + (i + 1) + ' (x = ' + s[i] + '): ' + (sal ? pl(sal, 'recta sale', 'rectas salen') + ' por el frente porque ya perdieron; ' : '') + 'la mejor es la del frente, y = ' + lines[dq[0]].m + 'x + ' + lines[dq[0]].b + ' → dp = ' + dp + '.', st(s[i], dq[0]));
     const nl = { m: f[i], b: dp, id: lines.length }; lines.push(nl);
     if (lines[dq[dq.length - 1]].m === nl.m && lines[dq[dq.length - 1]].b <= nl.b) { dead.push(nl.id); push('La recta nueva tiene la misma pendiente y es peor: no sirve.', st(-1, -1)); continue; }
-    while (dq.length >= 2 && sobra(lines[dq[dq.length - 2]], lines[dq[dq.length - 1]], nl)) dead.push(dq.pop());
-    dq.push(nl.id); push('Se agrega y = ' + nl.m + 'x + ' + nl.b + ' al final (se sacan las que quedan tapadas).', st(-1, -1));
+    let fuera = 0; while (dq.length >= 2 && sobra(lines[dq[dq.length - 2]], lines[dq[dq.length - 1]], nl)) { dead.push(dq.pop()); fuera++; }
+    dq.push(nl.id); push('Se agrega y = ' + nl.m + 'x + ' + nl.b + ' al final' + (fuera ? '; ' + pl(fuera, 'recta quedó tapada y sale', 'rectas quedaron tapadas y salen') + ' por el final.' : '; no tapa a ninguna.'), st(-1, -1));
   }
   push('Respuesta: ' + dp + ' (O(n) en total: cada recta entra y sale una vez).', st(-1, -1));
 }, s => { const W = 540, H = 280, X = s.X, ys = s.lines.flatMap(l => [l.b, l.m * X + l.b]), Y = Math.max(...ys, 1), px = x => 30 + (W - 50) * x / X, py = y => H - 25 - (H - 45) * y / Y;
@@ -1652,7 +1652,7 @@ V(DO_ + 'DigitDP', 'DP de dígitos: el camino pegado al límite', 'Se cuentan lo
   let total = 0, nz = 0; const filas = [];
   push('N = ' + N + '. Contar los números de [0, N] con ≤ 3 dígitos distintos de cero.', { D, pos: -1, filas: [], total });
   for (let p = 0; p < D.length; p++) { const resto = D.length - p - 1; let suma = 0; for (let d = 0; d < D[p]; d++) suma += libre(resto, nz + (d !== 0)); total += suma;
-    filas.push(['pos ' + (p + 1), 'dígitos 0…' + (D[p] - 1), suma]); push('Posición ' + (p + 1) + ' (límite ' + D[p] + '): poner 0…' + Math.max(0, D[p] - 1) + ' libera ' + resto + ' dígitos → suma ' + suma + '. Total = ' + total + '.', { D, pos: p, filas: filas.slice(), total });
+    filas.push(['pos ' + (p + 1), 'dígitos 0…' + (D[p] - 1), suma]); push('Posición ' + (p + 1) + ' (límite ' + D[p] + '): ' + (D[p] ? 'poner 0…' + (D[p] - 1) + ' libera ' + pl(resto, 'dígito', 'dígitos') : 'no hay dígitos menores que 0') + ' → suma ' + suma + '. Total = ' + total + '.', { D, pos: p, filas: filas.slice(), total });
     nz += D[p] !== 0; if (nz > 3) { push('Pegados a N ya hay ' + nz + ' dígitos no nulos: el camino se corta. Respuesta = ' + total + '.', { D, pos: p, filas: filas.slice(), total }); return; } }
   total++; push('Se llegó al final pegados: el propio N también cuenta. Respuesta = ' + total + '.', { D, pos: D.length, filas, total });
 }, s => cellsRow('N', s.D, s.D.map((_, i) => i < s.pos ? 'g' : i === s.pos ? 'a' : '')) + (s.filas.length ? table(s.filas, null, null, ['dígito', 'opciones menores', 'se suman']) : ''));
@@ -1779,7 +1779,7 @@ V('Data-Structures-Algorithms-PersistentSegmentTree', 'Segment Tree persistente:
     g += txt(x0 + w3 / 2, 16, 'versión ' + (v + 1), { b: 1 }); dib(rt, x0 + w3 / 2, 44, w3 / 4); });
   return svgBox(g, W, 230); });
 
-V('Data-Structures-Algorithms-Treap', 'Treap implícito: cortar y pegar', 'El árbol es de búsqueda por posición (en orden da la cadena) y un heap por prioridad (número pequeño). split parte por posición y merge une poniendo arriba la prioridad mayor; ambos bajan por una sola rama: O(log n) esperado.', push => {
+V('Data-Structures-Algorithms-Treap', 'Treap implícito: cortar y pegar', 'El árbol es de búsqueda por posición (en orden da la cadena) y un heap por prioridad (el número pequeño sobre cada nodo; arriba siempre queda la mayor). split parte por posición y merge une poniendo arriba la prioridad mayor; ambos bajan por una sola rama: O(log n) esperado.', push => {
   const str = shuffle('ABCDEFG'.split('')).join('').slice(0, 7), n = str.length, pr = shuffle([...Array(n).keys()].map(i => (i + 1) * 7 % 50 + R(0, 4))), nodos = str.split('').map((c, i) => ({ c, p: pr[i], l: -1, r: -1 }));
   const merge = (a, b) => { if (a < 0) return b; if (b < 0) return a; if (nodos[a].p > nodos[b].p) { nodos[a].r = merge(nodos[a].r, b); return a; } nodos[b].l = merge(a, nodos[b].l); return b; };
   const size = u => u < 0 ? 0 : 1 + size(nodos[u].l) + size(nodos[u].r);
@@ -1913,7 +1913,7 @@ V(GA + 'HalfPlaneIntersection', 'Intersección de semiplanos', 'Se conserva el l
   let reg = caja.slice(); push(lines.length + ' semiplanos, ordenados por el ángulo de su recta. Se empieza con la caja que acota todo.', { lines, k: -1, reg });
   lines.forEach(([a, b], k) => { reg = clipJS(reg, a, b); push('Recta ' + (k + 1) + ' (ángulo ' + Math.round(Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI) + '°): queda ' + (reg.length >= 3 ? 'una región de área ' + f3(areaJS(reg)) : 'vacío') + '.', { lines, k, reg }); });
 }, s => { let g = gridBg(); if (s.reg.length >= 3) g += poly(s.reg, '#2da44e44', '#2da44e');
-  s.lines.forEach(([a, b], k) => { const d = [b[0] - a[0], b[1] - a[1]], col = k === s.k ? '#d4a72c' : k < s.k || s.k < 0 && false ? '#1f6feb' : '#bbb'; g += seg([a[0] - 6 * d[0], a[1] - 6 * d[1]], [a[0] + 6 * d[0], a[1] + 6 * d[1]], k <= s.k ? (k === s.k ? '#d4a72c' : '#1f6feb') : '#ccc', k === s.k ? 3 : 1.5, k > s.k);
+  s.lines.forEach(([a, b], k) => { const d = [b[0] - a[0], b[1] - a[1]]; g += seg([a[0] - 6 * d[0], a[1] - 6 * d[1]], [a[0] + 6 * d[0], a[1] + 6 * d[1]], k <= s.k ? (k === s.k ? '#d4a72c' : '#1f6feb') : '#ccc', k === s.k ? 3 : 1.5, k > s.k);
     const A = toS(a), Bp = toS(b); g += '<line x1="' + A[0] + '" y1="' + A[1] + '" x2="' + Bp[0] + '" y2="' + Bp[1] + '" stroke="' + (k <= s.k ? '#1f6feb' : '#bbb') + '" stroke-width="2.5" marker-end="url(#hp-ar)"/>'; });
   return svgBox('<defs><marker id="hp-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1f6feb"/></marker></defs>' + g, G0.W, G0.H); });
 

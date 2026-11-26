@@ -5,7 +5,7 @@ INF = float('inf')
 MOD = 998244353
 
 """
- * Algoritmo : Rotación lexicográficamente mínima (algoritmo de Booth/Duval)
+ * Algoritmo : Rotación lexicográficamente mínima (método de los dos índices)
  * Problema  : CSES 1110 - Minimal Rotation (https://cses.fi/problemset/task/1110)
  * Entrada   : una cadena s
  * Salida    : la rotación lexicográficamente mínima de s

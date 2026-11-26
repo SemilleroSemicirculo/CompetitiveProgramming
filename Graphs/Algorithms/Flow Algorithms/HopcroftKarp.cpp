@@ -3,16 +3,16 @@
 using namespace std;
 typedef long long ll;
 typedef long double ld;
-const ll INF = numeric_limits<ll>::max();
+const ll INF = numeric_limits<ll>::max() / 4;   // deja margen para INF + w sin desbordar
 
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
 #define pi acos(-1)
 #define gcd __gcd
-#define lcm(a, b) ((a) * (b) / gcd(a, b))
+inline ll lcm(ll a, ll b) { return a / __gcd(a, b) * b; }   // divide antes de multiplicar
 #define precision(n) cout << fixed << setprecision(n)
-#define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
+#define debug(arr) do { cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl; } while (0)
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 /*
  * Algoritmo : Hopcroft-Karp (emparejamiento bipartito máximo en O(E·√V))
@@ -25,6 +25,7 @@ const ll INF = numeric_limits<ll>::max();
 int L, R;
 vector<vector<int>> g;
 vector<int> mL, mR, dist;   // mL[a] = pareja de a (−1 si libre); dist = capas del BFS
+int lim;                    // capa en la que el BFS encontró el primer derecho libre
 
 // BFS desde todos los izquierdos libres; capas alternando arista libre / arista emparejada
 bool bfs() {
@@ -33,16 +34,17 @@ bool bfs() {
         dist[a] = mL[a] == -1 ? 0 : -1;
         if (dist[a] == 0) q.push(a);
     }
-    bool hay = false;
+    lim = INT_MAX;
     while (!q.empty()) {
         int a = q.front(); q.pop();
+        if (dist[a] >= lim) continue;                         // más allá de la capa mínima no sirve
         for (int b : g[a]) {
             int c = mR[b];
-            if (c == -1) hay = true;                          // camino aumentante encontrado
+            if (c == -1) lim = min(lim, dist[a]);             // camino aumentante de largo mínimo
             else if (dist[c] == -1) { dist[c] = dist[a] + 1; q.push(c); }
         }
     }
-    return hay;
+    return lim != INT_MAX;
 }
 
 // DFS solo por las capas del BFS (como Dinic); it[] evita revisar dos veces la misma arista
@@ -50,7 +52,7 @@ vector<int> it;
 bool dfs(int a) {
     for (int &i = it[a]; i < (int)g[a].size(); i++) {
         int b = g[a][i], c = mR[b];
-        if (c == -1 || (dist[c] == dist[a] + 1 && dfs(c))) {
+        if ((c == -1 && dist[a] == lim) || (c != -1 && dist[c] == dist[a] + 1 && dfs(c))) {
             mL[a] = b; mR[b] = a;
             return true;
         }

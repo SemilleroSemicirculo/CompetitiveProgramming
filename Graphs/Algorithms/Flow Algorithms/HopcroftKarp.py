@@ -30,17 +30,19 @@ def main():
             if mL[a] == -1:
                 dist[a] = 0
                 q.append(a)
-        hay = False
+        lim = INF                         # capa del primer derecho libre (largo mínimo)
         while q:
             a = q.popleft()
+            if dist[a] >= lim:
+                continue
             for b in g[a]:
                 c = mR[b]
                 if c == -1:
-                    hay = True
+                    lim = min(lim, dist[a])
                 elif dist[c] == -1:
                     dist[c] = dist[a] + 1
                     q.append(c)
-        if not hay:
+        if lim == INF:
             break
         it = [0] * L
         for s in range(L):
@@ -56,14 +58,14 @@ def main():
                     continue
                 b = g[a][it[a]]
                 c = mR[b]
-                if c == -1:                       # aumentar a lo largo de camino
+                if c == -1 and dist[a] == lim:    # aumentar a lo largo de camino
                     for x in reversed(camino):
                         bx = g[x][it[x]]
                         mL[x] = bx
                         mR[bx] = x
                     K += 1
                     break
-                if dist[c] == dist[a] + 1:
+                if c != -1 and dist[c] == dist[a] + 1:
                     camino.append(c)
                 else:
                     it[a] += 1

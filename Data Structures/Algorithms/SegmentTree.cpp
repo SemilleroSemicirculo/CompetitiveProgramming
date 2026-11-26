@@ -3,16 +3,16 @@
 using namespace std;
 typedef long long ll;
 typedef long double ld;
-const ll INF = numeric_limits<ll>::max();
+const ll INF = numeric_limits<ll>::max() / 4;   // deja margen para INF + w sin desbordar
 
 #define all(x) x.begin(), x.end()
 #define rall(x) x.rbegin(), x.rend()
 #define MOD 998244353
 #define pi acos(-1)
 #define gcd __gcd
-#define lcm(a, b) ((a) * (b) / gcd(a, b))
+inline ll lcm(ll a, ll b) { return a / __gcd(a, b) * b; }   // divide antes de multiplicar
 #define precision(n) cout << fixed << setprecision(n)
-#define debug(arr) cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl;
+#define debug(arr) do { cerr << #arr << " = "; for (auto &x : arr) cerr << x << " "; cerr << endl; } while (0)
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
 /*
@@ -40,15 +40,16 @@ struct SegmentTree {
         for (t[p += n] = value; p > 1; p >>= 1) t[p >> 1] = min(t[p], t[p ^ 1]);
     }
 
-    // mínimo en [l, r)
-    // mínimo en [l, r): se sube juntando los nodos que cubren el rango
+    // mínimo en [l, r): se sube juntando los nodos que cubren el rango.
+    // Se acumula por separado lo de la izquierda (resL) y lo de la derecha (resR) para que el
+    // código sirva también con operaciones no conmutativas: el resultado es resL ∘ resR.
     ll query(int l, int r) {
-        ll res = INF;
+        ll resL = INF, resR = INF;
         for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
-            if (l & 1) res = min(res, t[l++]);
-            if (r & 1) res = min(res, t[--r]);
+            if (l & 1) resL = min(resL, t[l++]);
+            if (r & 1) resR = min(t[--r], resR);
         }
-        return res;
+        return min(resL, resR);
     }
 };
 

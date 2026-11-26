@@ -122,7 +122,7 @@ function inicio(){
         <p><span class="verdict wa">WRONG ANSWER</span> alguna respuesta no coincide.</p>
         <p><span class="verdict tle">TIME LIMIT</span> tu idea es correcta pero demasiado lenta.</p></div>
       <div class="box"><h3>Dónde practicar</h3>
-        <p>Todos los códigos de esta guía fueron probados en <a href="https://cses.fi/problemset/" target="_blank" rel="noopener">CSES</a>, una colección de problemas clásicos ordenados por tema. También puedes practicar en Codeforces, AtCoder o en los problemas de ICPC.</p></div>
+        <p>Cada código se probó contra una fuerza bruta en cientos de casos al azar (el script está en la carpeta <code>tests/</code> del repositorio) y, cuando existe, contra un juez en línea: CSES, Codeforces, Library Checker, Kattis, SPOJ u otros. Cada lección dice de qué juez es su problema. Para practicar, mira la sección Practicar.</p></div>
     </div>
   </section>
 

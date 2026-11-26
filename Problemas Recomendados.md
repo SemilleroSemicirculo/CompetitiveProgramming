@@ -54,7 +54,7 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | 1 | [Bracket Sequences II](https://cses.fi/problemset/task/2187) | CSES 2187 | — |
 | 2 | [Counting Necklaces](https://cses.fi/problemset/task/2209) | CSES 2209 | — |
 | 3 | [Counting Coprime Pairs](https://cses.fi/problemset/task/2417) | CSES 2417 | — |
-| 4 | [SOS Bit Problem](https://cses.fi/problemset/task/1654) | CSES 1654 | — |
+| 4 | [System of Linear Equations](https://cses.fi/problemset/task/3154) | CSES 3154 | — |
 | 5 | [Counting Grids](https://cses.fi/problemset/task/2210) | CSES 2210 | — |
 | 6 | [Magic Ship](https://codeforces.com/problemset/problem/1117/C) | Codeforces 1117C | 1900 |
 | 7 | [The Football Season](https://codeforces.com/problemset/problem/1244/C) | Codeforces 1244C | 2000 |
@@ -66,16 +66,16 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 
 | # | Problema | Juez | Dificultad |
 |---|---|---|---|
-| 1 | [DZY Loves Fibonacci Numbers](https://codeforces.com/problemset/problem/446/C) | Codeforces 446C | 2400 |
-| 2 | [Thief in a Shop](https://codeforces.com/problemset/problem/632/E) | Codeforces 632E | 2400 |
-| 3 | [Team Work](https://codeforces.com/problemset/problem/932/E) | Codeforces 932E | 2400 |
-| 4 | [Permutation Blackhole](https://codeforces.com/problemset/problem/2129/D) | Codeforces 2129D | 2600 |
+| 1 | [Thief in a Shop](https://codeforces.com/problemset/problem/632/E) | Codeforces 632E | 2400 |
+| 2 | [Team Work](https://codeforces.com/problemset/problem/932/E) | Codeforces 932E | 2400 |
+| 3 | [Ehab and the Expected GCD Problem](https://codeforces.com/problemset/problem/1174/E) | Codeforces 1174E | 2500 |
+| 4 | [Divisor Set](https://codeforces.com/problemset/problem/1257/G) | Codeforces 1257G | 2600 |
 | 5 | [Power Tower](https://codeforces.com/problemset/problem/906/D) | Codeforces 906D | 2700 |
-| 6 | [Gellyfish and Eternal Violet](https://codeforces.com/problemset/problem/2115/C) | Codeforces 2115C | 2700 |
-| 7 | [Hamed and AghaBalaSar](https://codeforces.com/problemset/problem/2127/F) | Codeforces 2127F | 2800 |
-| 8 | [Beautiful Bracket Sequence (hard version)](https://codeforces.com/problemset/problem/1264/D2) | Codeforces 1264D2 | 2900 |
-| 9 | [GCD Table](https://codeforces.com/problemset/problem/338/D) | Codeforces 338D | 2900 |
-| 10 | [Keep XOR Low](https://codeforces.com/problemset/problem/1616/H) | Codeforces 1616H | 3000 |
+| 6 | [Sum Over Subsets](https://codeforces.com/problemset/problem/1436/F) | Codeforces 1436F | 2800 |
+| 7 | [GCD Table](https://codeforces.com/problemset/problem/338/D) | Codeforces 338D | 2900 |
+| 8 | [Basis](https://codeforces.com/problemset/problem/1644/F) | Codeforces 1644F | 2900 |
+| 9 | [Classical?](https://codeforces.com/problemset/problem/1285/F) | Codeforces 1285F | 2900 |
+| 10 | [Artistic Partition](https://codeforces.com/problemset/problem/1603/D) | Codeforces 1603D | 3000 |
 
 ## Estructuras de datos
 
@@ -114,7 +114,7 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | # | Problema | Juez | Dificultad |
 |---|---|---|---|
 | 1 | [Polynomial Queries](https://cses.fi/problemset/task/1736) | CSES 1736 | — |
-| 2 | [Range Queries and Copies](https://cses.fi/problemset/task/1737) | CSES 1737 | — |
+| 2 | [Dynamic Connectivity](https://cses.fi/problemset/task/2133) | CSES 2133 | — |
 | 3 | [Increasing Array Queries](https://cses.fi/problemset/task/2416) | CSES 2416 | — |
 | 4 | [Distinct Values Queries II](https://cses.fi/problemset/task/3356) | CSES 3356 | — |
 | 5 | [Movie Festival Queries](https://cses.fi/problemset/task/1664) | CSES 1664 | — |
@@ -178,10 +178,10 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | 1 | [Counting Tilings](https://cses.fi/problemset/task/2181) | CSES 2181 | — |
 | 2 | [Increasing Subsequence II](https://cses.fi/problemset/task/1748) | CSES 1748 | — |
 | 3 | [Mountain Range](https://cses.fi/problemset/task/3314) | CSES 3314 | — |
-| 4 | [Subarray Squares](https://cses.fi/problemset/task/2086) | CSES 2086 | — |
+| 4 | [Houses and Schools](https://cses.fi/problemset/task/2087) | CSES 2087 | — |
 | 5 | [Book Shop II](https://cses.fi/problemset/task/1159) | CSES 1159 | — |
 | 6 | [Zuma](https://codeforces.com/problemset/problem/607/B) | Codeforces 607B | 1900 |
-| 7 | [Classy Numbers](https://codeforces.com/problemset/problem/1036/C) | Codeforces 1036C | 1900 |
+| 7 | [Monster Game II](https://cses.fi/problemset/task/2085) | CSES 2085 | — |
 | 8 | [The least round way](https://codeforces.com/problemset/problem/2/B) | Codeforces 2B | 2000 |
 | 9 | [Clear the String](https://codeforces.com/problemset/problem/1132/F) | Codeforces 1132F | 2000 |
 | 10 | [Modulo Sum](https://codeforces.com/problemset/problem/577/B) | Codeforces 577B | 1900 |
@@ -225,8 +225,8 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | 1 | [Monsters](https://cses.fi/problemset/task/1194) | CSES 1194 | — |
 | 2 | [High Score](https://cses.fi/problemset/task/1673) | CSES 1673 | — |
 | 3 | [Investigation](https://cses.fi/problemset/task/1202) | CSES 1202 | — |
-| 4 | [Tree Matching](https://cses.fi/problemset/task/1130) | CSES 1130 | — |
-| 5 | [Tree Distances II](https://cses.fi/problemset/task/1133) | CSES 1133 | — |
+| 4 | [Distance Queries](https://cses.fi/problemset/task/1135) | CSES 1135 | — |
+| 5 | [Path Queries](https://cses.fi/problemset/task/1138) | CSES 1138 | — |
 | 6 | [Kefa and Park](https://codeforces.com/problemset/problem/580/C) | Codeforces 580C | 1500 |
 | 7 | [Maze](https://codeforces.com/problemset/problem/377/A) | Codeforces 377A | 1600 |
 | 8 | [News Distribution](https://codeforces.com/problemset/problem/1167/C) | Codeforces 1167C | 1400 |
@@ -238,9 +238,9 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | # | Problema | Juez | Dificultad |
 |---|---|---|---|
 | 1 | [Planets Queries II](https://cses.fi/problemset/task/1160) | CSES 1160 | — |
-| 2 | [Police Chase](https://cses.fi/problemset/task/1695) | CSES 1695 | — |
+| 2 | [Distinct Routes II](https://cses.fi/problemset/task/2130) | CSES 2130 | — |
 | 3 | [Distinct Routes](https://cses.fi/problemset/task/1711) | CSES 1711 | — |
-| 4 | [Path Queries II](https://cses.fi/problemset/task/2134) | CSES 2134 | — |
+| 4 | [Fixed-Length Paths II](https://cses.fi/problemset/task/2081) | CSES 2081 | — |
 | 5 | [Distinct Colors](https://cses.fi/problemset/task/1139) | CSES 1139 | — |
 | 6 | [Dijkstra?](https://codeforces.com/problemset/problem/20/C) | Codeforces 20C | 1900 |
 | 7 | [Lomsat gelral](https://codeforces.com/problemset/problem/600/E) | Codeforces 600E | 2300 |
@@ -314,16 +314,16 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 
 | # | Problema | Juez | Dificultad |
 |---|---|---|---|
-| 1 | [Destiny](https://codeforces.com/problemset/problem/840/D) | Codeforces 840D | 2500 |
-| 2 | [Kuroni and the Punishment](https://codeforces.com/problemset/problem/1305/F) | Codeforces 1305F | 2500 |
-| 3 | [Willem, Chtholly and Seniorious](https://codeforces.com/problemset/problem/896/C) | Codeforces 896C | 2600 |
+| 1 | [Broken robot](https://codeforces.com/problemset/problem/24/D) | Codeforces 24D | 2400 |
+| 2 | [Expected Damage](https://codeforces.com/problemset/problem/1418/E) | Codeforces 1418E | 2400 |
+| 3 | [Expected Square Beauty](https://codeforces.com/problemset/problem/1187/F) | Codeforces 1187F | 2500 |
 | 4 | [Cards](https://codeforces.com/problemset/problem/1278/F) | Codeforces 1278F | 2600 |
-| 5 | [X-OR](https://codeforces.com/problemset/problem/1364/E) | Codeforces 1364E | 2700 |
-| 6 | [Tree Queries](https://codeforces.com/problemset/problem/1254/D) | Codeforces 1254D | 2700 |
-| 7 | [Tenzing and Random Operations](https://codeforces.com/problemset/problem/1842/G) | Codeforces 1842G | 2800 |
-| 8 | [Ghd](https://codeforces.com/problemset/problem/364/D) | Codeforces 364D | 2900 |
-| 9 | [Odd Mineral Resource](https://codeforces.com/problemset/problem/1479/D) | Codeforces 1479D | 2900 |
-| 10 | [ZS Shuffles Cards](https://codeforces.com/problemset/problem/1392/H) | Codeforces 1392H | 3000 |
+| 5 | [Intergalaxy Trips](https://codeforces.com/problemset/problem/605/E) | Codeforces 605E | 2700 |
+| 6 | [Tenzing and Random Operations](https://codeforces.com/problemset/problem/1842/G) | Codeforces 1842G | 2800 |
+| 7 | [DZY Loves Games](https://codeforces.com/problemset/problem/446/D) | Codeforces 446D | 2800 |
+| 8 | [Many Games](https://codeforces.com/problemset/problem/2023/D) | Codeforces 2023D | 2900 |
+| 9 | [ZS Shuffles Cards](https://codeforces.com/problemset/problem/1392/H) | Codeforces 1392H | 3000 |
+| 10 | [Random Ranking](https://codeforces.com/problemset/problem/303/E) | Codeforces 303E | 3000 |
 
 ## Cadenas (Strings)
 
@@ -349,7 +349,7 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | 1 | [All Palindromes](https://cses.fi/problemset/task/3138) | CSES 3138 | — |
 | 2 | [Palindrome Queries](https://cses.fi/problemset/task/2420) | CSES 2420 | — |
 | 3 | [String Functions](https://cses.fi/problemset/task/2107) | CSES 2107 | — |
-| 4 | [Finding Patterns](https://cses.fi/problemset/task/2102) | CSES 2102 | — |
+| 4 | [Substring Order II](https://cses.fi/problemset/task/2109) | CSES 2109 | — |
 | 5 | [String Reorder](https://cses.fi/problemset/task/1743) | CSES 1743 | — |
 | 6 | [Subsequence Hate](https://codeforces.com/problemset/problem/1363/B) | Codeforces 1363B | 1400 |
 | 7 | [Nearly Shortest Repeating Substring](https://codeforces.com/problemset/problem/1950/E) | Codeforces 1950E | 1500 |
@@ -377,15 +377,15 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 | # | Problema | Juez | Dificultad |
 |---|---|---|---|
 | 1 | [You Are Given Some Strings...](https://codeforces.com/problemset/problem/1202/E) | Codeforces 1202E | 2400 |
-| 2 | [Three Occurrences](https://codeforces.com/problemset/problem/1418/G) | Codeforces 1418G | 2500 |
-| 3 | [The Number of Subpermutations](https://codeforces.com/problemset/problem/1175/F) | Codeforces 1175F | 2500 |
-| 4 | [Frequency of String](https://codeforces.com/problemset/problem/963/D) | Codeforces 963D | 2500 |
-| 5 | [Fibonacci Additions](https://codeforces.com/problemset/problem/1634/F) | Codeforces 1634F | 2700 |
-| 6 | [Permutation](https://codeforces.com/problemset/problem/452/F) | Codeforces 452F | 2700 |
+| 2 | [Good Substrings](https://codeforces.com/problemset/problem/316/G3) | Codeforces 316G3 | 2400 |
+| 3 | [Frequency of String](https://codeforces.com/problemset/problem/963/D) | Codeforces 963D | 2500 |
+| 4 | [Yet Another LCP Problem](https://codeforces.com/problemset/problem/1073/G) | Codeforces 1073G | 2600 |
+| 5 | [Cyclical Quest](https://codeforces.com/problemset/problem/235/C) | Codeforces 235C | 2700 |
+| 6 | [k-substrings](https://codeforces.com/problemset/problem/961/F) | Codeforces 961F | 2700 |
 | 7 | [Mike and Friends](https://codeforces.com/problemset/problem/547/E) | Codeforces 547E | 2800 |
 | 8 | [Palindrome Partition](https://codeforces.com/problemset/problem/932/G) | Codeforces 932G | 2900 |
 | 9 | [Substrings in a String](https://codeforces.com/problemset/problem/914/F) | Codeforces 914F | 3000 |
-| 10 | [Duff is Mad](https://codeforces.com/problemset/problem/587/F) | Codeforces 587F | 3000 |
+| 10 | [Misha and LCP on Tree](https://codeforces.com/problemset/problem/504/E) | Codeforces 504E | 3000 |
 
 ## Geometría
 
@@ -438,16 +438,16 @@ También están en la guía web, en la sección **Practicar**, donde puedes marc
 
 | # | Problema | Juez | Dificultad |
 |---|---|---|---|
-| 1 | [Divide Square](https://codeforces.com/problemset/problem/1401/E) | Codeforces 1401E | 2400 |
-| 2 | [Long Way Home](https://codeforces.com/problemset/problem/1715/E) | Codeforces 1715E | 2400 |
-| 3 | [Bear and Bowling 4](https://codeforces.com/problemset/problem/660/F) | Codeforces 660F | 2500 |
-| 4 | [Product Sum](https://codeforces.com/problemset/problem/631/E) | Codeforces 631E | 2600 |
-| 5 | [Sum of Prefix Sums](https://codeforces.com/problemset/problem/1303/G) | Codeforces 1303G | 2700 |
-| 6 | [Off by One](https://codeforces.com/problemset/problem/1519/E) | Codeforces 1519E | 2700 |
-| 7 | [Disjoint Triangles](https://codeforces.com/problemset/problem/1025/F) | Codeforces 1025F | 2700 |
-| 8 | [Satanic Panic](https://codeforces.com/problemset/problem/1146/H) | Codeforces 1146H | 2900 |
-| 9 | [Yet Another Partiton Problem](https://codeforces.com/problemset/problem/1175/G) | Codeforces 1175G | 3000 |
-| 10 | [Swap Pass](https://codeforces.com/problemset/problem/1508/D) | Codeforces 1508D | 3000 |
+| 1 | [U2](https://codeforces.com/problemset/problem/1142/C) | Codeforces 1142C | 2400 |
+| 2 | [Rest In The Shades](https://codeforces.com/problemset/problem/1016/E) | Codeforces 1016E | 2400 |
+| 3 | [Hobbits](https://codeforces.com/problemset/problem/1468/G) | Codeforces 1468G | 2500 |
+| 4 | [Hag's Khashba](https://codeforces.com/problemset/problem/975/E) | Codeforces 975E | 2600 |
+| 5 | [Disjoint Triangles](https://codeforces.com/problemset/problem/1025/F) | Codeforces 1025F | 2700 |
+| 6 | [Large Triangle](https://codeforces.com/problemset/problem/1019/D) | Codeforces 1019D | 2700 |
+| 7 | [Little Brother](https://codeforces.com/problemset/problem/887/E) | Codeforces 887E | 2800 |
+| 8 | [Cut Length](https://codeforces.com/problemset/problem/598/F) | Codeforces 598F | 2900 |
+| 9 | [New Year and Cake](https://codeforces.com/problemset/problem/611/G) | Codeforces 611G | 2900 |
+| 10 | [Martian Colony](https://codeforces.com/problemset/problem/154/E) | Codeforces 154E | 3000 |
 
 ## Regionales latinoamericanos
 
