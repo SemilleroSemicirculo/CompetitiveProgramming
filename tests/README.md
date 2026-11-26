@@ -23,5 +23,9 @@ sh tests/run_all.sh 100                      # todo
 | `t_ge.py`, `t_ge2.py` | Geometría |
 | `t_ft.py`, `t_nt.py` | Herramientas, teoría de números, juegos y polinomios |
 | `t_pr.py`, `t_di.py` | Probabilidad y distribuciones |
+| `t_b1.py` | Álgebra lineal, combinatoria avanzada, logaritmo discreto y polinomios avanzados |
+| `t_b2.py` | Técnicas offline y estructuras avanzadas (conectividad dinámica, CDQ, beats, link-cut, wavelet) |
+| `t_b3.py` | Grafos de finales (cortes, flores, dominadores, bloques, arborescencias) |
+| `t_b4.py` | Cadenas, DP y geometría de finales (eertree, Lyndon, Aliens, slope trick, Minkowski) |
 
 Es la misma técnica de *stress testing* que explica el capítulo «Competir en equipo» del libro.

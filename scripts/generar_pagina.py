@@ -9,7 +9,7 @@ import json, os, re
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Versiones en Python correctas pero que no pasan el límite de tiempo de CSES
-PY_LENTOS = {"LIS-I", "BitmaskDP", "Serval and Bonus Problem", "MoAlgorithm", "LazySegmentTree", "Removal Game", "Hotel Queries", "Prefix Sum Queries", "Finding Borders", "Finding Periods", "Area of Rectangles", "Array Division", "SegmentIntersection", "EdmondsKarp", "FloydWarshall", "CentroidDecomposition", "FFT", "NTT", "DivideAndConquerDP", "KnuthOptimization", "SOSDP", "PersistentSegmentTree", "Treap", "FenwickTree", "SegmentTree"}
+PY_LENTOS = {"LIS-I", "BitmaskDP", "Serval and Bonus Problem", "MoAlgorithm", "LazySegmentTree", "Removal Game", "Hotel Queries", "Prefix Sum Queries", "Finding Borders", "Finding Periods", "Area of Rectangles", "Array Division", "SegmentIntersection", "EdmondsKarp", "FloydWarshall", "CentroidDecomposition", "FFT", "NTT", "DivideAndConquerDP", "KnuthOptimization", "SOSDP", "PersistentSegmentTree", "Treap", "FenwickTree", "SegmentTree", "GaussMod", "Determinant", "BerlekampMassey", "NTTAnyMod", "Lagrange", "ParallelBinarySearch", "LinkCutTree", "CDQ", "SegmentTreeBeats", "WaveletTree", "StoerWagner"}
 CARPETAS = ["DP", "Data Structures", "Graphs", "Strings", "Geometry", "FunctionalTools", "Probability"]
 NOMBRES = {"DP": "Programación dinámica", "Data Structures": "Estructuras de datos",
            "Graphs": "Grafos", "Strings": "Cadenas", "Geometry": "Geometría",

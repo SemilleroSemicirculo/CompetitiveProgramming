@@ -8,7 +8,7 @@ const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 const clone = o => JSON.parse(JSON.stringify(o));
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = R(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const fmt = x => (x === Infinity || x >= 1e15) ? '∞' : (x === -Infinity ? '−∞' : x);
+const fmt = x => typeof x !== 'number' ? x : (x === Infinity || x >= 1e15) ? '∞' : (x === -Infinity ? '−∞' : x);
 
 // ---------- reproductor común ----------
 function player(box, title, note, gen, render) {
@@ -1941,5 +1941,514 @@ V(GA + 'PointInConvexPolygon', 'Punto en polígono convexo en O(log n)', 'Desde 
 }, s => { let g = gridBg() + poly(s.P, '#1f6feb18', '#1f6feb'); for (let i = 2; i < s.P.length - 1; i++) g += seg(s.P[0], s.P[i], '#1f6feb55', 1, true);
   if (s.lo >= 0) g += poly([s.P[0], s.P[s.lo], s.P[s.hi]], s.res === null ? '#d4a72c33' : s.res ? '#2da44e55' : '#cf222e44', '#d4a72c');
   s.P.forEach((p, i) => g += dot(p, '#1f6feb', 4, '' + (i + 1))); return svgBox(g + dot(s.q, s.res === false ? '#cf222e' : s.res ? '#2da44e' : '#d4a72c', 7, 'Q'), G0.W, G0.H); });
+
+
+// =================== Lecciones de finales (fase B) ===================
+// ---- álgebra lineal (ejemplos con un primo pequeño para que los números se lean) ----
+const modp = (x, p) => ((x % p) + p) % p;
+const invp = (a, p) => { let r = 1, b = modp(a, p), e = p - 2; while (e) { if (e & 1) r = r * b % p; b = b * b % p; e >>= 1; } return r; };
+V('FunctionalTools-Linear-Algebra-GaussMod', 'Gauss-Jordan módulo 7', 'Para que los números se lean, el ejemplo usa módulo 7 (el código usa 10⁹ + 7). Amarillo = pivote; azul = fila que se modifica.', push => {
+  const p = 7, n = 3, m = 3, x = Array.from({ length: m }, () => R(0, 6));
+  const A = Array.from({ length: n }, () => { const r = Array.from({ length: m }, () => R(0, 6)); r.push(modp(r.reduce((s, v, j) => s + v * x[j], 0), p)); return r; });
+  const st = (pr, pc, mod) => ({ A, pr, pc, mod });
+  push('Sistema de ' + n + ' ecuaciones (última columna = término independiente). Hay al menos una solución: x = (' + x.join(', ') + ').', st(-1, -1, -1));
+  let row = 0; const piv = [];
+  for (let c = 0; c < m && row < n; c++) {
+    const r = A.findIndex((rw, i) => i >= row && rw[c] % p);
+    if (r < 0) { push('Columna ' + (c + 1) + ': no hay pivote; x' + (c + 1) + ' queda libre (se pone en 0).', st(-1, c, -1)); continue; }
+    [A[row], A[r]] = [A[r], A[row]];
+    const iv = invp(A[row][c], p); push('Columna ' + (c + 1) + ': pivote ' + A[row][c] + ' (fila ' + (row + 1) + '). Su inverso módulo 7 es ' + iv + '.', st(row, c, -1));
+    for (let j = 0; j <= m; j++) A[row][j] = A[row][j] * iv % p;
+    push('Se multiplica la fila por ' + iv + ': el pivote queda en 1.', st(row, c, row));
+    for (let i = 0; i < n; i++) if (i !== row && A[i][c]) { const f = A[i][c]; for (let j = 0; j <= m; j++) A[i][j] = modp(A[i][j] - f * A[row][j], p); push('Fila ' + (i + 1) + ' −= ' + f + ' · fila ' + (row + 1) + ': se anula la columna ' + (c + 1) + '.', st(row, c, i)); }
+    piv.push([row, c]); row++;
+  }
+  const sol = Array(m).fill(0); piv.forEach(([r, c]) => sol[c] = A[r][m]);
+  push('Cada fila con pivote da su variable: x = (' + sol.join(', ') + ') módulo 7.', st(-1, -1, -1));
+}, s => table(s.A, s.A.map((r, i) => r.map((_, j) => i === s.pr && j === s.pc ? 'a' : i === s.mod ? 'b' : j === r.length - 1 ? 'g' : '')), s.A.map((_, i) => 'ec. ' + (i + 1)), ['x1', 'x2', 'x3', 'b']));
+
+V('FunctionalTools-Linear-Algebra-XorBasis', 'Base xor de números de 5 bits', 'Cada fila de la base tiene un bit más alto distinto. Amarillo = número que se inserta; verde = representante usado.', push => {
+  const B = 5, a = Array.from({ length: 6 }, () => R(1, 31)), base = Array(B).fill(0);
+  const bin = v => v.toString(2).padStart(B, '0').split('');
+  const st = (cur, hl, res) => ({ base: base.slice(), cur, hl, res });
+  push('Números: ' + a.join(', ') + '. La base empieza vacía.', st(null, -1, null));
+  for (const v0 of a) { let v = v0;
+    for (let b = B - 1; b >= 0; b--) { if (!(v >> b & 1)) continue;
+      if (base[b]) { push('Insertar ' + v0 + ': tiene el bit ' + b + ' y ya hay representante ' + base[b] + ' → ' + v + ' xor ' + base[b] + ' = ' + (v ^ base[b]) + '.', st(v, b, null)); v ^= base[b]; }
+      else { base[b] = v; push('Insertar ' + v0 + ': el bit ' + b + ' no tiene representante; ' + v + ' queda en la base.', st(v, b, null)); v = -1; break; } }
+    if (v === 0) push(v0 + ' se redujo a 0: ya se podía formar con la base (no aporta nada).', st(0, -1, null)); }
+  let res = 0; for (let b = B - 1; b >= 0; b--) if (base[b] && (res ^ base[b]) > res) { res ^= base[b]; push('Máximo: usar el representante del bit ' + b + ' mejora → ' + res + '.', st(null, b, res)); }
+  push('El máximo xor de un subconjunto es ' + res + ' (' + res.toString(2) + ' en binario).', st(null, -1, res));
+}, s => table(s.base.map((v, b) => [b].concat(v ? s.base[b].toString(2).padStart(5, '0').split('') : ['', '', '', '', '']).concat([v || '—'])).reverse(), s.base.map((v, b) => Array(7).fill(b === s.hl ? 'g' : v ? '' : '')).reverse(), null, ['bit', '16', '8', '4', '2', '1', 'valor'])
+  + (s.cur !== null ? '<p class="note">Número actual: <b>' + s.cur + '</b> = ' + s.cur.toString(2).padStart(5, '0') + '</p>' : '') + (s.res !== null ? '<p class="note">Resultado parcial: <b>' + s.res + '</b></p>' : ''));
+
+V('FunctionalTools-Linear-Algebra-Determinant', 'Determinante por eliminación (módulo 7)', 'Amarillo = pivote. Cada intercambio de filas cambia el signo; el determinante es el producto de la diagonal.', push => {
+  const p = 7, n = 3, A = Array.from({ length: n }, () => Array.from({ length: n }, () => R(0, 6)));
+  let det = 1, sign = 1;
+  const st = (pr, pc) => ({ A, pr, pc, det, sign });
+  push('Matriz 3 × 3 con entradas módulo 7.', st(-1, -1));
+  for (let c = 0; c < n; c++) {
+    const r = A.findIndex((rw, i) => i >= c && rw[c]);
+    if (r < 0) { det = 0; push('La columna ' + (c + 1) + ' no tiene pivote: el determinante es 0.', st(-1, c)); return; }
+    if (r !== c) { [A[c], A[r]] = [A[r], A[c]]; sign = -sign; push('Se intercambian las filas ' + (c + 1) + ' y ' + (r + 1) + ': el signo pasa a ' + (sign > 0 ? '+' : '−') + '.', st(c, c)); }
+    det = det * A[c][c] % p; push('Pivote ' + A[c][c] + ': producto acumulado = ' + det + '.', st(c, c));
+    const iv = invp(A[c][c], p);
+    for (let i = c + 1; i < n; i++) if (A[i][c]) { const f = A[i][c] * iv % p; for (let j = c; j < n; j++) A[i][j] = modp(A[i][j] - f * A[c][j], p); push('Fila ' + (i + 1) + ' −= ' + f + ' · fila ' + (c + 1) + ' (no cambia el determinante).', st(c, c)); }
+  }
+  det = modp(sign * det, p); push('Determinante = ' + (sign > 0 ? '' : '−') + 'producto de la diagonal = ' + det + ' (módulo 7).', st(-1, -1));
+}, s => table(s.A, s.A.map((r, i) => r.map((_, j) => i === s.pr && j === s.pc ? 'a' : i === j ? 'g' : j < i ? 'b' : ''))) + '<p class="note">Signo: ' + (s.sign > 0 ? '+' : '−') + ' · producto: ' + s.det + '</p>');
+
+V('FunctionalTools-Linear-Algebra-Simplex', 'Símplex en 2 variables', 'La región gris es factible. El símplex salta de vértice en vértice (amarillo) mientras el objetivo mejore.', push => {
+  let cons, verts;
+  for (let t = 0; t < 50; t++) {
+    cons = Array.from({ length: 3 }, () => { const a = R(1, 4), b = R(1, 4); return [a, b, a * R(2, 6) + b * R(1, 4)]; });
+    const lines = cons.concat([[-1, 0, 0], [0, -1, 0]]), pts = [];
+    for (let i = 0; i < lines.length; i++) for (let j = i + 1; j < lines.length; j++) {
+      const [a1, b1, c1] = lines[i], [a2, b2, c2] = lines[j], d = a1 * b2 - a2 * b1; if (!d) continue;
+      const x = (c1 * b2 - c2 * b1) / d, y = (a1 * c2 - a2 * c1) / d;
+      if (lines.every(([a, b, c]) => a * x + b * y <= c + 1e-9)) pts.push([x, y]); }
+    verts = pts.filter((q, i) => pts.findIndex(r => Math.abs(r[0] - q[0]) + Math.abs(r[1] - q[1]) < 1e-9) === i);
+    if (verts.length >= 4) break; }
+  const cx = verts.reduce((s, q) => s + q[0], 0) / verts.length, cy = verts.reduce((s, q) => s + q[1], 0) / verts.length;
+  verts.sort((a, b) => Math.atan2(a[1] - cy, a[0] - cx) - Math.atan2(b[1] - cy, b[0] - cx));
+  const c = [R(1, 5), R(1, 5)], val = q => c[0] * q[0] + c[1] * q[1];
+  let k = verts.findIndex(q => Math.abs(q[0]) + Math.abs(q[1]) < 1e-9); const path = [k];
+  const st = () => ({ cons, verts, path: path.slice(), c });
+  push('Maximizar ' + c[0] + 'x + ' + c[1] + 'y. Se empieza en el origen, que es un vértice factible.', st());
+  while (true) { const n = verts.length, nb = [(k + 1) % n, (k + n - 1) % n].filter(j => val(verts[j]) > val(verts[k]) + 1e-9);
+    if (!nb.length) break; const j = nb.sort((a, b) => val(verts[b]) - val(verts[a]))[0];
+    push('Desde (' + verts[k].map(f3).join(', ') + ') con valor ' + f3(val(verts[k])) + ', el vecino (' + verts[j].map(f3).join(', ') + ') vale ' + f3(val(verts[j])) + ': se pivotea.', (path.push(j), k = j, st())); }
+  push('Ningún vecino mejora: el óptimo es ' + f3(val(verts[k])) + ' en (' + verts[k].map(f3).join(', ') + ').', st());
+}, s => { const mx = Math.max(...s.verts.map(q => Math.max(q[0], q[1])), 1), sc = 240 / mx, P = q => [40 + q[0] * sc, 270 - q[1] * sc];
+  let g = '<line x1="40" y1="270" x2="520" y2="270" stroke="#888"/><line x1="40" y1="270" x2="40" y2="10" stroke="#888"/>';
+  g += '<polygon points="' + s.verts.map(q => P(q).join(',')).join(' ') + '" fill="#8884" stroke="#888"/>';
+  s.cons.forEach(([a, b, c], i) => { const A = P([c / a, 0]), B = P([0, c / b]); g += '<line x1="' + A[0] + '" y1="' + A[1] + '" x2="' + B[0] + '" y2="' + B[1] + '" stroke="' + COL.b + '" stroke-dasharray="4 3"/>'; });
+  for (let i = 1; i < s.path.length; i++) { const A = P(s.verts[s.path[i - 1]]), B = P(s.verts[s.path[i]]); g += '<line x1="' + A[0] + '" y1="' + A[1] + '" x2="' + B[0] + '" y2="' + B[1] + '" stroke="' + COL.a + '" stroke-width="4"/>'; }
+  s.verts.forEach((q, i) => { const A = P(q); g += '<circle cx="' + A[0] + '" cy="' + A[1] + '" r="' + (i === s.path[s.path.length - 1] ? 7 : 4) + '" fill="' + (i === s.path[s.path.length - 1] ? COL.a : '#666') + '"/>'; });
+  return svgBox(g, 540, 290); });
+
+// ---- combinatoria y teoría de números ----
+V('FunctionalTools-Combinatorics-Lucas', 'Teorema de Lucas', 'n y k se escriben en base p; el binomial es el producto de los binomiales dígito a dígito.', push => {
+  const p = pick([3, 5, 7]), n = R(p * p, p * p * p), k = R(0, n);
+  const dig = v => { const d = []; while (v) { d.push(v % p); v = Math.floor(v / p); } return d; };
+  const C = (a, b) => { if (b > a) return 0; let r = 1; for (let i = 0; i < b; i++) r = r * (a - i) / (i + 1); return r; };
+  const dn = dig(n), dk = dig(k); while (dk.length < dn.length) dk.push(0);
+  let res = 1; const parts = [];
+  push('C(' + n + ', ' + k + ') módulo ' + p + '. En base ' + p + ': n = ' + dn.slice().reverse().join('') + ', k = ' + dk.slice().reverse().join('') + '.', { dn, dk, i: -1, parts: [], res });
+  for (let i = 0; i < dn.length; i++) { const c = C(dn[i], dk[i]) % p; res = res * c % p; parts.push(c);
+    push('Dígito ' + i + ': C(' + dn[i] + ', ' + dk[i] + ') = ' + C(dn[i], dk[i]) + (dk[i] > dn[i] ? ' (k_i > n_i)' : '') + ' ≡ ' + c + '. Producto = ' + res + '.', { dn, dk, i, parts: parts.slice(), res }); }
+  push('C(' + n + ', ' + k + ') ≡ ' + res + ' (mód ' + p + ').', { dn, dk, i: -1, parts, res });
+}, s => rows([{ t: 'posición', v: s.dn.map((_, i) => 'p^' + i) }, { t: 'n_i', v: s.dn, c: s.dn.map((_, i) => i === s.i ? 'a' : '') }, { t: 'k_i', v: s.dk, c: s.dk.map((_, i) => i === s.i ? 'a' : '') }, { t: 'C(n_i, k_i)', v: s.dn.map((_, i) => i < s.parts.length ? s.parts[i] : null), c: s.dn.map((_, i) => i < s.parts.length ? (s.parts[i] ? 'g' : 'r') : '') }]));
+
+V('FunctionalTools-Combinatorics-Mobius', 'Pares coprimos con Möbius', 'Para cada d: μ(d) · (pares con d dividiendo a ambos). Verde suma, rojo resta, gris μ = 0.', push => {
+  const a = Array.from({ length: 6 }, () => R(2, 12)), V0 = 12;
+  const mu = Array(V0 + 1).fill(1); mu[0] = 0; for (let i = 2; i <= V0; i++) { let x = i, c = 0, sq = false; for (let q = 2; q * q <= x; q++) if (x % q === 0) { x /= q; c++; if (x % q === 0) sq = true; while (x % q === 0) x /= q; } if (x > 1) c++; mu[i] = sq ? 0 : (c % 2 ? -1 : 1); }
+  const ds = [], cnt = [], ct = []; let tot = 0;
+  push('Números: ' + a.join(', ') + '. Se recorre d = 1 … ' + V0 + '.', { ds: [], mu: [], cnt: [], ct: [], tot, cur: -1 });
+  for (let d = 1; d <= V0; d++) { const c = a.filter(x => x % d === 0).length, pr = c * (c - 1) / 2; ds.push(d); cnt.push(c); ct.push(mu[d] * pr); tot += mu[d] * pr;
+    if (c >= 2 || d === 1) push('d = ' + d + ': μ = ' + mu[d] + ', ' + c + ' múltiplos → ' + pr + ' pares; aporte ' + mu[d] * pr + '. Total = ' + tot + '.', { ds: ds.slice(), mu: ds.map(x => mu[x]), cnt: cnt.slice(), ct: ct.slice(), tot, cur: ds.length - 1 }); }
+  push('Hay ' + tot + ' pares coprimos.', { ds, mu: ds.map(x => mu[x]), cnt, ct, tot, cur: -1 });
+}, s => rows([{ t: 'd', v: s.ds }, { t: 'μ(d)', v: s.mu }, { t: 'múltiplos', v: s.cnt }, { t: 'aporte', v: s.ct, c: s.ct.map((x, i) => i === s.cur ? 'a' : s.mu[i] === 0 ? '' : x > 0 ? 'g' : x < 0 ? 'r' : '') }]) + '<p class="note">Total: <b>' + s.tot + '</b></p>');
+
+V('FunctionalTools-Combinatorics-Burnside', 'Collares con Burnside', 'Rotar k posiciones deja fijas las coloraciones constantes en cada uno de sus gcd(k, n) ciclos.', push => {
+  const n = R(4, 8), m = R(2, 3), gcd = (a, b) => b ? gcd(b, a % b) : a; let sum = 0; const fx = [];
+  push('Collares de ' + n + ' perlas con ' + m + ' colores. Hay ' + n + ' rotaciones.', { n, k: -1, fx: [], sum, m });
+  for (let k = 0; k < n; k++) { const g = gcd(k, n), f = m ** g; sum += f; fx.push(f);
+    push('Rotar ' + k + ': ' + g + ' ciclos (colores en la imagen) → ' + m + '^' + g + ' = ' + f + ' coloraciones fijas. Suma = ' + sum + '.', { n, k, fx: fx.slice(), sum, m }); }
+  push('Collares distintos = ' + sum + ' / ' + n + ' = ' + sum / n + '.', { n, k: -1, fx, sum, m });
+}, s => { const g = (a, b) => b ? g(b, a % b) : a, cyc = s.k >= 0 ? g(s.k, s.n) : 0, cols = ['#2da44e', '#1f6feb', '#d4a72c', '#cf222e', '#8250df', '#fb8f44', '#57606a', '#0aa'];
+  let h = ''; for (let i = 0; i < s.n; i++) { const t = 2 * Math.PI * i / s.n - Math.PI / 2, x = 130 + 85 * Math.cos(t), y = 120 + 85 * Math.sin(t); h += '<circle cx="' + x + '" cy="' + y + '" r="16" fill="' + (s.k >= 0 ? cols[i % cyc] : 'var(--card)') + '" stroke="#666"/>' + txt(x, y + 4, i, { c: s.k >= 0 ? '#fff' : 'currentColor' }); }
+  if (s.k >= 0) h += txt(130, 124, 'k = ' + s.k, { b: 1 });
+  return svgBox(h, 270, 240) + rows([{ t: 'rotación', v: s.fx.map((_, i) => i) }, { t: 'fijas', v: s.fx, c: s.fx.map((_, i) => i === s.k ? 'a' : 'g') }]); });
+
+V('FunctionalTools-Number-Theory-DiscreteLog', 'Baby-step giant-step', 'Pasos de bebé: Y·X^j en una tabla. Pasos de gigante: (X^s)^i hasta encontrar uno igual.', push => {
+  const ps = [23, 29, 31, 37, 41, 43, 47], M = pick(ps), X = R(2, M - 1), K = R(3, M - 2); let Y = 1; for (let i = 0; i < K; i++) Y = Y * X % M;
+  const s = Math.ceil(Math.sqrt(M)), baby = []; let cur = Y;
+  push('Buscar K con ' + X + '^K ≡ ' + Y + ' (mód ' + M + '). s = ⌈√' + M + '⌉ = ' + s + '.', { baby: [], giant: [], hit: -1, s });
+  for (let j = 0; j < s; j++) { baby.push([j, cur]); cur = cur * X % M; }
+  push('Pasos de bebé: Y·X^j para j = 0 … ' + (s - 1) + '.', { baby, giant: [], hit: -1, s });
+  let Xs = 1; for (let i = 0; i < s; i++) Xs = Xs * X % M;
+  const giant = []; let g = 1;
+  for (let i = 1; i <= s + 1; i++) { g = g * Xs % M; giant.push([i, g]); const jj = baby.filter(b => b[1] === g).map(b => b[0]); 
+    if (jj.length) { const j = Math.max(...jj); push('Gigante i = ' + i + ': (X^s)^i = ' + g + ' coincide con j = ' + j + ' → K = i·s − j = ' + (i * s - j) + '.', { baby, giant: giant.slice(), hit: g, s }); return; }
+    push('Gigante i = ' + i + ': (X^s)^i = ' + g + ' no está en la tabla.', { baby, giant: giant.slice(), hit: -1, s }); }
+}, s => rows([{ t: 'j', v: s.baby.map(b => b[0]) }, { t: 'Y·X^j', v: s.baby.map(b => b[1]), c: s.baby.map(b => b[1] === s.hit ? 'g' : 'b') }, { t: 'i', v: s.giant.map(b => b[0]) }, { t: '(X^s)^i', v: s.giant.map(b => b[1]), c: s.giant.map(b => b[1] === s.hit ? 'g' : 'a') }]));
+
+V('FunctionalTools-Polynomials-Lagrange', 'Interpolación de Lagrange', 'Con los valores en x = 0 … d se evalúa el polinomio en cualquier x sin conocer sus coeficientes.', push => {
+  const kk = R(1, 2), d = kk + 1, n = R(8, 15), P = x => { let s = 0; for (let i = 1; i <= x; i++) s += i ** kk; return s; };
+  const ys = Array.from({ length: d + 1 }, (_, i) => P(i));
+  push('S(x) = 1^' + kk + ' + … + x^' + kk + ' es un polinomio de grado ' + d + '. Se calculan S(0) … S(' + d + ') a mano.', { ys, terms: [], n, tot: null, cur: -1 });
+  let tot = 0; const terms = [];
+  for (let i = 0; i <= d; i++) { let num = 1, den = 1; for (let j = 0; j <= d; j++) if (j !== i) { num *= n - j; den *= i - j; } const t = ys[i] * num / den; tot += t; terms.push(t);
+    push('Término ' + i + ': S(' + i + ') · Π(' + n + ' − j)/(' + i + ' − j) = ' + ys[i] + ' · ' + num + ' / ' + den + ' = ' + t + '.', { ys, terms: terms.slice(), n, tot: null, cur: i }); }
+  push('Suma de los términos: S(' + n + ') = ' + Math.round(tot) + ' (comprobación directa: ' + P(n) + ').', { ys, terms, n, tot: Math.round(tot), cur: -1 });
+}, s => rows([{ t: 'x', v: s.ys.map((_, i) => i) }, { t: 'S(x)', v: s.ys, c: s.ys.map((_, i) => i === s.cur ? 'a' : 'g') }, { t: 'término', v: s.ys.map((_, i) => i < s.terms.length ? f3(s.terms[i]) : null), c: s.ys.map((_, i) => i === s.cur ? 'a' : '') }]) + (s.tot !== null ? '<p class="note">S(' + s.n + ') = <b>' + s.tot + '</b></p>' : ''));
+
+V('FunctionalTools-Polynomials-BerlekampMassey', 'Berlekamp-Massey (módulo 97)', 'Se procesa término a término. Si la recurrencia actual falla (discrepancia ≠ 0), se corrige con la última que falló.', push => {
+  const p = 97, c1 = R(1, 9), c2 = R(1, 9), a = [R(1, 9), R(1, 9)]; while (a.length < 8) a.push((c1 * a[a.length - 1] + c2 * a[a.length - 2]) % p);
+  let C = [1], B = [1], L = 0, m = 1, b = 1;
+  const show = (i, dd) => ({ a, i, C: C.slice(1).map(x => modp(-x, p)), L, dd });
+  push('Secuencia generada por a_i = ' + c1 + '·a_{i−1} + ' + c2 + '·a_{i−2} (mód 97). El algoritmo no lo sabe.', show(-1, null));
+  for (let i = 0; i < a.length; i++) {
+    let d = a[i]; for (let j = 1; j <= L; j++) d = modp(d + C[j] * a[i - j], p);
+    if (d === 0) { m++; push('a_' + i + ' = ' + a[i] + ': la recurrencia actual lo predice (discrepancia 0).', show(i, 0)); continue; }
+    const T = C.slice(), coef = d * invp(b, p) % p; while (C.length < B.length + m) C.push(0);
+    for (let j = 0; j < B.length; j++) C[j + m] = modp(C[j + m] - coef * B[j], p);
+    if (2 * L <= i) { L = i + 1 - L; B = T; b = d; m = 1; } else m++;
+    while (C.length > L + 1) C.pop();
+    push('a_' + i + ' = ' + a[i] + ': discrepancia ' + d + '. Se corrige; ahora la recurrencia tiene largo ' + L + '.', show(i, d));
+  }
+  push('Recurrencia encontrada: a_i = ' + C.slice(1).map((x, j) => modp(-x, p) + '·a_{i−' + (j + 1) + '}').join(' + ') + '.', show(-1, null));
+}, s => rows([{ t: 'i', v: s.a.map((_, i) => i) }, { t: 'a_i', v: s.a, c: s.a.map((_, i) => i === s.i ? (s.dd ? 'r' : 'g') : i < s.i ? 'g' : '') }, { t: 'coeficientes', v: s.C.length ? s.C : [null], c: s.C.map(() => 'b') }]) + '<p class="note">Largo L = ' + s.L + '</p>');
+
+V('FunctionalTools-Polynomials-NTTAnyMod', 'Convolución con tres primos', 'Cada coeficiente se calcula módulo tres primos NTT; con sus restos se recupera el valor exacto y se reduce módulo 10⁹ + 7.', push => {
+  const P = [998244353n, 167772161n, 469762049n], MOD = 1000000007n;
+  const a = Array.from({ length: 3 }, () => BigInt(R(1e8, 1e9))), b = Array.from({ length: 3 }, () => BigInt(R(1e8, 1e9)));
+  const c = Array(5).fill(0n); a.forEach((x, i) => b.forEach((y, j) => c[i + j] += x * y));
+  const st = (k, r) => ({ a: a.map(String), b: b.map(String), c: c.map(String), k, r });
+  push('Los coeficientes reales llegan a ~10¹⁸: no caben en un solo primo NTT (≈ 10⁹).', st(-1, null));
+  for (let k = 0; k < 5; k++) { const r = P.map(p => (c[k] % p).toString()); push('c_' + k + ': restos ' + r.join(', ') + ' → chino del resto → ' + c[k] + ' → módulo 10⁹ + 7 = ' + (c[k] % MOD) + '.', st(k, r)); }
+  push('El producto de los tres primos (~7.8·10²⁶) supera cualquier coeficiente, así que la reconstrucción es exacta.', st(-1, null));
+}, s => rows([{ t: 'a', v: s.a }, { t: 'b', v: s.b }, { t: 'c (exacto)', v: s.c, c: s.c.map((_, i) => i === s.k ? 'a' : '') }]) + (s.r ? '<p class="note">mód 998244353 = ' + s.r[0] + ' · mód 167772161 = ' + s.r[1] + ' · mód 469762049 = ' + s.r[2] + '</p>' : ''));
+// ---- estructuras y técnicas offline ----
+V('Data-Structures-Offline-DynamicConnectivity', 'Conectividad dinámica offline', 'Cada arista vive en un intervalo de tiempo (filas). El DFS sobre el árbol del tiempo une al entrar a un nodo (amarillo) y deshace al salir.', push => {
+  const n = 5, T = 6, E = []; const used = new Set();
+  while (E.length < 4) { const a = R(1, n), b = R(1, n); if (a === b || used.has(Math.min(a, b) + '-' + Math.max(a, b))) continue; used.add(Math.min(a, b) + '-' + Math.max(a, b)); const l = R(0, T - 2); E.push({ a, b, l, r: R(l, T - 1) }); }
+  const par = [...Array(n + 1).keys()], hist = []; let comps = n; const res = Array(T).fill(null);
+  const find = x => { while (par[x] !== x) x = par[x]; return x; };
+  const seg = {}; const add = (u, l, r, e) => { if (e.r < l || r < e.l) return; if (e.l <= l && r <= e.r) { (seg[u] = seg[u] || []).push(e); return; } const m = (l + r) >> 1; add(2 * u, l, m, e); add(2 * u + 1, m + 1, r, e); };
+  E.forEach(e => add(1, 0, T - 1, e));
+  const st = (l, r) => ({ E, T, l, r, res: res.slice(), comps });
+  push('Cada arista existe durante un intervalo de tiempo. Se cuelga de los nodos del árbol del tiempo que cubren su intervalo.', st(-1, -1));
+  const dfs = (u, l, r) => { const mark = hist.length, es = seg[u] || [];
+    for (const e of es) { const x = find(e.a), y = find(e.b); if (x !== y) { par[y] = x; hist.push(y); comps--; } }
+    push('Nodo [' + l + ', ' + r + ']' + (es.length ? ': se unen ' + es.map(e => e.a + '–' + e.b).join(', ') : ': sin aristas propias') + '. Componentes: ' + comps + '.', st(l, r));
+    if (l === r) res[l] = comps; else { const m = (l + r) >> 1; dfs(2 * u, l, m); dfs(2 * u + 1, m + 1, r); }
+    if (hist.length > mark) { while (hist.length > mark) { const y = hist.pop(); par[y] = y; comps++; } push('Se sale de [' + l + ', ' + r + ']: se deshacen sus uniones (componentes = ' + comps + ').', st(l, r)); } };
+  dfs(1, 0, T - 1);
+  push('Componentes en cada instante: ' + res.join(', ') + '.', st(-1, -1));
+}, s => rows(s.E.map(e => ({ t: 'arista ' + e.a + '–' + e.b, v: [...Array(s.T).keys()].map(t => t >= e.l && t <= e.r ? '■' : ''), c: [...Array(s.T).keys()].map(t => t >= s.l && t <= s.r ? (t >= e.l && t <= e.r ? 'a' : 'b') : (t >= e.l && t <= e.r ? 'g' : '')) })).concat([{ t: 'tiempo', v: [...Array(s.T).keys()] }, { t: 'componentes', v: s.res, c: s.res.map(x => x === null ? '' : 'g') }])));
+
+V('Data-Structures-Offline-CDQ', 'CDQ: dominancia en 3D', 'Puntos ordenados por a. En cada mezcla, los de la izquierda (azul) entran al Fenwick por c y los de la derecha (amarillo) consultan.', push => {
+  const n = 8; let P = Array.from({ length: n }, (_, i) => ({ id: i, a: R(1, 6), b: R(1, 6), c: R(1, 6), ans: 0 }));
+  P.sort((x, y) => x.a - y.a || x.b - y.b || x.c - y.c); P.forEach((p, i) => p.id = i + 1);
+  // para la visual se evitan repetidos exactos
+  const st = (l, m, r) => ({ P: clone(P), l, m, r });
+  push('Puntos ordenados por a (la primera dimensión ya está resuelta por el orden).', st(-1, -1, -1));
+  const rec = (l, r) => { if (r - l <= 1) return; const m = (l + r) >> 1; rec(l, m); rec(m, r);
+    const L = P.slice(l, m), Rr = P.slice(m, r), out = []; let i = 0; const bit = [];
+    for (const q of Rr) { while (i < L.length && L[i].b <= q.b) { bit.push(L[i].c); out.push(L[i++]); } q.ans += bit.filter(c => c <= q.c).length; out.push(q); }
+    while (i < L.length) out.push(L[i++]);
+    for (let t = 0; t < out.length; t++) P[l + t] = out[t];
+    push('Mezcla [' + (l + 1) + ', ' + m + '] con [' + (m + 1) + ', ' + r + ']: cada punto derecho suma los izquierdos con b y c menores o iguales. Queda ordenado por b.', st(l, m, r)); };
+  rec(0, n);
+  push('ans = cuántos puntos dominan a cada uno (con a, b, c ≤).', st(-1, -1, -1));
+}, s => table(s.P.map(p => ['#' + p.id, p.a, p.b, p.c, p.ans]), s.P.map((_, i) => Array(5).fill(i >= s.l && i < s.m ? 'b' : i >= s.m && i < s.r ? 'a' : '')), null, ['punto', 'a', 'b', 'c', 'domina a']));
+
+V('Data-Structures-Offline-ParallelBinarySearch', 'Búsqueda binaria paralela', 'En cada ronda, todas las consultas se revisan en una sola pasada por las operaciones. Amarillo = rango [lo, hi] actual.', push => {
+  const K = 8, add = Array.from({ length: K }, () => R(1, 4)), Q = Array.from({ length: 4 }, () => R(3, 22));
+  const lo = Q.map(() => 1), hi = Q.map(() => K + 1); let ronda = 0;
+  const pref = add.reduce((a, x) => (a.push(a[a.length - 1] + x), a), [0]);
+  const st = () => ({ K, add, Q, lo: lo.slice(), hi: hi.slice(), ronda });
+  push('Operación t suma ' + add.join(', ') + '. Cada consulta busca el primer t con total ≥ su meta.', st());
+  while (lo.some((x, i) => x < hi[i])) { ronda++;
+    for (let i = 0; i < Q.length; i++) if (lo[i] < hi[i]) { const m = (lo[i] + hi[i]) >> 1; if (pref[m] >= Q[i]) hi[i] = m; else lo[i] = m + 1; }
+    push('Ronda ' + ronda + ': una pasada por las ' + K + ' operaciones; cada consulta mira su punto medio y achica su rango.', st()); }
+  push('Respuestas: ' + lo.map(x => x > K ? 'nunca' : x).join(', ') + ' (en ' + ronda + ' rondas en lugar de una simulación por consulta).', st());
+}, s => rows([{ t: 't', v: [...Array(s.K).keys()].map(i => i + 1) }, { t: 'suma', v: s.add }].concat(s.Q.map((q, i) => ({ t: 'meta ' + q, v: [...Array(s.K).keys()].map(t => t + 1 === s.lo[i] && s.lo[i] === s.hi[i] ? '✓' : ''), c: [...Array(s.K).keys()].map(t => t + 1 >= s.lo[i] && t + 1 <= Math.min(s.hi[i], s.K) ? (s.lo[i] === s.hi[i] ? 'g' : 'a') : '') })))));
+
+V('Data-Structures-Algorithms-SegmentTreeBeats', 'Segment Tree Beats: chmin', 'Cada nodo muestra máximo / segundo máximo. Verde = se aplica la marca en O(1); rojo = hay que bajar (beats).', push => {
+  const n = 8, a = Array.from({ length: n }, () => R(1, 9)), T = [];
+  const build = (u, l, r) => { T[u] = { l, r }; if (l < r) { const m = (l + r) >> 1; build(2 * u, l, m); build(2 * u + 1, m + 1, r); } };
+  build(1, 0, n - 1);
+  const info = u => { const v = a.slice(T[u].l, T[u].r + 1), m1 = Math.max(...v), m2 = Math.max(-1, ...v.filter(x => x < m1)); return [m1, m2]; };
+  const st = (col, q) => ({ a: a.slice(), T, info: T.map((_, u) => u ? info(u) : null), col, q });
+  push('Arreglo inicial: ' + a.join(', ') + '.', st({}, null));
+  for (let it = 0; it < 3; it++) { const x = R(0, n - 2), y = R(x + 1, n - 1), t = R(2, 7), col = {};
+    const go = u => { const [m1, m2] = info(u); if (T[u].r < x || y < T[u].l || m1 <= t) return; if (x <= T[u].l && T[u].r <= y && m2 < t) { col[u] = 'g'; return; } col[u] = 'r'; if (T[u].l < T[u].r) { go(2 * u); go(2 * u + 1); } };
+    go(1); push('chmin(' + (x + 1) + '…' + (y + 1) + ', ' + t + '): verde = solo cambian los máximos del nodo; rojo = segundo máximo ≥ ' + t + ', se baja.', st(col, [x, y, t]));
+    for (let i = x; i <= y; i++) a[i] = Math.min(a[i], t);
+    push('Resultado: ' + a.join(', ') + '.', st({}, [x, y, t])); }
+}, s => { const nodes = [], edges = []; for (let u = 1; u < s.T.length; u++) { if (!s.T[u]) continue; const d = Math.floor(Math.log2(u)), k = u - (1 << d), W = 540, cnt = 1 << d; nodes[u - 1] = { x: Math.round(W * (k + 0.5) / cnt), y: 30 + d * 60, l: s.info[u][0] + '/' + (s.info[u][1] < 0 ? '–' : s.info[u][1]), c: s.col[u] }; if (u > 1) edges.push({ a: (u >> 1) - 1, b: u - 1 }); }
+  return graph({ nodes: nodes.map(v => v || { hide: true, x: 0, y: 0, l: '' }), edges, H: 230 }) + rows([{ t: 'a', v: s.a, c: s.a.map((_, i) => s.q && i >= s.q[0] && i <= s.q[1] ? 'a' : '') }]); });
+
+V('Data-Structures-Algorithms-LinkCutTree', 'Caminos preferidos de un link-cut tree', 'Cada color es un camino preferido (en el código, un splay tree). access(v) hace que el camino de la raíz llegue justo hasta v.', push => {
+  const n = 9, { T, E } = treeState(n), pref = Array(n).fill(-1), s = GS(T.xy, E);
+  const paint = hl => { const col = Array(n).fill(''), ec = E.map(() => 'x'); let c = 0; const cols = ['b', 'g', 'o', 'p', 'r', 'a', 'k'];
+    for (let v = 0; v < n; v++) if (v === 0 || pref[T.par[v]] !== v) { const cc = cols[c++ % cols.length]; for (let x = v; x !== -1; x = pref[x]) { col[x] = cc; if (pref[x] >= 0) ec[pref[x] - 1] = cc; } }
+    s.nc = col; s.ec = ec; s.ring = hl; };
+  paint(-1); push('Al principio cada vértice es su propio camino preferido.', s);
+  for (let it = 0; it < 4; it++) { const v = R(1, n - 1); pref[v] = -1; let changes = 0;
+    for (let x = v; T.par[x] !== -1; x = T.par[x]) { if (pref[T.par[x]] !== x) changes++; pref[T.par[x]] = x; }
+    paint(v); push('access(' + (v + 1) + '): el camino desde la raíz hasta ' + (v + 1) + ' queda en un solo color (' + pl(changes, 'cambio', 'cambios') + ' de camino preferido; amortizado O(log n)).', s); }
+  push('Con el camino raíz → v en un solo splay tree, su suma o máximo está en la raíz del splay. link y cut se arman con access y makeRoot.', s);
+}, GR);
+
+V('Data-Structures-Algorithms-WaveletTree', 'Wavelet tree: k-ésimo menor en un rango', 'Cada nivel separa valores bajos (0, a la izquierda) y altos (1). Amarillo = el rango que se sigue al bajar.', push => {
+  const n = 8, a = Array.from({ length: n }, () => R(0, 7)), l = R(0, 3), r = R(l + 2, n), k = R(0, r - l - 1);
+  const levels = []; const build = (seq, lo, hi, d, path) => { if (lo === hi || !seq.length) return; const mid = (lo + hi) >> 1; (levels[d] = levels[d] || []).push({ seq, lo, hi, mid, path }); build(seq.filter(x => x <= mid), lo, mid, d + 1, path + 'L'); build(seq.filter(x => x > mid), mid + 1, hi, d + 1, path + 'R'); };
+  build(a, 0, 7, 0, '');
+  const st = (path, L, Rr, kk) => ({ levels, path, L, R: Rr, kk });
+  push('Arreglo ' + a.join(', ') + '. Se pide el ' + (k + 1) + '.º menor de las posiciones ' + l + '…' + (r - 1) + '.', st('', l, r, k));
+  let L = l, Rr = r, kk = k, lo = 0, hi = 7, path = '', d = 0;
+  while (lo < hi) { const node = levels[d].find(x => x.path === path), mid = node.mid, pre = i => node.seq.slice(0, i).filter(x => x <= mid).length, e = pre(Rr) - pre(L);
+    if (kk < e) { push('Nivel ' + d + ': en el rango hay ' + e + ' valores ≤ ' + mid + '; como k = ' + kk + ' < ' + e + ', se baja a la izquierda.', st(path, L, Rr, kk)); [L, Rr] = [pre(L), pre(Rr)]; hi = mid; path += 'L'; }
+    else { push('Nivel ' + d + ': solo ' + e + ' valores ≤ ' + mid + '; k = ' + kk + ' ≥ ' + e + ': se baja a la derecha con k = ' + (kk - e) + '.', st(path, L, Rr, kk)); [L, Rr] = [L - pre(L), Rr - pre(Rr)]; kk -= e; lo = mid + 1; path += 'R'; }
+    d++; }
+  push('Se llegó a la hoja del valor ' + lo + ': es la respuesta (comprobación: ' + a.slice(l, r).sort((x, y) => x - y)[k] + ').', st(path, L, Rr, kk));
+}, s => s.levels.map((lv, d) => '<div class="vrow"><span class="vlab">nivel ' + d + '</span>' + lv.map(nd => '<div class="cells" style="margin:3px 8px 3px 0;display:inline-flex">' + nd.seq.map((x, i) => '<div class="cell ' + (nd.path === s.path && i >= s.L && i < s.R ? 'a' : x <= nd.mid ? 'b' : 'g') + '">' + x + '</div>').join('') + '</div>').join('') + '</div>').join('') + '<p class="note">Azul = va a la izquierda (≤ mitad); verde = va a la derecha.</p>');
+
+V('Graphs-Algorithms-Trees-SmallToLarge', 'Small to large', 'Etiqueta = tamaño del mapa de colores de cada nodo. Al juntar hijos, el nodo adopta el mapa más grande (verde) y vuelca los otros (amarillo).', push => {
+  const n = 10, { T, E, s } = treeState(n), col = Array.from({ length: n }, () => R(1, 3)), mp = Array(n).fill(null); let moved = 0;
+  s.lab = col.map((c, i) => (i + 1) + '·c' + c);
+  push('Cada nodo tiene un color (c1, c2, c3). Se procesan los hijos antes que el padre.', s);
+  const order = []; const q = [0]; for (const u of q) { order.push(u); q.push(...T.kids[u]); }
+  for (const u of order.reverse()) { let big = null; for (const v of T.kids[u]) if (!big || mp[v].size > mp[big].size) big = v;
+    const m = big !== null ? mp[big] : new Map(); s.nc = s.nc.map(() => ''); if (big !== null) s.nc[big] = 'g';
+    let mv = 1; for (const v of T.kids[u]) if (v !== big) { s.nc[v] = 'a'; for (const [c, k] of mp[v]) { m.set(c, (m.get(c) || 0) + k); mv++; } }
+    m.set(col[u], (m.get(col[u]) || 0) + 1); mp[u] = m; moved += mv; s.ns[u] = 'tam ' + [...m.values()].reduce((a, b) => a + b, 0); s.ring = u;
+    const best = Math.max(...m.values()); push('Nodo ' + (u + 1) + ': ' + (big !== null ? 'adopta el mapa de ' + (big + 1) + ' y ' : '') + 'mueve ' + mv + ' elementos. Color más frecuente del subárbol: ' + [...m].filter(([, k]) => k === best).map(([c]) => 'c' + c).join(', ') + '.', s); }
+  s.nc = s.nc.map(() => ''); s.ring = -1; push('En total se movieron ' + moved + ' elementos; nunca más de n·log n.', s);
+}, GR);
+
+V('Graphs-Algorithms-Trees-VirtualTree', 'Árbol virtual', 'Rojo = nodos de la consulta; morado = LCA agregados. Las líneas punteadas son las aristas del árbol virtual.', push => {
+  const n = 12, { T, E, s } = treeState(n, 540, 300); const imp = shuffle([...Array(n).keys()]).slice(0, 4);
+  const anc = v => { const r = []; for (let x = v; x !== -1; x = T.par[x]) r.push(x); return r; }, lca = (a, b) => { const A = anc(a); return anc(b).find(x => A.includes(x)); };
+  const tin = []; let t = 0; const dfs = u => { tin[u] = t++; T.kids[u].forEach(dfs); }; dfs(0);
+  imp.forEach(v => s.nc[v] = 'r'); push('Consulta: nodos ' + imp.map(v => v + 1).join(', ') + '. Se ordenan por tiempo de entrada del DFS.', s);
+  const srt = imp.slice().sort((a, b) => tin[a] - tin[b]); const nodes = new Set(srt); nodes.add(0);
+  for (let i = 0; i + 1 < srt.length; i++) { const w = lca(srt[i], srt[i + 1]); if (!nodes.has(w)) { nodes.add(w); s.nc[w] = 'p'; } push('LCA(' + (srt[i] + 1) + ', ' + (srt[i + 1] + 1) + ') = ' + (w + 1) + '.', s); }
+  if (s.nc[0] === '') s.nc[0] = 'p';
+  const V2 = [...nodes].sort((a, b) => tin[a] - tin[b]), pila = [], VE = [];
+  for (const v of V2) { while (pila.length && !anc(v).includes(pila[pila.length - 1])) pila.pop(); if (pila.length) VE.push({ a: pila[pila.length - 1], b: v }); pila.push(v); }
+  s.ec = E.map(() => 'x'); s.E = E.concat(VE.map(e => Object.assign({ bend: 18 }, e))); s.ec = s.ec.concat(VE.map(() => 'b')); s.el = s.el.concat(VE.map(() => ''));
+  push('Con una pila se cuelga cada nodo de su último ancestro: el árbol virtual (azul) tiene ' + V2.length + ' nodos en vez de ' + n + '.', s);
+}, s => GR(s).replace(/stroke="#1f6feb" stroke-width="3.5"/g, 'stroke="#1f6feb" stroke-width="3" stroke-dasharray="6 4"'));
+// ---- grafos de finales ----
+// flujo genérico con caminos BFS sobre un grafo dibujado (s, t dados); devuelve el lado de la fuente
+function flowGen(push, s, E, S, Tt, msg) {
+  const n = s.xy.length, f = E.map(() => 0), cap = e => e.w === Infinity ? Infinity : e.w; let total = 0;
+  const lab = () => E.map((e, k) => (f[k]) + '/' + (e.w === Infinity ? '∞' : e.w));
+  s.el = lab(); push(msg, s);
+  for (let it = 0; it < 20; it++) { const prev = Array(n).fill(null); prev[S] = [-1, 0]; const q = [S];
+    for (const u of q) E.forEach((e, k) => { if (e.a === u && !prev[e.b] && f[k] < cap(e)) { prev[e.b] = [k, 1]; q.push(e.b); } if (e.b === u && !prev[e.a] && f[k] > 0) { prev[e.a] = [k, -1]; q.push(e.a); } });
+    if (!prev[Tt]) break; let b = Infinity, path = []; for (let v = Tt; v !== S;) { const [k, d] = prev[v]; path.push([k, d]); b = Math.min(b, d > 0 ? cap(E[k]) - f[k] : f[k]); v = d > 0 ? E[k].a : E[k].b; }
+    s.ec = E.map(() => ''); path.forEach(([k]) => s.ec[k] = 'a'); push('Camino aumentante con cuello de botella ' + b + '.', s); path.forEach(([k, d]) => f[k] += d * b); total += b; s.el = lab(); }
+  const seen = Array(n).fill(false); seen[S] = true; const q = [S]; for (const u of q) E.forEach((e, k) => { if (e.a === u && !seen[e.b] && f[k] < cap(e)) { seen[e.b] = true; q.push(e.b); } if (e.b === u && !seen[e.a] && f[k] > 0) { seen[e.a] = true; q.push(e.a); } });
+  s.ec = E.map(e => seen[e.a] && !seen[e.b] ? 'r' : 'x'); return { total, seen };
+}
+V('Graphs-Algorithms-Flow-Algorithms-ProjectSelection', 'Selección de proyectos con corte mínimo', 'Proyectos P (ganancia) a la izquierda, herramientas H (costo) a la derecha. Lo que queda del lado de S (verde) es lo que conviene hacer.', push => {
+  const np = 3, nh = 3, gain = Array.from({ length: np }, () => R(3, 9)), cost = Array.from({ length: nh }, () => R(2, 7));
+  const xy = [{ x: 40, y: 150 }].concat(gain.map((_, i) => ({ x: 190, y: 50 + i * 100 })), cost.map((_, i) => ({ x: 360, y: 50 + i * 100 })), [{ x: 500, y: 150 }]), T = np + nh + 1, E = [];
+  gain.forEach((g, i) => E.push({ a: 0, b: 1 + i, w: g })); cost.forEach((c, j) => E.push({ a: 1 + np + j, b: T, w: c }));
+  for (let i = 0; i < np; i++) { const need = shuffle([...Array(nh).keys()]).slice(0, R(1, 2)); need.forEach(j => E.push({ a: 1 + i, b: 1 + np + j, w: Infinity })); }
+  const s = GS(xy, E, true); s.lab = ['S'].concat(gain.map((_, i) => 'P' + (i + 1)), cost.map((_, j) => 'H' + (j + 1)), ['T']);
+  const { total, seen } = flowGen(push, s, E, 0, T, 'S → P: ganancia; P → H: ∞ (el proyecto exige la herramienta); H → T: costo.');
+  s.nc = seen.map(x => x ? 'g' : 'o'); const tot = gain.reduce((a, b) => a + b, 0);
+  push('Corte mínimo = ' + total + '. Ganancia = ' + tot + ' − ' + total + ' = ' + (tot - total) + ': hacer ' + (s.lab.filter((_, i) => seen[i] && i >= 1 && i <= np).join(', ') || 'nada') + ' y comprar ' + (s.lab.filter((_, i) => seen[i] && i > np && i < T).join(', ') || 'nada') + '.', s);
+}, GR);
+
+V('Graphs-Algorithms-Flow-Algorithms-MinPathCover', 'Cobertura por caminos de un DAG', 'Cada arco elegido (amarillo) une dos caminos en uno. Caminos = n − arcos elegidos.', push => {
+  const n = 7, ord = shuffle([...Array(n).keys()]), E = [], has = new Set();
+  for (let t = 0; t < 11; t++) { const i = R(0, n - 2), j = R(i + 1, n - 1), a = ord[i], b = ord[j]; if (!has.has(a + ',' + b)) { has.add(a + ',' + b); E.push({ a, b }); } }
+  const s = GS(circleLayout(n), E, true), mL = Array(n).fill(-1), mR = Array(n).fill(-1);
+  push('DAG con ' + n + ' vértices: al principio, ' + n + ' caminos de un solo vértice.', s);
+  const kuhn = (u, vis) => { for (const e of E) if (e.a === u && !vis[e.b]) { vis[e.b] = true; if (mR[e.b] < 0 || kuhn(mR[e.b], vis)) { mR[e.b] = u; mL[u] = e.b; return true; } } return false; };
+  let M = 0;
+  for (let u = 0; u < n; u++) if (kuhn(u, Array(n).fill(false))) { M++; s.ec = E.map(e => mL[e.a] === e.b ? 'a' : ''); push('Desde ' + (u + 1) + ' se encontró un camino aumentante: ' + M + ' arcos elegidos → ' + (n - M) + ' caminos.', s); }
+  const cols = ['g', 'b', 'o', 'p', 'r', 'a', 'k']; let c = 0;
+  for (let u = 0; u < n; u++) if (mR[u] < 0) { const cc = cols[c++ % cols.length]; for (let x = u; x >= 0; x = mL[x]) s.nc[x] = cc; }
+  s.ec = E.map(e => mL[e.a] === e.b ? s.nc[e.a] : 'x'); push('Mínimo: ' + (n - M) + ' caminos disjuntos (cada color es uno).', s);
+}, GR);
+
+V('Graphs-Algorithms-Flow-Algorithms-StoerWagner', 'Stoer-Wagner', 'Etiqueta = peso que conecta al vértice con el conjunto. Amarillo = agregados en la fase; los dos últimos se fusionan.', push => {
+  const n = 6, E = randGraph(n, 4, { wmax: 6 }), s = GS(circleLayout(n), E), W = Array.from({ length: n }, () => Array(n).fill(0));
+  E.forEach(e => { W[e.a][e.b] += e.w; W[e.b][e.a] += e.w; });
+  const grp = [...Array(n).keys()].map(i => [i]), alive = Array(n).fill(true); let best = Infinity;
+  s.lab = grp.map(g => g.map(x => x + 1).join('')); push('Grafo no dirigido con pesos. Se buscará el corte mínimo global.', s);
+  for (let ph = 1; ph < n; ph++) { const w = Array(n).fill(0), inA = Array(n).fill(false); let sv = -1, tv = -1;
+    for (let it = 0; it < n - ph + 1; it++) { let u = -1; for (let v = 0; v < n; v++) if (alive[v] && !inA[v] && (u < 0 || w[v] > w[u])) u = v; inA[u] = true; sv = tv; tv = u; for (let v = 0; v < n; v++) if (alive[v] && !inA[v]) w[v] += W[u][v]; }
+    s.nc = [...Array(n).keys()].map(v => !alive[v] ? '' : v === tv ? 'r' : v === sv ? 'o' : 'a'); s.ns = w.map((x, v) => alive[v] && v !== tv ? '' : ''); s.ns[tv] = 'w = ' + w[tv];
+    const prevBest = best; best = Math.min(best, w[tv]);
+    push('Fase ' + ph + ': el último es ' + s.lab[tv] + ' con w = ' + w[tv] + ' (corte de la fase). Mejor hasta ahora: ' + best + (best < prevBest ? ' (nuevo)' : '') + '.', s);
+    for (let v = 0; v < n; v++) { W[sv][v] += W[tv][v]; W[v][sv] = W[sv][v]; } alive[tv] = false; grp[sv] = grp[sv].concat(grp[tv]); s.lab[sv] = grp[sv].map(x => x + 1).join(''); s.lab[tv] = '·';
+    s.ec = E.map(e => { const ga = grp.findIndex((g, i) => alive[i] && g.includes(e.a)), gb = grp.findIndex((g, i) => alive[i] && g.includes(e.b)); return ga === gb ? 'x' : ''; }); s.ns = s.ns.map(() => '');
+    s.nc = s.nc.map(() => ''); push('Se fusiona ' + s.lab[sv] + ' (las aristas internas, en gris, ya no cuentan).', s); }
+  push('Corte mínimo global = ' + best + '.', s);
+}, GR);
+
+V('Graphs-Algorithms-Flow-Algorithms-GomoryHu', 'Árbol de Gomory-Hu (Gusfield)', 'Arriba, el grafo; abajo, el árbol que se construye. Cada vértice i se corta contra su padre actual.', push => {
+  const n = 5, E = randGraph(n, 3, { wmax: 6 }), xy = circleLayout(n, 540, 200), par = Array(n).fill(0), w = Array(n).fill(0);
+  const cutOf = mask => E.reduce((s, e) => s + (((mask >> e.a) & 1) !== ((mask >> e.b) & 1) ? e.w : 0), 0);
+  const st = (hl, side) => ({ g: Object.assign(GS(xy, E), { nc: [...Array(n).keys()].map(v => side ? (side >> v & 1 ? 'g' : 'o') : v === hl ? 'a' : '') }), par: par.slice(), w: w.slice(), hl });
+  push('Se empieza con todos los vértices colgando del vértice 1.', st(-1, 0));
+  for (let i = 1; i < n; i++) { let best = Infinity, bm = 0; for (let m = 0; m < (1 << n); m++) if ((m >> i & 1) && !(m >> par[i] & 1)) { const c = cutOf(m); if (c < best) { best = c; bm = m; } }
+    w[i] = best; const pi = par[i]; for (let j = i + 1; j < n; j++) if (par[j] === pi && (bm >> j & 1)) par[j] = i;
+    push('Vértice ' + (i + 1) + ' contra ' + (pi + 1) + ': corte mínimo ' + best + ' (verde = lado de ' + (i + 1) + '). Los que estaban con ' + (pi + 1) + ' y quedan del lado de ' + (i + 1) + ' pasan a colgar de él.', st(i, bm)); }
+  push('Listo: el corte mínimo entre dos vértices es la arista más liviana del camino entre ellos en el árbol.', st(-1, 0));
+}, s => { const tx = circleLayout(s.par.length, 540, 170); const TE = s.par.slice(1).map((p, i) => ({ a: p, b: i + 1, w: s.w[i + 1] })).filter((e, i) => s.w[i + 1] > 0 || true);
+  return GR(s.g) + '<p class="note">Árbol de Gomory-Hu (hasta ahora):</p>' + graph({ nodes: tx.map((p, i) => ({ x: p.x, y: p.y, l: i + 1, c: i === s.hl ? 'a' : '' })), edges: TE.map((e, k) => ({ a: e.a, b: e.b, l: s.w[e.b] || '?', c: s.w[e.b] ? 'g' : '' })), H: 180 }); });
+
+V('Graphs-Algorithms-Flow-Algorithms-Blossom', 'Edmonds: emparejamiento con flores', 'Verde = aristas del emparejamiento. Cuando el BFS cierra un ciclo impar (morado), se contrae a su base y la búsqueda sigue.', push => {
+  const n = 8, xy = circleLayout(n); let E;
+  for (;;) { E = randGraph(n, 4); if (E.length >= 9) break; }
+  const s = GS(xy, E), g = adjOf(n, E), mate = Array(n).fill(-1);
+  const paint = () => { s.ec = E.map(e => mate[e.a] === e.b ? 'g' : ''); s.nc = mate.map(m => m >= 0 ? 'g' : ''); };
+  push('Grafo general (puede tener ciclos impares).', s);
+  for (let root = 0; root < n; root++) { if (mate[root] >= 0) continue;
+    const p = Array(n).fill(-1), base = [...Array(n).keys()], used = Array(n).fill(false); used[root] = true; const q = [root]; let found = false;
+    const lca = (a, b) => { const mk = Array(n).fill(false); for (;;) { a = base[a]; mk[a] = true; if (mate[a] < 0) break; a = p[mate[a]]; } for (;;) { b = base[b]; if (mk[b]) return b; b = p[mate[b]]; } };
+    const mark = (v, b, ch, bl) => { while (base[v] !== b) { bl[base[v]] = bl[base[mate[v]]] = true; p[v] = ch; ch = mate[v]; v = p[mate[v]]; } };
+    for (let qi = 0; qi < q.length && !found; qi++) { const v = q[qi];
+      for (const [to] of g[v]) { if (base[v] === base[to] || mate[v] === to) continue;
+        if (to === root || (mate[to] >= 0 && p[mate[to]] >= 0)) { const cb = lca(v, to), bl = Array(n).fill(false); mark(v, cb, to, bl); mark(to, cb, v, bl);
+          for (let i = 0; i < n; i++) if (bl[base[i]]) { base[i] = cb; if (!used[i]) { used[i] = true; q.push(i); } }
+          paint(); s.nc = s.nc.map((c, i) => base[i] === cb ? 'p' : c); s.ring = root; push('Desde ' + (root + 1) + ': la arista ' + (v + 1) + '–' + (to + 1) + ' cierra un ciclo impar. Se contrae a la base ' + (cb + 1) + ' (morado).', s); }
+        else if (p[to] < 0) { p[to] = v; if (mate[to] < 0) { let u = to; while (u >= 0) { const pv = p[u], ppv = mate[pv]; mate[u] = pv; mate[pv] = u; u = ppv; } found = true; paint(); s.ring = root; push('Desde ' + (root + 1) + ': camino aumentante hasta ' + (to + 1) + '; se invierte y el emparejamiento crece.', s); break; }
+          used[mate[to]] = true; q.push(mate[to]); } } }
+    if (!found) { paint(); s.ring = root; push('Desde ' + (root + 1) + ' no hay camino aumentante.', s); } }
+  s.ring = -1; push('Emparejamiento máximo: ' + mate.filter((m, i) => m > i).length + ' parejas.', s);
+}, GR);
+
+V('Graphs-Algorithms-Connectivity-DominatorTree', 'Dominadores', 'Grafo dirigido desde el vértice 1. Amarillo = vértice actual; morado = sus dominadores (si se quita uno, deja de ser alcanzable).', push => {
+  const n = 7, E = randGraph(n, 4, { dir: true }).filter(() => true), xy = circleLayout(n);
+  // asegurar que 1 alcance a todos: árbol dirigido desde 0
+  const E2 = []; const ord = [0].concat(shuffle([...Array(n).keys()].slice(1))); for (let i = 1; i < n; i++) E2.push({ a: ord[R(0, i - 1)], b: ord[i] });
+  for (let t = 0; t < 5; t++) { const a = R(0, n - 1), b = R(1, n - 1); if (a !== b && !E2.some(e => e.a === a && e.b === b)) E2.push({ a, b }); }
+  const s = GS(xy, E2, true), reach = ban => { const seen = Array(n).fill(false); if (ban === 0) return seen; seen[0] = true; const q = [0]; for (const u of q) E2.forEach(e => { if (e.a === u && e.b !== ban && !seen[e.b]) { seen[e.b] = true; q.push(e.b); } }); return seen; };
+  const dom = [...Array(n).keys()].map(v => [...Array(n).keys()].filter(d => d !== v && (d === 0 || !reach(d)[v])));
+  const idom = dom.map((ds, v) => v === 0 ? -1 : ds.find(d => ds.every(e => e === d || dom[d].includes(e) || e === d)));
+  push('El vértice 1 es la raíz.', s);
+  for (let v = 1; v < n; v++) { s.nc = s.nc.map((_, i) => i === v ? 'a' : dom[v].includes(i) ? 'p' : ''); s.ec = E2.map(e => idom[e.b] === e.a && e.b < v + 1 ? 'g' : '');
+    push('Vértice ' + (v + 1) + ': lo dominan ' + dom[v].map(x => x + 1).join(', ') + '. Dominador inmediato (el más cercano): ' + (idom[v] + 1) + '.', s); }
+  s.nc = s.nc.map(() => ''); const extra = [...Array(n).keys()].slice(1).map(v => ({ a: idom[v], b: v })); s.E = E2.concat(extra.map(e => Object.assign({ bend: 20 }, e))); s.ec = E2.map(() => 'x').concat(extra.map(() => 'g')); s.el = s.E.map(() => '');
+  push('Árbol de dominadores (verde): cada vértice cuelga de su dominador inmediato.', s);
+}, GR);
+
+V('Graphs-Algorithms-Connectivity-BlockCutTree', 'Bloques biconexos', 'Etiqueta = tin/low. Cuando un hijo v cumple low[v] ≥ tin[u], lo apilado desde v más u es un bloque (un color por bloque).', push => {
+  const n = 9, E = randGraph(n, 3), s = GS(circleLayout(n), E), g = adjOf(n, E), tin = Array(n).fill(-1), low = Array(n).fill(0), pila = []; let t = 0, nb = 0;
+  const cols = ['g', 'b', 'o', 'p', 'r', 'a', 'k'], bloque = Array(E.length).fill('');
+  push('Grafo conexo. Se hace un DFS desde 1 apilando vértices.', s);
+  const dfs = (u, pe) => { tin[u] = low[u] = t++; pila.push(u); s.ns[u] = tin[u] + '/' + low[u]; s.nc[u] = s.nc[u] || 'a';
+    for (const [v, k] of g[u]) { if (k === pe) continue; if (tin[v] >= 0) { low[u] = Math.min(low[u], tin[v]); continue; }
+      dfs(v, k); low[u] = Math.min(low[u], low[v]); s.ns[u] = tin[u] + '/' + low[u];
+      if (low[v] >= tin[u]) { const b = [u]; for (;;) { const x = pila.pop(); b.push(x); if (x === v) break; } const c = cols[nb++ % cols.length];
+        E.forEach((e, kk) => { if (b.includes(e.a) && b.includes(e.b) && !bloque[kk]) bloque[kk] = c; }); s.ec = bloque.slice(); b.forEach(x => s.nc[x] = c);
+        push('low[' + (v + 1) + '] = ' + low[v] + ' ≥ tin[' + (u + 1) + '] = ' + tin[u] + ': bloque {' + b.map(x => x + 1).join(', ') + '}' + (u !== 0 || g[0].length > 1 ? (u === 0 ? '' : '; ' + (u + 1) + ' es punto de articulación') : '') + '.', s); } } };
+  dfs(0, -1);
+  push('Hay ' + nb + ' bloques. Los vértices que están en más de uno son puntos de articulación; con ellos se arma el block-cut tree.', s);
+}, GR);
+
+V('Graphs-Algorithms-MST-DirectedMST', 'Arborescencia mínima (Chu-Liu/Edmonds)', 'Cada vértice elige su arco de entrada más barato (amarillo). Si forman un ciclo (rojo), se contrae; al final, verde = arborescencia óptima.', push => {
+  const n = 5, xy = circleLayout(n); let E, cyc;
+  for (let t = 0; t < 300; t++) { const ord = [0].concat(shuffle([1, 2, 3, 4])); E = [];
+    for (let i = 1; i < n; i++) E.push({ a: ord[R(0, i - 1)], b: ord[i], w: R(3, 9) });
+    for (let x = 0; x < 4; x++) { const a = R(1, n - 1), b = R(1, n - 1); if (a !== b && !E.some(e => e.a === a && e.b === b)) E.push({ a, b, w: R(1, 5) }); }
+    const best = Array(n).fill(-1);
+    for (let v = 1; v < n; v++) E.forEach((e, k) => { if (e.b === v && (best[v] < 0 || e.w < E[best[v]].w)) best[v] = k; });
+    E.best = best; cyc = null;
+    for (let v = 1; v < n && !cyc; v++) { const path = []; let x = v; while (x !== 0 && !path.includes(x)) { path.push(x); x = E[best[x]].a; } if (x !== 0) cyc = path.slice(path.indexOf(x)); }
+    if (cyc) break; }
+  const s = GS(xy, E, true); s.lab = ['R', 2, 3, 4, 5]; push('Raíz R. Se busca el conjunto de arcos de costo mínimo para llegar a todos.', s);
+  s.ec = E.map((_, k) => E.best.includes(k) ? 'a' : ''); push('Cada vértice toma su arco de entrada más barato.', s);
+  if (cyc) { s.ec = E.map((e, k) => E.best.includes(k) && cyc.includes(e.b) && cyc.includes(e.a) ? 'r' : s.ec[k]); s.nc = s.nc.map((_, i) => cyc.includes(i) ? 'r' : ''); push('Ciclo ' + cyc.map(x => s.lab[x]).join(' → ') + ': se contrae a un solo vértice. Los arcos que entran al ciclo en v bajan su costo en el del arco que v ya eligió.', s); }
+  // óptimo por fuerza bruta
+  const inc = [...Array(n).keys()].map(v => E.map((e, k) => e.b === v ? k : -1).filter(k => k >= 0)); let bestC = Infinity, bestSel = null;
+  const rec = (v, sel) => { if (v === n) { for (let x = 1; x < n; x++) { let y = x, c = 0; while (y !== 0 && c <= n) { y = E[sel[y - 1]].a; c++; } if (y !== 0) return; } const c = sel.reduce((a, k) => a + E[k].w, 0); if (c < bestC) { bestC = c; bestSel = sel.slice(); } return; } for (const k of inc[v]) { sel.push(k); rec(v + 1, sel); sel.pop(); } };
+  rec(1, []); s.nc = s.nc.map(() => ''); s.ec = E.map((_, k) => bestSel.includes(k) ? 'g' : 'x');
+  push('Al deshacer la contracción se obtiene la arborescencia mínima: costo ' + bestC + '.', s);
+}, GR);
+
+V('Graphs-Algorithms-Miscellaneous-MinMeanCycle', 'Karp: ciclo de media mínima', 'D[k][v] = menor peso de un camino de exactamente k arcos que termina en v.', push => {
+  const n = 4; let E; for (;;) { E = randGraph(n, 3, { dir: true, wmax: 9, wmin: 1 }); E.push({ a: E[0].b, b: E[0].a, w: R(1, 9), bend: 16 }); break; }
+  const D = Array.from({ length: n + 1 }, (_, k) => Array(n).fill(k ? Infinity : 0));
+  const st = (k, best) => ({ D: D.map(r => r.map(fmt)), k, best, E });
+  push('Arcos: ' + E.map(e => (e.a + 1) + '→' + (e.b + 1) + ' (' + e.w + ')').join(', ') + '. D[0][v] = 0.', st(0, null));
+  for (let k = 1; k <= n; k++) { for (const e of E) if (D[k - 1][e.a] < Infinity) D[k][e.b] = Math.min(D[k][e.b], D[k - 1][e.a] + e.w); push('Capa k = ' + k + ': relajar cada arco desde la capa anterior.', st(k, null)); }
+  let best = Infinity; for (let v = 0; v < n; v++) { if (D[n][v] === Infinity) continue; let w = -Infinity; for (let k = 0; k < n; k++) if (D[k][v] < Infinity) w = Math.max(w, (D[n][v] - D[k][v]) / (n - k)); best = Math.min(best, w); }
+  push(best === Infinity ? 'Ningún D[n][v] es finito: no hay ciclos.' : 'min_v max_k (D[n][v] − D[k][v])/(n − k) = ' + f3(best) + ': es la menor media de un ciclo.', st(-1, best));
+}, s => table(s.D, s.D.map((_, k) => s.D[0].map(() => k === s.k ? 'a' : ''))
+  , s.D.map((_, k) => 'k=' + k), s.D[0].map((_, v) => 'v=' + (v + 1))));
+// ---- cadenas, DP y geometría de finales ----
+V('Strings-Algorithms-Eertree', 'Construcción del eertree', 'Cada letra agrega a lo sumo un palíndromo nuevo: el sufijo palíndromo más largo. Amarillo = letra actual.', push => {
+  const s0 = Array.from({ length: R(7, 10) }, () => pick('ab')).join('') + pick(['a', 'b', 'ba']);
+  const len = [-1, 0], link = [0, 0], nxt = [{}, {}], name = ['(−1)', '(vacío)'], cnt = [0, 0]; let last = 1;
+  const st = (i, nuevo) => ({ s: s0, i, nodes: name.slice(2).map((nm, k) => [nm, len[k + 2], name[link[k + 2]], cnt[k + 2]]), nuevo });
+  push('Cadena ' + s0 + '. Dos raíces: longitud −1 (para impares) y 0 (para pares).', st(-1, -1));
+  for (let i = 0; i < s0.length; i++) { const c = s0[i]; let v = last; const ok = v => i - 1 - len[v] >= 0 && s0[i - 1 - len[v]] === c;
+    while (!ok(v)) v = link[v]; let nu = -1;
+    if (!nxt[v][c]) { let lk = 1; if (v !== 0) { let w = link[v]; while (!ok(w)) w = link[w]; lk = nxt[w][c]; }
+      len.push(len[v] + 2); link.push(lk); nxt.push({}); cnt.push(0); name.push(s0.slice(i - len[v] - 1, i + 1)); nxt[v][c] = len.length - 1; nu = len.length - 3; }
+    last = nxt[v][c]; cnt[last]++;
+    push('Letra ' + (i + 1) + ' («' + c + '»): ' + (nu >= 0 ? 'palíndromo nuevo «' + name[last] + '», enlace a «' + name[link[last]] + '».' : 'el sufijo palíndromo más largo «' + name[last] + '» ya existía.'), st(i, nu)); }
+  for (let v = len.length - 1; v >= 2; v--) cnt[link[v]] += cnt[v];
+  push('Acumulando hacia los enlaces, la última columna dice cuántas veces aparece cada palíndromo.', st(-1, -1));
+}, s => cellsRow('cadena', s.s.split(''), s.s.split('').map((_, i) => i === s.i ? 'a' : i < s.i ? 'g' : '')) + table(s.nodes, s.nodes.map((_, k) => Array(4).fill(k === s.nuevo ? 'a' : '')), null, ['palíndromo', 'largo', 'enlace', 'apariciones']));
+
+V('Strings-Algorithms-Lyndon', 'Duval: factorización de Lyndon', 'Azul = bloque actual desde i; amarillo = j (la letra que se compara) y k (la letra del período con que se compara).', push => {
+  const s = Array.from({ length: R(9, 12) }, () => pick('aab' + (R(0, 1) ? 'c' : ''))).join(''), n = s.length, cuts = [0]; let i = 0;
+  const st = (i, j, k) => ({ s, i, j, k, cuts: cuts.slice() });
+  push('Cadena ' + s + '.', st(-1, -1, -1));
+  while (i < n) { let j = i + 1, k = i;
+    while (j < n && s[k] <= s[j]) { push(s[k] < s[j] ? 's[k] = ' + s[k] + ' < s[j] = ' + s[j] + ': la palabra de Lyndon se alarga hasta j (k vuelve a i).' : 's[k] = s[j] = ' + s[j] + ': se repite el período.', st(i, j, k)); k = s[k] < s[j] ? i : k + 1; j++; }
+    push(j < n ? 's[k] = ' + s[k] + ' > s[j] = ' + s[j] + ': se cierran las copias completas del período (largo ' + (j - k) + ').' : 'Fin de la cadena: se cierran las copias del período (largo ' + (j - k) + ').', st(i, j, k));
+    while (i <= k) { i += j - k; cuts.push(i); } }
+  push('Factorización: ' + cuts.slice(1).map((c, t) => s.slice(cuts[t], c)).join(' ≥ ') + '.', st(-1, -1, -1));
+}, s => { const part = []; let p = 0; for (let t = 1; t < s.cuts.length; t++) for (let x = s.cuts[t - 1]; x < s.cuts[t]; x++) part[x] = t; return cellsRow('s', s.s.split(''), s.s.split('').map((_, x) => x === s.j || x === s.k ? 'a' : part[x] ? (part[x] % 2 ? 'g' : 'p') : s.i >= 0 && x >= s.i ? 'b' : '')) + '<p class="note">Cortes: ' + s.cuts.join(', ') + '</p>'; });
+
+V('DP-Optimizations-Aliens', 'Truco de Aliens: búsqueda sobre λ', 'Cada subarreglo cuesta λ. Al subir λ se usan menos subarreglos; se busca el menor λ que usa ≤ k.', push => {
+  const n = 10, a = Array.from({ length: n }, () => R(-6, 8)), k = R(1, 3), tried = [];
+  const solve = lam => { let fv = 0, fc = 0, dv = -1e18, dc = 0; const better = (x, xc, y, yc) => x > y || (x === y && xc < yc);
+    for (const x of a) { const av = fv - lam + x, ac = fc + 1, sv = dv + x, sc = dc; const [ndv, ndc] = better(av, ac, sv, sc) ? [av, ac] : [sv, sc]; if (better(dv, dc, fv, fc)) { fv = dv; fc = dc; } dv = ndv; dc = ndc; }
+    return better(dv, dc, fv, fc) ? [dv, dc] : [fv, fc]; };
+  push('Arreglo ' + a.join(', ') + '. Hasta k = ' + k + ' subarreglos disjuntos. Con λ = 0 la DP usa los que quiera.', { a, tried: [], k, fin: null });
+  let lo = 0, hi = 60;
+  while (lo < hi) { const mid = (lo + hi) >> 1, [v, c] = solve(mid); tried.push([mid, c, v, v + mid * k]); push('λ = ' + mid + ': la DP sin límite usa ' + c + ' subarreglos (valor penalizado ' + v + '). ' + (c <= k ? 'Sirve: se prueba un λ menor.' : 'Usa demasiados: hay que subir λ.'), { a, tried: tried.slice(), k, fin: null }); if (c <= k) hi = mid; else lo = mid + 1; }
+  const [v] = solve(lo); push('λ* = ' + lo + ': respuesta = ' + v + ' + λ*·k = ' + (v + lo * k) + '.', { a, tried, k, fin: v + lo * k });
+}, s => cellsRow('a', s.a) + table(s.tried.map(t => [t[0], t[1], t[2], t[1] <= s.k ? 'sí' : 'no']), s.tried.map(t => Array(4).fill(t[1] <= s.k ? 'g' : 'r')), null, ['λ', 'subarreglos', 'valor penalizado', '≤ k']) + (s.fin !== null ? '<p class="note">Respuesta: <b>' + s.fin + '</b></p>' : ''));
+
+V('DP-Optimizations-SlopeTrick', 'Slope trick con un heap', 'Para hacer el arreglo no decreciente. Amarillo = valor que entra; si el máximo del heap es mayor, se paga la diferencia.', push => {
+  const a = Array.from({ length: 8 }, () => R(1, 12)), heap = []; let ans = 0;
+  push('Arreglo ' + a.join(', ') + ' (en el problema estricto se resta i antes; aquí se pide no decreciente).', { a, i: -1, heap: [], ans });
+  a.forEach((x, i) => { heap.push(x); heap.sort((p, q) => q - p);
+    if (heap[0] > x) { const top = heap.shift(); ans += top - x; heap.push(x); heap.sort((p, q) => q - p); push(x + ' < máximo ' + top + ': costo += ' + (top - x) + ' (total ' + ans + '); el quiebre ' + top + ' baja a ' + x + '.', { a, i, heap: heap.slice(), ans }); }
+    else push(x + ' ≥ máximo del heap: no cuesta nada, solo se agrega como quiebre.', { a, i, heap: heap.slice(), ans }); });
+  push('Costo mínimo: ' + ans + '.', { a, i: -1, heap, ans });
+}, s => rows([{ t: 'a', v: s.a, c: s.a.map((_, i) => i === s.i ? 'a' : i < s.i ? 'g' : '') }, { t: 'heap (máx → mín)', v: s.heap.length ? s.heap : [null], c: s.heap.map((_, i) => i === 0 ? 'b' : '') }]) + '<p class="note">Costo: <b>' + s.ans + '</b></p>');
+
+V('DP-Algorithms-BrokenProfile', 'DP de perfil roto', 'La cuadrícula se llena celda por celda (amarillo). La tabla muestra las máscaras posibles de la frontera y de cuántas formas se llega a cada una.', push => {
+  const n = 3, m = R(3, 4); let dp = new Map([[0, 1]]);
+  const st = (r, c) => ({ n, m, r, c, dp: [...dp].sort((x, y) => x[0] - y[0]).map(([k, v]) => [k.toString(2).padStart(n, '0').split('').reverse().join(''), v]) });
+  push('Tablero de ' + n + ' × ' + m + '. Bit r de la máscara = la celda de la fila r en la columna siguiente ya está ocupada.', st(-1, -1));
+  for (let c = 0; c < m; c++) for (let r = 0; r < n; r++) { const nd = new Map(), ad = (k, v) => nd.set(k, (nd.get(k) || 0) + v);
+    for (const [mask, v] of dp) { if (mask >> r & 1) { ad(mask ^ (1 << r), v); continue; } ad(mask | (1 << r), v); if (r + 1 < n && !(mask >> (r + 1) & 1)) ad(mask | (1 << (r + 1)), v); }
+    dp = nd; push('Celda (' + (r + 1) + ', ' + (c + 1) + '): ya ocupada, ficha horizontal o ficha vertical. ' + pl(dp.size, 'máscara posible', 'máscaras posibles') + '.', st(r, c)); }
+  push('Formas de cubrir el tablero: ' + (dp.get(0) || 0) + '. Solo vale la máscara 000: las demás tienen fichas que se salen del tablero.', Object.assign(st(-1, -1), { fin: true }));
+}, s => { let g = ''; for (let c = 0; c < s.m; c++) for (let r = 0; r < s.n; r++) { const done = c < s.c || (c === s.c && r <= s.r) || s.fin; g += '<rect x="' + (10 + c * 40) + '" y="' + (10 + r * 40) + '" width="36" height="36" rx="5" fill="' + (c === s.c && r === s.r ? FILL.a : done ? FILL.g : 'var(--card)') + '" stroke="#888"/>'; }
+  return svgBox(g, 20 + s.m * 40, 20 + s.n * 40) + table(s.dp, s.dp.map(() => ['b', 'g']), null, ['máscara (fila 1 → ' + s.n + ')', 'formas']); });
+
+V('Geometry-Advanced-Minkowski', 'Suma de Minkowski', 'Azul y verde: los dos polígonos. Las aristas de la suma (amarillo) son las de ambos, mezcladas por ángulo.', push => {
+  const mk = () => { for (;;) { const P = hullJS(Array.from({ length: 5 }, () => [R(-2, 2), R(-2, 2)])); if (P.length >= 3) return P; } };
+  const low = P => { let k = 0; P.forEach((p, i) => { if (p[1] < P[k][1] || (p[1] === P[k][1] && p[0] < P[k][0])) k = i; }); return P.slice(k).concat(P.slice(0, k)); };
+  const A = low(mk()).map(p => [p[0] - 6, p[1] + 2]), B = low(mk()).map(p => [p[0] + 1, p[1] - 3]);
+  const res = []; let i = 0, j = 0; const n = A.length, m = B.length, a = A.concat(A.slice(0, 2)), b = B.concat(B.slice(0, 2));
+  const st = () => ({ A, B, res: res.slice(), i, j });
+  push('Se empieza por los vértices más bajos de cada polígono; su suma es el vértice más bajo del resultado.', st());
+  while (i < n || j < m) { res.push([a[i][0] + b[j][0], a[i][1] + b[j][1]]); const c = cross([0, 0], [a[i + 1][0] - a[i][0], a[i + 1][1] - a[i][1]], [b[j + 1][0] - b[j][0], b[j + 1][1] - b[j][1]]);
+    const which = j >= m || (i < n && c > 0) ? 'A' : (i >= n || c < 0) ? 'B' : 'ambos'; if (which === 'A') i++; else if (which === 'B') j++; else { i++; j++; }
+    push('Vértice ' + res.length + ' de la suma. La siguiente arista con menor ángulo es la de ' + (which === 'ambos' ? 'ambos (paralelas)' : which === 'A' ? 'A (azul)' : 'B (verde)') + '.', st()); }
+  push('A + B tiene ' + res.length + ' vértices: a lo sumo |A| + |B|.', Object.assign(st(), { fin: true }));
+}, s => { const T = p => [p[0] * 0.75, p[1] * 0.75]; let g = gridBg() + poly(s.A.map(T), '#1f6feb33', COL.b) + poly(s.B.map(T), '#2da44e33', COL.g);
+  if (s.res.length > 1) g += '<' + (s.fin ? 'polygon' : 'polyline') + ' points="' + s.res.map(p => toS(T(p)).join(',')).join(' ') + '" fill="' + (s.fin ? '#d4a72c33' : 'none') + '" stroke="' + COL.a + '" stroke-width="3"/>';
+  s.res.forEach(p => g += dot(T(p), COL.a, 4)); return svgBox(g, G0.W, G0.H); });
+
+V('Geometry-Advanced-AngularSort', 'Orden angular sin atan2', 'Los puntos se numeran en el orden final. Grupo 0 = abajo (y < 0), 1 = eje x positivo, 2 = arriba y eje x negativo.', push => {
+  const P = Array.from({ length: 9 }, () => [R(-5, 5), R(-5, 5)]), grp = ([x, y]) => y < 0 ? 0 : (y === 0 && x >= 0 ? 1 : 2);
+  const ord = P.slice().sort((a, b) => grp(a) - grp(b) || (grp(a) === 1 ? 0 : -(a[0] * b[1] - a[1] * b[0])));
+  push('Puntos alrededor del origen.', { P, ord: [] });
+  for (let i = 0; i < ord.length; i++) push('Posición ' + (i + 1) + ': (' + ord[i].join(', ') + '), grupo ' + grp(ord[i]) + (i ? '; respecto al anterior, cross = ' + (ord[i - 1][0] * ord[i][1] - ord[i - 1][1] * ord[i][0]) + (grp(ord[i - 1]) !== grp(ord[i]) ? ' (cambia de grupo)' : ' ≥ 0') : '') + '.', { P, ord: ord.slice(0, i + 1) });
+  push('Orden completo desde −π hasta π, solo con enteros.', { P, ord });
+}, s => { let g = gridBg() + seg([-12, 0], [12, 0], '#888', 1) + seg([0, -7], [0, 7], '#888', 1);
+  s.P.forEach(p => g += dot(p, '#999', 4)); s.ord.forEach((p, i) => { g += seg([0, 0], p, COL.b, 1.5) + dot(p, i === s.ord.length - 1 ? COL.a : COL.b, 5, String(i + 1)); }); return svgBox(g, G0.W, G0.H); });
 
 })();
